@@ -1,0 +1,67 @@
+{
+  "duration": ["three days", "nine days", "two weeks", "a month", "six weeks", "most of a season"],
+  "weekday": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+  "street": ["Myrtle", "Fulton", "Atlantic", "Tremont", "Steinway", "Victory", "Dyckman", "Nostrand", "Castle Hill", "Ditmars"],
+  "cargo": ["generator coils", "uncut antibiotics", "Belgian ammunition", "real coffee", "counterfeit relics", "frozen beef", "solar glass", "somebody's art collection"],
+  "congregation": ["A dozen believers", "Forty of the faithful", "A quiet crowd", "Rows of believers in work clothes"],
+  "static_blessing": ["Clear signal to you", "May your noise floor be low", "Strong carrier, friend", "Be received"],
+
+  "blackout_consequence": ["Eleven thousand generators came on, and a new aristocracy with them.", "The refrigerated city spoiled first; the candle city did fine.", "When the lights returned, several things that happened in the dark declined to un-happen.", "Three neighborhoods never fully reconnected, by accident or by invoice."],
+  "tabloid_blackout": ["WHO PULLED THE PLUG?", "DARK AGES, EXPRESS SERVICE", "CANDLE BARONS CASH IN", "NIGHT FALLS AT NOON"],
+  "blackout_graffiti": ["WE SAW STARS", "THE DARK WAS HONEST", "PAY THE WATTMEN", "WHO NEEDS CON ED", "LIGHTS OUT, EYES OPEN"],
+
+  "hurricane_name": ["Oksana", "Dmitri", "Patience", "Wendell", "Marisol", "Hubert"],
+  "flood_depth": ["four feet", "six feet", "nine feet", "a story and a half"],
+  "flood_consequence": ["The water left in a week. The insurance men never came at all.", "They found the seawall money three years later, in a marina upstate.", "The neighborhood learned to read tide charts like racing forms.", "Some blocks pumped out. Some blocks learned to float."],
+  "flood_graffiti": ["THE WATER REMEMBERS", "HIGH GROUND IS A LANDLORD'S WORD", "WE WERE PROMISED FERRIES", "SWIM PRACTICE 2031", "THE TIDE KEEPS RECEIPTS"],
+  "surge_flotsam": ["a piano, tuned", "three sealed shipping containers nobody claimed", "the old pier, returned in pieces", "a vending machine full of dry cigarettes"],
+
+  "transit_excuse": ["a temporary service adjustment", "deferred maintenance realization", "ridership rebalancing", "an abundance of caution"],
+  "transit_graffiti": ["THE L TRAIN LIVES (IN OUR HEARTS)", "GHOST TRAINS RUN ON TIME", "MIND THE GAP IN SERVICE", "WE WALK NOW"],
+
+  "fire_consequence": ["The hydrants worked on the rich side of the block.", "Arson, said the marshal. Insurance, said everyone else.", "The block rebuilt in vinyl and resentment.", "Three companies fought it; one of them set it."],
+
+  "tabloid_heat": ["CITY COOKS, COUNCIL SIMMERS", "ASPHALT SOUP AGAIN", "FRY AN EGG ON THE MAYOR", "AC BARONS DECLARE RECORD QUARTER"],
+
+  "crash_graffiti": ["YOUR 401K IS A GHOST STORY", "NUMBERS LIE IN BOTH DIRECTIONS", "THE LEDGER SEES", "SHORT EVERYTHING"],
+  "crash_consequence": ["The ATMs worked; the numbers in them didn't.", "Midtown wept into its phones. The outer boroughs, long broke, barely noticed.", "Cash came back like an old fashion. So did the men who guard cash.", "Six banks became two banks became a question."],
+
+  "port_graffiti": ["THE NARROWS COLLECTS", "CUSTOMS IS A COSTUME", "EVERYTHING FLOATS ASHORE EVENTUALLY"],
+
+  "tenant_banner": ["NOT ONE FAMILY OUT", "THE BLOCK STANDS", "RENT IS VIOLENCE", "WE LIVE HERE", "MARSHALS GO HOME"],
+  "housing_consequence": ["The landlords blinked first, that once.", "Forty marshals came on a Tuesday. The drum line was louder.", "The settlement was sealed; the new boilers weren't.", "It spread to nine buildings before winter broke it."],
+  "enclave_word": ["'resilience'", "'community curation'", "'managed serenity'", "'a return to neighborhood values'"],
+
+  "street_memorial": ["candles and a basketball jersey, renewed weekly", "a wall of names repainted brighter each year", "plastic flowers zip-tied to a lamppost, fresh ones every month"],
+  "turf_graffiti": ["KINGS COUNTY MEANS KINGS", "WRONG SIDE OF THE AVE", "ASK PERMISSION", "THIS FAR. NO FARTHER."],
+  "war_consequence": ["Both crews lost their founders and kept their accountants.", "The truce line runs down the middle of the avenue to this day, and so does the price difference.", "Forty-one funerals, two parades, one extremely careful peace.", "It ended the way they end: everyone tired, nothing learned, territory identical."],
+
+  "signal_shrine": ["a satellite dish repainted gold, aimed at nothing in the sky anyone can find", "a ring of dead phones, screens up, kept charged by hand", "an antenna grown over with morning glories, still humming"],
+  "water_shrine": ["a high-water line traced in blue paint and pearl buttons", "a rowboat filled with candles, dry for years now", "a font of harbor water, changed daily, never explained"],
+  "miracle_shrine": ["an intersection where the candles never blow out, verified twice", "a painted saint whose eyes locals repaint every dawn before anyone can check them", "a fire escape where the pigeons land in the same formation every dusk"],
+  "miracle_desc": ["a stopped clock that chimed the hour of the blackout, once, correctly", "rain that fell on one side of the street for nine days", "a mural whose painted window showed a light that no one painted", "every cat on the block facing the river at the same moment, photographed"],
+
+  "vision_graffiti": ["DID YOU DREAM IT TOO", "THE CITY DREAMS US", "SAME DREAM SAME TRAIN", "ASK ME ABOUT THE DOOR"],
+  "vision_desc": ["a door at the end of a subway platform that opens onto warm light", "the harbor, perfectly still, with all the bridges gone", "an apartment they had never rented and could draw from memory", "a voice reading station names that do not exist, in order"],
+
+  "schism_reason": ["whether the second broadcast had already happened", "the treasurer, the treasury, and a marina upstate", "whether converts from the old faiths needed re-baptism in harbor water", "a single comma in the founding tenet"],
+  "relic_examples": ["blackout candles, authenticated", "subway tokens from the last train", "splinters of the old boardwalk", "water from the '31 flood, sealed in baby food jars"],
+
+  "curfew_hour": ["nine o'clock", "ten o'clock", "sundown"],
+  "riot_ending": ["with the visiting bench barricaded in their own locker room", "in three hours of joy that did a million dollars of damage", "when the league pulled the refs out by helicopter, which everyone agreed was excessive", "with the trophy missing for nine days and returned polished"],
+  "sports_graffiti": ["REFS LIVE IN MIDTOWN", "OUR HOUSE STILL", "CHAMPIONS OF NOTHING", "RING THE BELL"],
+
+  "radio_graffiti": ["TUNE IN ψ", "88.3 AFTER MIDNIGHT", "THE VOICE KNOWS YOUR BLOCK", "STATIC IS A LANGUAGE"],
+  "radio_content": ["station names, read slowly, some of them real", "weather reports for years that haven't happened", "a woman reading debts aloud and declaring them void", "music nobody can Shazam and everybody hums"],
+
+  "exodus_graffiti": ["LAST ONE OUT FEED THE CATS", "WE'LL BE BACK (NO WE WON'T)", "FORWARDING ADDRESS: ANYWHERE", "SOLD. SORRY."],
+  "exodus_count": ["nine thousand", "a fifth of its", "fourteen thousand", "more than the census would admit"],
+  "influx_count": ["twenty thousand", "a busload an hour of", "eleven thousand", "uncounted thousands of"],
+
+  "borough_adj": ["Brooklyn", "Bronx", "Harlem", "Queensbridge", "Canarsie", "Pelham", "Rockaway", "Bowery"],
+  "team_noun": ["Hounds", "Pilots", "Wardens", "Cyclones", "Bishops", "Mules", "Saints", "Breakers"],
+  "drone_team_first": ["Voltage", "Static", "Redline", "Null", "Vector", "Downdraft"],
+  "drone_team_second": ["Collective", "Syndicate", "Works", "Crew", "Lab", "Union"],
+  "parkour_team": ["The Turnstile Saints", "Platform Zero", "The Third Rail Runners", "Gap Minders", "The Headway", "Last Car Crew"],
+  "boxer_gym": ["Corona Forge", "Iron Steinway", "The Flushing Bell", "Jackson Heights Anvil", "Rockaway Southpaw", "The Jamaica Clinch", "Astoria Counterweight", "Woodside Glass Jaw"]
+}

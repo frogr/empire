@@ -1,0 +1,1063 @@
+{
+  "events": [
+    {
+      "id": "evt_grid_blackout",
+      "scope": "citywide",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 5,
+      "tags": [
+        "blackout",
+        "comms_collapse"
+      ],
+      "preconditions": {
+        "year_min": 2027,
+        "stat": {
+          "infrastructure": {
+            "lt": 0.6
+          }
+        }
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.08,
+          "prosperity": -0.05,
+          "cult": 0.05,
+          "infrastructure": -0.05
+        }
+      },
+      "residue": [
+        {
+          "type": "graffiti",
+          "density": "high",
+          "grammar": "#blackout_graffiti#"
+        },
+        {
+          "type": "shrine",
+          "density": "low",
+          "grammar": "candles fused into the asphalt in a ring, melted during the dark of {year}"
+        }
+      ],
+      "chronicle": "In {year} the grid failed for #duration#. #blackout_consequence#",
+      "news": "GRID DOWN AGAIN \u2014 #tabloid_blackout#"
+    },
+    {
+      "id": "evt_hurricane_flood",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 5,
+      "tags": [
+        "flood",
+        "storm"
+      ],
+      "preconditions": {
+        "coastal": true
+      },
+      "effects": {
+        "stats": {
+          "prosperity": -0.2,
+          "infrastructure": -0.25,
+          "cult": 0.08
+        },
+        "population": -0.12,
+        "flood": true,
+        "kill_subway": 0.4,
+        "spread": 0.3
+      },
+      "residue": [
+        {
+          "type": "flood",
+          "density": "high"
+        },
+        {
+          "type": "memorial",
+          "density": "med",
+          "grammar": "a memorial wall of laminated photographs from the water of {year}"
+        },
+        {
+          "type": "graffiti",
+          "density": "med",
+          "grammar": "#flood_graffiti#"
+        }
+      ],
+      "chronicle": "Hurricane #hurricane_name# put {neighborhood} under #flood_depth# of water in {year}. #flood_consequence#"
+    },
+    {
+      "id": "evt_storm_surge",
+      "scope": "neighborhood",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 4,
+      "tags": [
+        "storm"
+      ],
+      "preconditions": {
+        "coastal": true
+      },
+      "effects": {
+        "stats": {
+          "infrastructure": -0.1,
+          "prosperity": -0.06
+        }
+      },
+      "residue": [
+        {
+          "type": "graffiti",
+          "density": "low",
+          "grammar": "#flood_graffiti#"
+        }
+      ],
+      "chronicle": "A surge tide chewed the {neighborhood} waterfront in {year}. The water gave back #surge_flotsam#."
+    },
+    {
+      "id": "evt_subway_abandonment",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 4,
+      "tags": [
+        "transit_collapse"
+      ],
+      "preconditions": {
+        "year_min": 2028,
+        "stat": {
+          "infrastructure": {
+            "lt": 0.5
+          }
+        }
+      },
+      "effects": {
+        "stats": {
+          "prosperity": -0.12,
+          "crime": 0.06
+        },
+        "kill_subway": 0.8
+      },
+      "residue": [
+        {
+          "type": "barricade",
+          "density": "low"
+        },
+        {
+          "type": "graffiti",
+          "density": "med",
+          "grammar": "#transit_graffiti#"
+        }
+      ],
+      "chronicle": "The MTA's successor cut service to {neighborhood} in {year}, calling it #transit_excuse#. The station gates were welded by spring."
+    },
+    {
+      "id": "evt_great_fire",
+      "scope": "neighborhood",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 3,
+      "tags": [
+        "fire"
+      ],
+      "effects": {
+        "stats": {
+          "prosperity": -0.15,
+          "infrastructure": -0.15,
+          "faith": 0.05
+        },
+        "population": -0.05
+      },
+      "residue": [
+        {
+          "type": "burn",
+          "density": "high"
+        },
+        {
+          "type": "memorial",
+          "density": "low",
+          "grammar": "a scorched doorframe kept upright with flowers, {year}"
+        }
+      ],
+      "chronicle": "The {neighborhood} fire of {year} burned for #duration#. #fire_consequence#"
+    },
+    {
+      "id": "evt_heat_dome",
+      "scope": "citywide",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 4,
+      "tags": [
+        "heatwave"
+      ],
+      "preconditions": {
+        "year_min": 2027
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.05,
+          "infrastructure": -0.04,
+          "cult": 0.03
+        }
+      },
+      "chronicle": "The heat dome of {year} lasted #duration#. The city counted its dead by precinct and stopped publishing the count.",
+      "news": "MERCURY RISING: #tabloid_heat#"
+    },
+    {
+      "id": "evt_market_crash",
+      "scope": "citywide",
+      "phase": [
+        "history"
+      ],
+      "weight": 4,
+      "once": true,
+      "tags": [
+        "crash"
+      ],
+      "preconditions": {
+        "year_min": 2027,
+        "year_max": 2033
+      },
+      "effects": {
+        "stats": {
+          "prosperity": -0.15,
+          "crime": 0.08
+        }
+      },
+      "residue": [
+        {
+          "type": "graffiti",
+          "density": "med",
+          "grammar": "#crash_graffiti#"
+        }
+      ],
+      "chronicle": "The Crash of '{yy} reached the street in {year}. #crash_consequence#"
+    },
+    {
+      "id": "evt_port_collapse",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 4,
+      "once": true,
+      "tags": [
+        "port_collapse",
+        "smuggling_boom"
+      ],
+      "preconditions": {
+        "coastal": true,
+        "area_type": [
+          "industrial",
+          "waterfront"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "prosperity": -0.18,
+          "crime": 0.15
+        },
+        "found": [
+          {
+            "kind": "faction",
+            "chance": 0.9
+          }
+        ]
+      },
+      "residue": [
+        {
+          "type": "graffiti",
+          "density": "med",
+          "grammar": "#port_graffiti#"
+        }
+      ],
+      "chronicle": "Customs walked off the {neighborhood} piers in {year} and never walked back. What crosses water now pays differently."
+    },
+    {
+      "id": "evt_rent_strike",
+      "scope": "neighborhood",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 5,
+      "tags": [
+        "housing_war"
+      ],
+      "preconditions": {
+        "stat": {
+          "prosperity": {
+            "lt": 0.5
+          }
+        }
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.05,
+          "prosperity": 0.03
+        },
+        "found": [
+          {
+            "kind": "faction",
+            "chance": 0.5
+          }
+        ]
+      },
+      "residue": [
+        {
+          "type": "banner",
+          "density": "med",
+          "grammar": "#tenant_banner#"
+        }
+      ],
+      "chronicle": "The {neighborhood} rent strike of {year} held #duration#. #housing_consequence#"
+    },
+    {
+      "id": "evt_landlord_consolidation",
+      "scope": "borough",
+      "phase": [
+        "history"
+      ],
+      "weight": 4,
+      "tags": [
+        "housing_war",
+        "consolidation"
+      ],
+      "preconditions": {
+        "year_min": 2028
+      },
+      "effects": {
+        "stats": {
+          "prosperity": 0.05,
+          "crime": 0.03
+        },
+        "found": [
+          {
+            "kind": "faction",
+            "chance": 0.6
+          }
+        ]
+      },
+      "chronicle": "By {year}, one in five doors in {borough} answered to a single holding company with no listed address."
+    },
+    {
+      "id": "evt_tech_enclave",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "tags": [
+        "boom",
+        "enclave"
+      ],
+      "preconditions": {
+        "stat": {
+          "prosperity": {
+            "gt": 0.55
+          }
+        }
+      },
+      "effects": {
+        "stats": {
+          "prosperity": 0.15,
+          "crime": -0.05
+        },
+        "population": 0.05
+      },
+      "residue": [
+        {
+          "type": "barricade",
+          "density": "low"
+        }
+      ],
+      "chronicle": "{neighborhood} gated itself politely in {year}: bollards, doormen with thermal scopes, a private grid. The brochures said #enclave_word#."
+    },
+    {
+      "id": "evt_police_split",
+      "scope": "citywide",
+      "phase": [
+        "history"
+      ],
+      "weight": 5,
+      "once": true,
+      "tags": [
+        "police_collapse"
+      ],
+      "preconditions": {
+        "year_min": 2029
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.1
+        },
+        "found": [
+          {
+            "kind": "faction",
+            "chance": 1.0
+          },
+          {
+            "kind": "faction",
+            "chance": 0.8
+          }
+        ]
+      },
+      "chronicle": "The Department came apart in {year} \u2014 pension fight, then a contract fight, then just a fight. What patrols now wears three different shoulder patches and agrees on nothing."
+    },
+    {
+      "id": "evt_gang_war",
+      "scope": "neighborhood",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 5,
+      "tags": [
+        "gang_war"
+      ],
+      "preconditions": {
+        "stat": {
+          "crime": {
+            "gt": 0.45
+          }
+        }
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.12,
+          "prosperity": -0.08
+        },
+        "found": [
+          {
+            "kind": "faction",
+            "chance": 0.35
+          }
+        ]
+      },
+      "residue": [
+        {
+          "type": "memorial",
+          "density": "med",
+          "grammar": "#street_memorial#"
+        },
+        {
+          "type": "graffiti",
+          "density": "high",
+          "grammar": "#turf_graffiti#"
+        }
+      ],
+      "chronicle": "The {neighborhood} war of {year} ran #duration#. #war_consequence#"
+    },
+    {
+      "id": "evt_crackdown",
+      "scope": "neighborhood",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 4,
+      "tags": [
+        "crackdown"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "police_collapse"
+        ],
+        "stat": {
+          "crime": {
+            "gt": 0.6
+          }
+        }
+      },
+      "effects": {
+        "stats": {
+          "crime": -0.15,
+          "prosperity": -0.03
+        }
+      },
+      "residue": [
+        {
+          "type": "barricade",
+          "density": "med"
+        }
+      ],
+      "chronicle": "In {year} the patrols swept {neighborhood} block by block for #duration#. Quiet followed. Nobody called it peace."
+    },
+    {
+      "id": "evt_blackout_church",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 5,
+      "tags": [
+        "prophecy",
+        "signal"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "blackout"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "cult": 0.12,
+          "faith": 0.05
+        },
+        "found": [
+          {
+            "kind": "religion",
+            "chance": 0.9
+          }
+        ]
+      },
+      "residue": [
+        {
+          "type": "shrine",
+          "density": "med",
+          "grammar": "#signal_shrine#"
+        }
+      ],
+      "chronicle": "During the dark, somebody in {neighborhood} heard something on a dead frequency. By {year} they had a name, a doctrine, and a rooftop full of dishes."
+    },
+    {
+      "id": "evt_flood_sect",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 5,
+      "tags": [
+        "prophecy",
+        "water"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "flood"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "cult": 0.12
+        },
+        "found": [
+          {
+            "kind": "religion",
+            "chance": 0.85
+          }
+        ]
+      },
+      "residue": [
+        {
+          "type": "shrine",
+          "density": "med",
+          "grammar": "#water_shrine#"
+        }
+      ],
+      "chronicle": "After the water, a preacher in {neighborhood} said the tide had been a first knock. In {year} the congregation started leaving their doors unlocked for it."
+    },
+    {
+      "id": "evt_miracle",
+      "scope": "neighborhood",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 3,
+      "tags": [
+        "miracle"
+      ],
+      "effects": {
+        "stats": {
+          "cult": 0.08,
+          "faith": 0.08
+        },
+        "found": [
+          {
+            "kind": "religion",
+            "chance": 0.4
+          }
+        ]
+      },
+      "residue": [
+        {
+          "type": "shrine",
+          "density": "high",
+          "grammar": "#miracle_shrine#"
+        }
+      ],
+      "chronicle": "The {neighborhood} miracle of {year}: #miracle_desc#. The diocese sent investigators. The investigators stayed."
+    },
+    {
+      "id": "evt_mass_vision",
+      "scope": "citywide",
+      "phase": [
+        "history"
+      ],
+      "weight": 2,
+      "once": true,
+      "tags": [
+        "vision"
+      ],
+      "preconditions": {
+        "year_min": 2030
+      },
+      "effects": {
+        "stats": {
+          "cult": 0.1,
+          "faith": 0.05
+        }
+      },
+      "residue": [
+        {
+          "type": "graffiti",
+          "density": "med",
+          "grammar": "#vision_graffiti#"
+        }
+      ],
+      "chronicle": "On one night in {year}, several thousand people across the city report the same dream: #vision_desc#. The papers ran it as weather."
+    },
+    {
+      "id": "evt_schism",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "tags": [
+        "schism"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "prophecy"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "cult": 0.05,
+          "crime": 0.04
+        },
+        "found": [
+          {
+            "kind": "religion",
+            "chance": 0.5
+          }
+        ]
+      },
+      "chronicle": "The faithful split in {year} over #schism_reason#. Both halves kept the name. Lawyers and worse got involved."
+    },
+    {
+      "id": "evt_relic_trade",
+      "scope": "borough",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 3,
+      "tags": [
+        "relic"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "prophecy"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.05,
+          "cult": 0.04
+        }
+      },
+      "chronicle": "By {year} the {borough} relic market had a wholesale tier: #relic_examples#. Provenance negotiable, faith extra."
+    },
+    {
+      "id": "evt_secession_vote",
+      "scope": "borough",
+      "phase": [
+        "history"
+      ],
+      "weight": 2,
+      "once": true,
+      "tags": [
+        "secession"
+      ],
+      "preconditions": {
+        "year_min": 2029
+      },
+      "effects": {
+        "stats": {
+          "prosperity": -0.04
+        }
+      },
+      "chronicle": "{borough} voted on secession in {year}. It failed by a margin thin enough to frame. The flags stayed up anyway."
+    },
+    {
+      "id": "evt_checkpoint_law",
+      "scope": "citywide",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "once": true,
+      "tags": [
+        "checkpoints"
+      ],
+      "preconditions": {
+        "year_min": 2031,
+        "requires_tag": [
+          "police_collapse"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "crime": -0.05,
+          "prosperity": -0.05
+        }
+      },
+      "residue": [
+        {
+          "type": "barricade",
+          "density": "med"
+        }
+      ],
+      "chronicle": "The Safe Corridors Act passed in {year}. Within a month every bridge had a queue, a fee schedule, and a man with a clipboard deciding who was a resident."
+    },
+    {
+      "id": "evt_curfew_year",
+      "scope": "borough",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "tags": [
+        "curfew"
+      ],
+      "preconditions": {
+        "stat": {
+          "crime": {
+            "gt": 0.55
+          }
+        }
+      },
+      "effects": {
+        "stats": {
+          "crime": -0.08,
+          "prosperity": -0.06
+        }
+      },
+      "chronicle": "{borough} spent most of {year} under a #curfew_hour# curfew. The clubs moved to basements and the basements thrived."
+    },
+    {
+      "id": "evt_amnesty",
+      "scope": "citywide",
+      "phase": [
+        "history"
+      ],
+      "weight": 2,
+      "tags": [
+        "amnesty"
+      ],
+      "preconditions": {
+        "year_min": 2032
+      },
+      "effects": {
+        "stats": {
+          "crime": -0.06,
+          "prosperity": 0.04
+        }
+      },
+      "chronicle": "The {year} amnesty emptied half the holding system in a week. Some came home to blocks that remembered them. Some came home to blocks that didn't exist."
+    },
+    {
+      "id": "evt_drone_league",
+      "scope": "borough",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "once": true,
+      "tags": [
+        "league_drone",
+        "league"
+      ],
+      "preconditions": {
+        "year_min": 2028
+      },
+      "effects": {
+        "stats": {
+          "prosperity": 0.05
+        }
+      },
+      "chronicle": "Drone racing went legitimate in {year} \u2014 a {borough} commissioner, a points system, gambling licenses. The crashes stayed illegitimate and that was the draw."
+    },
+    {
+      "id": "evt_parkour_cup",
+      "scope": "citywide",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "once": true,
+      "tags": [
+        "league_parkour",
+        "league"
+      ],
+      "preconditions": {
+        "year_min": 2029
+      },
+      "effects": {
+        "stats": {
+          "cult": 0.02
+        }
+      },
+      "chronicle": "The first Subway Parkour Cup ran in {year}, through stations the trains had abandoned. Two dead, one canonized by the crowds, a sponsorship deal by autumn."
+    },
+    {
+      "id": "evt_stadium_riot",
+      "scope": "neighborhood",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 2,
+      "tags": [
+        "riot",
+        "sports"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "league"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.06,
+          "infrastructure": -0.05
+        }
+      },
+      "residue": [
+        {
+          "type": "burn",
+          "density": "low"
+        },
+        {
+          "type": "graffiti",
+          "density": "med",
+          "grammar": "#sports_graffiti#"
+        }
+      ],
+      "chronicle": "The {neighborhood} final of {year} ended #riot_ending#. The league called it an isolated incident, annually."
+    },
+    {
+      "id": "evt_pirate_radio",
+      "scope": "neighborhood",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 3,
+      "tags": [
+        "broadcast"
+      ],
+      "effects": {
+        "stats": {
+          "cult": 0.04
+        }
+      },
+      "residue": [
+        {
+          "type": "graffiti",
+          "density": "low",
+          "grammar": "#radio_graffiti#"
+        }
+      ],
+      "chronicle": "A voice started broadcasting from somewhere in {neighborhood} in {year} \u2014 #radio_content#. Triangulation parties found nothing but warm rooftops."
+    },
+    {
+      "id": "evt_exodus",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "tags": [
+        "exodus"
+      ],
+      "preconditions": {
+        "stat": {
+          "prosperity": {
+            "lt": 0.35
+          }
+        }
+      },
+      "effects": {
+        "population": -0.15,
+        "stats": {
+          "prosperity": -0.05,
+          "crime": 0.05
+        }
+      },
+      "residue": [
+        {
+          "type": "graffiti",
+          "density": "med",
+          "grammar": "#exodus_graffiti#"
+        }
+      ],
+      "chronicle": "{neighborhood} lost #exodus_count# residents in {year}. The moving trucks ran at night to dodge the departure tax rumors, which were true."
+    },
+    {
+      "id": "evt_influx",
+      "scope": "neighborhood",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "tags": [
+        "migration"
+      ],
+      "preconditions": {
+        "stat": {
+          "prosperity": {
+            "gt": 0.4
+          }
+        }
+      },
+      "effects": {
+        "population": 0.1,
+        "stats": {
+          "prosperity": 0.04
+        }
+      },
+      "chronicle": "The buses kept coming in {year} \u2014 climate money, war money, no money. {neighborhood} absorbed #influx_count# new arrivals and invented four new cuisines doing it."
+    },
+    {
+      "id": "evt_generator_cartel",
+      "scope": "borough",
+      "phase": [
+        "history"
+      ],
+      "weight": 4,
+      "tags": [
+        "power_racket"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "blackout"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.06
+        },
+        "found": [
+          {
+            "kind": "faction",
+            "chance": 0.6
+          }
+        ]
+      },
+      "chronicle": "By {year}, half of {borough} bought its watts off the books. The men who own the generators collect on the first of the month and they do not take checks."
+    },
+    {
+      "id": "evt_counterfeit_relics",
+      "scope": "borough",
+      "phase": [
+        "history",
+        "live"
+      ],
+      "weight": 2,
+      "tags": [
+        "counterfeit"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "relic"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "crime": 0.04
+        }
+      },
+      "chronicle": "A {borough} workshop was caught pressing relics in {year} \u2014 #relic_examples#, aged with tea and grief. The faithful bought them anyway. Belief does its own authentication."
+    },
+    {
+      "id": "evt_levee_authority",
+      "scope": "citywide",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "once": true,
+      "tags": [
+        "levee"
+      ],
+      "preconditions": {
+        "requires_tag": [
+          "flood"
+        ]
+      },
+      "effects": {
+        "stats": {
+          "infrastructure": 0.08
+        },
+        "found": [
+          {
+            "kind": "faction",
+            "chance": 0.7
+          }
+        ]
+      },
+      "chronicle": "The Harbor Wall Authority was chartered in {year} with emergency powers and a budget nobody audited. The wall is real. So are the tolls."
+    },
+    {
+      "id": "evt_boxing_league",
+      "scope": "borough",
+      "phase": [
+        "history"
+      ],
+      "weight": 3,
+      "once": true,
+      "tags": [
+        "league_boxing",
+        "league"
+      ],
+      "preconditions": {
+        "year_min": 2028
+      },
+      "effects": {
+        "stats": {
+          "prosperity": 0.03,
+          "crime": 0.02
+        }
+      },
+      "chronicle": "Augmented boxing got its {borough} charter in {year}: servo-assisted, blood optional but customary. The commission's medical officer resigned and was replaced by a veterinarian."
+    },
+    {
+      "id": "evt_quiet_year",
+      "scope": "citywide",
+      "phase": [
+        "history"
+      ],
+      "weight": 2,
+      "tags": [
+        "quiet"
+      ],
+      "effects": {
+        "stats": {
+          "prosperity": 0.04,
+          "crime": -0.03,
+          "infrastructure": 0.03
+        }
+      },
+      "chronicle": "{year} was, by the standards of the decade, quiet. People repainted things. Everyone agreed it couldn't last, and saying so out loud became the year's main social ritual."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "leagues": [
+    {
+      "id": "gotham_basketball",
+      "name": "Gotham Basketball Association",
+      "sport": "basketball",
+      "era": "old",
+      "venue_kind": "arena",
+      "team_count": 8,
+      "team_grammar": "#borough_adj# #team_noun#",
+      "season_games": 28,
+      "founded_by_event_tags": []
+    },
+    {
+      "id": "borough_drone_circuit",
+      "name": "Five Borough Drone Circuit",
+      "sport": "drone racing",
+      "era": "new",
+      "venue_kind": "industrial",
+      "team_count": 6,
+      "team_grammar": "#drone_team_first# #drone_team_second#",
+      "season_games": 18,
+      "founded_by_event_tags": [
+        "league_drone"
+      ]
+    },
+    {
+      "id": "subway_parkour_cup",
+      "name": "Subway Parkour Cup",
+      "sport": "parkour",
+      "era": "new",
+      "venue_kind": "station",
+      "team_count": 6,
+      "team_grammar": "#parkour_team#",
+      "season_games": 12,
+      "founded_by_event_tags": [
+        "league_parkour"
+      ]
+    },
+    {
+      "id": "queens_augmented_boxing",
+      "name": "Queens Augmented Boxing League",
+      "sport": "augmented boxing",
+      "era": "new",
+      "venue_kind": "market",
+      "team_count": 8,
+      "team_grammar": "#boxer_gym#",
+      "season_games": 20,
+      "founded_by_event_tags": [
+        "league_boxing"
+      ]
+    }
+  ]
+}
