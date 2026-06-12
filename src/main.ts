@@ -386,7 +386,7 @@ function handleGameKeys(e: KeyboardEvent): void {
   if (e.key === '?') { helpOpen = !helpOpen; e.preventDefault(); return; }
   if (e.key === 'Escape' && helpOpen) { helpOpen = false; e.preventDefault(); return; }
   if (helpOpen) return;
-  if (e.key === 'Q' && e.shiftKey) {
+  if (e.key === 'Q') { // capital Q only — shift is implied by the capital
     // Quit to title; the autosave keeps the city where you left it.
     requestSave();
     shell = 'title';
@@ -433,17 +433,18 @@ function dimmed(c: number, f: number): number {
 }
 
 const TITLE_ART = [
-  '▄████▄ ██▄  ██▄ ██▄▄▄▄ ██ ▄████▄ ▄████▄    ██  ██  ▄█▄ ▄████▄',
-  '██▄▄   ██ █ █ █ ██   █ ██ ██  ██ ██▄▄      ██  ██   █  ██  ██',
-  '██▀▀   ██ ▀█▀ █ ██▀▀▀▀ ██ ██▀██▀ ██▀▀  ▄▄  ▀█▄▄█▀  ▄█▄ ██▄▄██',
-  '▀████▀ ██  ▀  █ ██     ██ ██  ██ ▀████▀ ██   ▀▀    ▀█▀ ▀████▀',
+  '═══════════════════════════════════════',
+  '   E M P I R E : / / 3 6',
+  '═══════════════════════════════════════',
 ];
 
 function drawTitle(): void {
   const cx = renderer.cols >> 1;
   let y = Math.max(2, (renderer.rows >> 1) - 12);
-  for (const line of TITLE_ART) {
-    renderer.write(cx - (line.length >> 1), y++, line, 0x2f8a8a);
+  for (let i = 0; i < TITLE_ART.length; i++) {
+    const line = TITLE_ART[i];
+    renderer.write(cx - (TITLE_ART[0].length >> 1), y++, line, i === 1 ? 0x6fd4c0 : 0x2f5a5a);
+    if (i === 0 || i === TITLE_ART.length - 1) continue;
   }
   y++;
   renderer.write(cx - 17, y++, 'A NEW YORK ROGUELIKE · OCTOBER 2036', 0x6fa8b8);

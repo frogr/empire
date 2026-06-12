@@ -1,16 +1,28 @@
 # EMPIRE://36
 
 Turn-based, glyph-rendered roguelike set in NYC 2036. Full product spec lives in
-`docs/PRD.md` — read it before adding features. Current status: **M0 complete**
-(walking skeleton: renderer, one procgen neighborhood, turn loop, FOV, log).
-Next milestone: M1 (worldgen pipeline, 2026→2036 history sim, chronicle).
+`docs/PRD.md` — read it before adding features. Current status: **v1 complete
+(M0–M4)**: history sim, living city (Tier 1/2/3), combat/death/legacy, economy,
+faiths, leagues, server saves, CRT, content packs at volume. Remaining operator
+step: public deploy (Dockerfile + fly.toml are ready).
 
 ## Commands
 
-- `npm run dev` — Vite dev server on http://localhost:5136 (`?seed=foo` to pin a world)
-- `npm run check` — typecheck
-- `npm test` — vitest (determinism, connectivity, perf budgets)
-- `npm run build` — typecheck + production build
+- `npm run server` — API/saves server on :8136 (SQLite at ./empire.db)
+- `npm run dev` — Vite dev server on http://localhost:5136 (proxies /api; `?seed=foo` pins a world)
+- `npm run check` — typecheck client + server
+- `npm test` — vitest (determinism, connectivity, perf budgets, sim E2E)
+- `npm run build` — typecheck + production build; `npm start` serves dist + API
+
+## Code map
+
+- `src/sim/worldgen/history.ts` — 2026→2036 yearly event loop (the chronicle)
+- `src/sim/city.ts` — Tier 2/3 living-city sim (records, daily tick, rumors, leagues)
+- `src/sim/game.ts` — turn resolution, travel, combat, economy, faith, save/restore
+- `src/sim/mapgen.ts` — area-type local maps, stat-parameterized, residue stamping
+- `src/sim/content/` — typed pack registry; `/content/packs/*.json` merge in automatically
+- `server/` — Hono + better-sqlite3 + argon2id (auth, saves, runs)
+- `src/main.ts` — client shell (title/auth/settings/game), autosave; `src/render/` — atlas, renderer, CRT
 
 ## Architecture (do not erode these)
 
