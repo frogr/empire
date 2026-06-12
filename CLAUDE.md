@@ -1,10 +1,14 @@
 # EMPIRE://36
 
 Turn-based, glyph-rendered roguelike set in NYC 2036. Full product spec lives in
-`docs/PRD.md` — read it before adding features. Current status: **v1 complete
-(M0–M4)**: history sim, living city (Tier 1/2/3), combat/death/legacy, economy,
-faiths, leagues, server saves, CRT, content packs at volume. Remaining operator
-step: public deploy (Dockerfile + fly.toml are ready).
+`docs/PRD.md` — read it before adding features. Current status: **v2 complete
+(M0–M7)**: history sim, living city (Tier 1/2/3), combat/death/legacy, economy,
+faiths, leagues, server saves, CRT, content packs at volume, plus M5 legibility
+(hint bar, real NYC city map, tabbed help), M6 aliveness (street director,
+scenes, directed encounters, surfaced sim), M7 depth (multi-quest journal,
+stashes, dumpster diving, reaction barks). **Next: M8–M11 agency — the full
+execution spec is `docs/ROADMAP-M8-M11.md`; read it before starting any M8+
+work.** Public deploy is deliberately parked until the owner calls it.
 
 ## Commands
 
