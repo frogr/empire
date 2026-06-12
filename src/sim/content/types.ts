@@ -218,6 +218,25 @@ export interface StreetSceneDef {
   text: { start: string; tick?: string; end?: string }; // grammar refs or literals
 }
 
+// --- quest templates (M7; instantiated by Game when an NPC offers work) -------
+
+export type QuestKind = 'deliver' | 'fetch' | 'scavenge' | 'collect' | 'errand' | 'task';
+
+export interface QuestTemplateDef {
+  id: string;
+  kind: QuestKind;
+  givers: string[]; // archetype ids that offer this
+  weight: number;
+  itemId?: string;        // deliver/fetch/scavenge subject (deliver defaults to 'package')
+  qty?: [number, number]; // scavenge count range
+  reward: [number, number];
+  offer: string;   // spoken on offer; supports {name} {target} {item} {reward} {qty} and #slots#
+  desc: string;    // journal line; same substitutions
+  needsFaction?: boolean; // task: requires a controlling faction somewhere adjacent
+  needsFaith?: boolean;   // errand: requires a faith presence; completes at an altar
+  twist?: number;         // 0..1 chance the delivery was bait (staged on completion)
+}
+
 // --- world state (output of the 2026→2036 history sim) -----------------------
 
 export interface ResidueStamp {

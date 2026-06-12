@@ -1,0 +1,58 @@
+{
+ "items": [
+  {
+   "id": "ferry_token_31",
+   "name": "ferry token, 2031",
+   "glyph": "©",
+   "color": "#c9b458",
+   "kind": "valuable",
+   "value": 60,
+   "desc": "Brass, for a ferry line that ran exactly one summer between the floods. Collectors argue about which trip was last."
+  },
+  {
+   "id": "waterline_photo",
+   "name": "framed waterline photograph",
+   "glyph": "□",
+   "color": "#7a9ab0",
+   "kind": "valuable",
+   "value": 45,
+   "desc": "Somebody photographed their own living room at high water and framed it. The frame is water-damaged. That's the piece."
+  },
+  {
+   "id": "transit_map_old",
+   "name": "pre-collapse subway map",
+   "glyph": "♦",
+   "color": "#3a6ad0",
+   "kind": "valuable",
+   "value": 50,
+   "desc": "Every line, all of them running, none of it true anymore. People cry at this. Fences pay for that."
+  },
+  {
+   "id": "sermon_tape",
+   "name": "cassette sermon, unlabeled",
+   "glyph": "■",
+   "color": "#9a8ac0",
+   "kind": "valuable",
+   "value": 40,
+   "desc": "A voice preaching about the water, recorded over somebody's wedding. Both events are still on the tape."
+  },
+  {
+   "id": "campaign_button",
+   "name": "mayoral campaign button, 2025",
+   "glyph": "o",
+   "color": "#c05a50",
+   "kind": "valuable",
+   "value": 35,
+   "desc": "TOGETHER WE RISE. The slogan aged into a flood joke, which doubled the price."
+  },
+  {
+   "id": "rooftop_key",
+   "name": "stamped rooftop key",
+   "glyph": "¬",
+   "color": "#b08a40",
+   "kind": "valuable",
+   "value": 55,
+   "desc": "Opens one roof door in the city. Nobody who buys it asks which one. That isn't what it's for."
+  }
+ ]
+}

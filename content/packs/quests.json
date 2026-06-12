@@ -1,0 +1,238 @@
+{
+  "quests": [
+
+    {
+      "id": "vendor_package_run",
+      "kind": "deliver",
+      "givers": ["vendor"],
+      "weight": 4,
+      "reward": [40, 65],
+      "twist": 0.15,
+      "offer": "\"Bodega across the bridge owes me a favor and I owe them this. {target}. Counter, not the back room. Don't read it, don't drop it, {reward} dollars.\"",
+      "desc": "Get the package to a counter in {target} without it growing legs."
+    },
+
+    {
+      "id": "hustler_hot_package",
+      "kind": "deliver",
+      "givers": ["hustler"],
+      "weight": 3,
+      "reward": [55, 90],
+      "twist": 0.35,
+      "offer": "\"I need this thing in {target} before someone asks me why I have it. Counter, any bodega, {reward}. Fast.\"",
+      "desc": "Move the #hustle_noun# to a counter in {target}. The clock is somebody else's problem for now."
+    },
+
+    {
+      "id": "enforcer_package_escort",
+      "kind": "deliver",
+      "givers": ["enforcer"],
+      "weight": 3,
+      "reward": [70, 110],
+      "twist": 0.4,
+      "offer": "\"This goes to {target}. Bodega counter. You don't ask what it weighs. I don't explain why you're getting {reward}. We clear?\"",
+      "desc": "Deliver the package to a counter in {target}. High reward. Don't open it."
+    },
+
+    {
+      "id": "dockworker_cargo_drop",
+      "kind": "deliver",
+      "givers": ["dockworker"],
+      "weight": 3,
+      "reward": [45, 75],
+      "twist": 0.2,
+      "offer": "\"Manifest says this left the pier three hours ago. Technically it's already in {target}. Help it get there physically. {reward}.\"",
+      "desc": "Finish the transit — get the package to a counter in {target}."
+    },
+
+    {
+      "id": "watchman_patrol_drop",
+      "kind": "deliver",
+      "givers": ["watchman"],
+      "weight": 2,
+      "reward": [35, 55],
+      "twist": 0.1,
+      "offer": "\"I cover from here to {target}, no further. You carry this the rest of the way. Counter, any bodega. {reward} and nobody asks you anything.\"",
+      "desc": "Carry the package to a counter in {target}. The watchman's jurisdiction ends at the block."
+    },
+
+    {
+      "id": "medic_supply_fetch",
+      "kind": "fetch",
+      "givers": ["street_medic"],
+      "weight": 4,
+      "itemId": "medkit",
+      "reward": [35, 60],
+      "offer": "\"I've got three people who needed this yesterday. There's a kit somewhere in {target} — bodega counter, someone's holding it. Bring it and I'll pay {reward}. Don't use it.\"",
+      "desc": "Find the medkit at a counter in {target} and bring it back."
+    },
+
+    {
+      "id": "technician_battery_fetch",
+      "kind": "fetch",
+      "givers": ["technician"],
+      "weight": 4,
+      "itemId": "salvage_battery",
+      "reward": [30, 55],
+      "offer": "\"Quebec battery, if it's still there. {target}, counter. These things go fast when the grid hiccups. {reward}.\"",
+      "desc": "Retrieve the salvage battery from a counter in {target}."
+    },
+
+    {
+      "id": "preacher_candle_fetch",
+      "kind": "fetch",
+      "givers": ["preacher"],
+      "weight": 3,
+      "itemId": "blackout_candle",
+      "reward": [25, 45],
+      "offer": "\"There are candles kept for the vigil — a counter in {target} is holding them. Blessed stock, specific. I can pay {reward} and my gratitude, which historically has been worth something.\"",
+      "desc": "Collect the blackout candle from a counter in {target} and bring it to the preacher."
+    },
+
+    {
+      "id": "parkour_kid_token_fetch",
+      "kind": "fetch",
+      "givers": ["parkour_kid"],
+      "weight": 3,
+      "itemId": "subway_token",
+      "reward": [25, 40],
+      "offer": "\"I know, I know, they don't work. Still — {target}, counter, there's a token from the old system. Collector's item. {reward} if you don't ask how it got there.\"",
+      "desc": "Get the subway token from a counter in {target}."
+    },
+
+    {
+      "id": "retired_cop_painkillers_fetch",
+      "kind": "fetch",
+      "givers": ["retired_cop"],
+      "weight": 3,
+      "itemId": "painkillers",
+      "reward": [30, 50],
+      "offer": "\"Knees. You don't need the story. There's a pack at a counter in {target} — somebody held it for me. {reward} to go get it.\"",
+      "desc": "Pick up the painkillers at a counter in {target} and bring them back."
+    },
+
+    {
+      "id": "scavenge_coils",
+      "kind": "scavenge",
+      "givers": ["technician", "dockworker"],
+      "weight": 4,
+      "itemId": "copper_coil",
+      "qty": [3, 5],
+      "reward": [40, 70],
+      "offer": "\"Copper coils — {qty} of them. I don't care where they came from before you. {reward} when you drop them at the counter.\"",
+      "desc": "Scavenge {qty} copper coils and drop them at a counter."
+    },
+
+    {
+      "id": "scavenge_scrap",
+      "kind": "scavenge",
+      "givers": ["dockworker", "hustler"],
+      "weight": 4,
+      "itemId": "scrap_metal",
+      "qty": [4, 6],
+      "reward": [35, 60],
+      "offer": "\"Scrap. {qty} pieces, any grade. Drop at a counter and I'll know you came by. Pays {reward}.\"",
+      "desc": "Collect {qty} scrap metal and turn it in at a counter."
+    },
+
+    {
+      "id": "scavenge_bandages",
+      "kind": "scavenge",
+      "givers": ["street_medic"],
+      "weight": 3,
+      "itemId": "bandage",
+      "qty": [3, 5],
+      "reward": [30, 50],
+      "offer": "\"Bandages are going fast. I need {qty} — wherever you find them. Counter, any bodega nearby. {reward}. Sterile preferred, but I'll take what I can get.\"",
+      "desc": "Scavenge {qty} bandages and drop them at a counter."
+    },
+
+    {
+      "id": "collect_overdue_debt",
+      "kind": "collect",
+      "givers": ["vendor", "enforcer"],
+      "weight": 3,
+      "reward": [50, 85],
+      "offer": "\"There's a counter in {target} that owes me a number. They know what it is. You collect it, I give you {reward}. Don't bring me an argument.\"",
+      "desc": "Collect the debt from a counter in {target}. The debtor may have opinions."
+    },
+
+    {
+      "id": "hustler_collect_tabs",
+      "kind": "collect",
+      "givers": ["hustler"],
+      "weight": 3,
+      "reward": [45, 75],
+      "offer": "\"Tab's been running since spring. {target}, counter, they know the number. Tell them I said #collect_phrase#. {reward} for your trouble.\"",
+      "desc": "Collect the outstanding tab from a counter in {target}."
+    },
+
+    {
+      "id": "errand_altar_delivery",
+      "kind": "errand",
+      "givers": ["preacher", "street_medic"],
+      "weight": 3,
+      "reward": [30, 55],
+      "needsFaith": true,
+      "offer": "\"This needs to reach the altar in {target} — hands that haven't carried anything ugly today. I'd go myself but the walk's not mine to make right now. {reward} plus something the faith owes you.\"",
+      "desc": "Carry the offering to an altar in {target}. The faith will notice."
+    },
+
+    {
+      "id": "errand_holy_circuit",
+      "kind": "errand",
+      "givers": ["preacher", "watchman"],
+      "weight": 2,
+      "reward": [25, 45],
+      "needsFaith": true,
+      "offer": "\"The altar in {target} hasn't been tended. This belongs there. Bring it, say nothing, accept whatever they give you. I'll add {reward}.\"",
+      "desc": "Deliver the #holy_item# to an altar in {target} and receive the faith's blessing."
+    },
+
+    {
+      "id": "task_faction_drop",
+      "kind": "task",
+      "givers": ["enforcer", "hustler"],
+      "weight": 3,
+      "reward": [65, 110],
+      "needsFaction": true,
+      "offer": "\"Package goes to {target}. The people there will know where. You don't need to know more than that. {reward} and you go up a notch with the right people.\"",
+      "desc": "Deliver the package to the faction's drop point in {target}. Standing improves."
+    },
+
+    {
+      "id": "task_league_message",
+      "kind": "task",
+      "givers": ["retired_cop", "parkour_kid"],
+      "weight": 2,
+      "reward": [55, 95],
+      "needsFaction": true,
+      "offer": "\"Word needs to get to {target}. Official channels are slow or compromised. You walk in, hand it to whoever's running the floor, walk out. {reward}. Simple.\"",
+      "desc": "Carry the message to the faction contact in {target}. Don't read it."
+    }
+  ],
+
+  "grammars": {
+    "hustle_noun": [
+      "parcel",
+      "envelope",
+      "box sealed with tape and optimism",
+      "bag that doesn't rattle",
+      "tube somebody capped both ends of"
+    ],
+    "collect_phrase": [
+      "the math is settled",
+      "the grace period is over",
+      "Thursdays are for paying",
+      "I don't send people twice",
+      "the number is what the number is"
+    ],
+    "holy_item": [
+      "sealed vessel",
+      "wrapped offering",
+      "candle in a paper bag",
+      "bound cloth the color of harbor water",
+      "small clay dish you are not to open"
+    ]
+  }
+}

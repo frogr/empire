@@ -12,6 +12,7 @@ export enum T {
   Rubble, Trash, Lamp, Hydrant, Car,
   Water, Shallow, Pier, Fence, Container, Barricade,
   Station, StationDead, Burnt,
+  DoorLocked, // appended (M7) — keep enum order stable for regenerated maps
 }
 
 export const FLAG_WALK = 1;
@@ -33,6 +34,7 @@ const TILE_PROPS: Record<T, [boolean, boolean]> = {
   [T.Water]: [false, false], [T.Shallow]: [true, false], [T.Pier]: [true, false],
   [T.Fence]: [false, false], [T.Container]: [false, true], [T.Barricade]: [false, false],
   [T.Station]: [true, false], [T.StationDead]: [false, true], [T.Burnt]: [true, false],
+  [T.DoorLocked]: [false, true],
 };
 
 export const TILE_DESC: Record<T, string> = {
@@ -76,6 +78,7 @@ export const TILE_DESC: Record<T, string> = {
   [T.Station]: 'A subway entrance. Warm air and old electricity breathe up the steps.',
   [T.StationDead]: 'A welded subway gate. The MTA successor calls this "service adjustment."',
   [T.Burnt]: 'Char and ash, rained on and dried a hundred times.',
+  [T.DoorLocked]: 'A door with three locks and opinions. Somebody left something behind it.',
 };
 
 export const ch = (s: string) => s.charCodeAt(0);

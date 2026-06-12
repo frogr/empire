@@ -10,14 +10,14 @@ import { CitySim, T2Incident } from './city';
 import { Director } from './director';
 import { Rand } from './rng';
 import { Grammar } from './content/grammar';
-import { GRAMMAR_RULES, RELIGIONS, FACTIONS, ORIGINS, NAMES, ITEM_BY_ID, ARCHETYPES, LEAGUES, CITYMAP } from './content';
+import { GRAMMAR_RULES, RELIGIONS, FACTIONS, ORIGINS, NAMES, ITEM_BY_ID, ARCHETYPES, LEAGUES, CITYMAP, QUEST_TEMPLATES } from './content';
 import { PlayerChar, SKILLS, STATS, INJURY_LABEL, ItemStack } from './player';
 import {
   PED_BARKS, BUMP_PED, INTRO, TRAVEL_WALK, TRAVEL_SUBWAY, ARRIVE,
 } from './flavor';
 import type { Action, FrameMeta, Hint, Msg, PulseCell } from '../bridge/protocol';
 import type {
-  ChronicleEntry, Grave, NeighborhoodSeed, NeighborhoodState, OriginDef, StreetSceneDef, WorldState,
+  ChronicleEntry, Grave, NeighborhoodSeed, NeighborhoodState, OriginDef, QuestKind, QuestTemplateDef, StreetSceneDef, WorldState,
 } from './content/types';
 
 export interface SaveData {
@@ -34,7 +34,10 @@ export interface SaveData {
   graves: Grave[];
   faith: string | null;
   favor: Record<string, number>;
-  quest: Quest | null;
+  quest?: { kind: string; itemId: string; targetHood?: string; reward: number; giver: string } | null; // v1 legacy
+  quests?: Quest[];                    // v2
+  questSerial?: number;                // v2
+  standing?: Record<string, number>;   // v2
   bets: { league: string; team: string; stake: number; odds: number; day: number }[];
   heat: number;
   heatByBorough: Record<string, number>;
@@ -44,6 +47,7 @@ export interface SaveData {
   lastEditionBand?: number;    // v2
   pendingHeadlines?: string[]; // v2
   director?: { lastBeat: number; lastEncounter: number };  // v2
+  searched?: Record<string, number[]>; // v2 — dug-through tiles per hood
   lastRitual: number;
   city: unknown;
   maps: Record<string, { explored: string; items: [number, { id: string; qty: number }[]][]; doors: number[] }>;
@@ -91,6 +95,7 @@ const ARCH_COLOR: Record<string, number> = {
 
 // Actor states.
 const ST_SCHEDULE = 0, ST_HOSTILE = 1, ST_FLEE = 2, ST_PANIC = 3, ST_SCENE = 4, ST_BRAWL = 5;
+const AF_QUESTGIVER = 8; // joins AF_DISARMED/AF_LIMP/AF_BLEED below
 // Actor flag bits.
 const AF_DISARMED = 1, AF_LIMP = 2, AF_BLEED = 4;
 
@@ -118,12 +123,19 @@ const BLOCK_MSG: Partial<Record<T, string>> = {
   [T.Container]: 'A shipping container, locked.',
   [T.Barricade]: 'Checkpoint concrete. Climbing it would be a statement.',
   [T.StationDead]: 'The gate is welded. The downstairs dark has the tunnel smell anyway.',
+  [T.DoorLocked]: 'Locked. The kind of locked that means it. [e] to argue.',
 };
 
 const PED_TILES = new Set<T>([T.Sidewalk, T.Crosswalk, T.Road, T.Alley, T.Path, T.Pier]);
 const VAULTABLE = new Set<T>([T.Car, T.Fence, T.Bench, T.Barricade, T.Counter, T.Hydrant]);
 const PIGEON_TILES = new Set<T>([T.Road, T.Sidewalk, T.Crosswalk, T.Grass, T.Path, T.Scrub, T.Pier]);
 const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
+
+// One-off relics found behind locked doors (defs in content/packs/items_relics.json).
+const RELIC_IDS = [
+  'ferry_token_31', 'waterline_photo', 'transit_map_old', 'sermon_tape',
+  'campaign_button', 'rooftop_key',
+];
 
 // Staged when a Tier-2 death lands on the block you're standing in.
 const BODY_DISCOVERED: StreetSceneDef = {
@@ -181,12 +193,20 @@ interface Menu {
 }
 
 interface Quest {
-  kind: 'deliver' | 'fetch';
-  itemId: string;
-  targetHood?: string; // deliver only
+  id: string;          // instance id, unique per run
+  kind: QuestKind;
+  desc: string;        // journal line
+  itemId: string;      // what you carry / collect ('' for collect)
+  qty: number;         // scavenge target (1 otherwise)
+  targetHood?: string; // where it resolves (deliver/collect/errand/task)
   reward: number;
   giver: string;
+  faction?: string;    // task: standing on completion
+  faith?: string;      // errand: favor on completion
+  twist?: boolean;     // deliver: it was bait
 }
+
+const QUEST_CAP = 3;
 
 export class Game {
   readonly seed: string;
@@ -229,7 +249,10 @@ export class Game {
   private director: Director;
   private scene: ActiveScene | null = null; // transient; ends on travel
   private encounter: Encounter | null = null;
-  private quest: Quest | null = null;
+  private searched = new Map<string, Set<number>>(); // hoodId → dug-through tiles
+  private quests: Quest[] = [];
+  private questSerial = 0;
+  private standing: Record<string, number> = {}; // faction goodwill, earned by work
   private faith: string | null = null; // joined religion pack id
   private favor: Record<string, number> = {};
   private lastRitual = 0;
@@ -354,6 +377,15 @@ export class Game {
         .map((f) => ({ pack: FACTIONS.find((p) => p.id === f.packId)!, control: state.control[f.packId] ?? 0 }))
         .filter((x) => x.pack),
     });
+    // Lock a few doors over whatever somebody left behind (M7 stashes).
+    const rs = new Rand(this.seed, `stash:${id}`);
+    const doorIdx: number[] = [];
+    for (let i = 0; i < gen.map.terrain.length; i++) if (gen.map.terrain[i] === T.DoorClosed) doorIdx.push(i);
+    rs.shuffle(doorIdx);
+    for (const di of doorIdx.slice(0, Math.min(doorIdx.length, 1 + rs.int(0, 2)))) {
+      const x = di % gen.map.w, y = Math.floor(di / gen.map.w);
+      gen.map.set(x, y, T.DoorLocked, '+'.charCodeAt(0), 0xb08a40, gen.map.bg[di]);
+    }
     if (this.hoodCache.size >= MAP_CACHE_CAP) {
       let evict: string | null = null;
       let oldest = Infinity;
@@ -489,6 +521,15 @@ export class Game {
       }
       this.occ[ti] = i;
     }
+    // Mark 2-3 NPCs as people with work to hand out (gold on the street).
+    const rq = new Rand(this.seed, `qgiver:${this.hoodId}`);
+    const giverArchs = new Set(QUEST_TEMPLATES.flatMap((t) => t.givers));
+    const candidates: number[] = [];
+    for (let i = 0; i < this.aCount; i++) {
+      if (this.aAlive[i] && this.aKind[i] === AK.NPC && giverArchs.has(ARCHETYPES[this.aArch[i]].id)) candidates.push(i);
+    }
+    rq.shuffle(candidates);
+    for (const i of candidates.slice(0, 2 + rq.int(0, 1))) this.aFlags[i] |= AF_QUESTGIVER;
   }
 
   private npcName(i: number): string {
@@ -513,7 +554,8 @@ export class Game {
       // Crossing into somebody else's turf can cost you at the barricade (M6.3).
       const curTop = Object.entries(curState.control).sort((a, b) => b[1] - a[1])[0];
       const dstTop = Object.entries(dstState.control).sort((a, b) => b[1] - a[1])[0];
-      if (!this.encounter && dstTop && dstTop[1] > 0.25 && dstTop[0] !== curTop?.[0] && this.rTurn.chance(0.25)) {
+      if (!this.encounter && dstTop && dstTop[1] > 0.25 && dstTop[0] !== curTop?.[0]
+          && (this.standing[dstTop[0]] ?? 0) < 2 && this.rTurn.chance(0.25)) {
         const pack = FACTIONS.find((p) => p.id === dstTop[0]);
         if (pack) {
           const toll = 10 + this.rTurn.int(0, 30);
@@ -545,7 +587,13 @@ export class Game {
       this.clockMin += minutes;
       this.turn += minutes * 10;
       this.mode = 'play';
-      this.say(`You catch the ${shared[0]} train.`, MSG_TRAVEL);
+      if (this.pc.money >= 2) {
+        this.pc.money -= 2;
+        this.say(`$2 fare. You catch the ${shared[0]} train.`, MSG_TRAVEL);
+      } else {
+        this.heat += 0.5;
+        this.say(`You hop the gate — broke is broke — and catch the ${shared[0]} train.`, MSG_TRAVEL);
+      }
       this.say(this.rTurn.pick(TRAVEL_SUBWAY), MSG_TRAVEL);
       this.enterHood(dst.id, 'subway');
       this.say(`${minutes} minutes underground.`, 0x5a6a78);
@@ -1179,6 +1227,12 @@ export class Game {
 
   private openShop(): void {
     const STOCK = ['bacalao_roll', 'beans', 'street_dumpling', 'coffee', 'tallboy', 'bandage', 'blackout_candle'];
+    // Stock follows the money: better blocks carry better shelves.
+    const stats = this.world.neighborhoods[this.hoodId].stats;
+    if (stats.prosperity > 0.5) STOCK.push('medkit');
+    if (stats.prosperity > 0.6) STOCK.push('work_jacket', 'bat');
+    if (stats.prosperity > 0.72) STOCK.push('stab_vest');
+    if (stats.crime > 0.6) STOCK.push('box_cutter');
     const entries: Menu['entries'] = [];
     for (const id of STOCK) {
       const def = ITEM_BY_ID.get(id)!;
@@ -1326,54 +1380,122 @@ export class Game {
     }
   }
 
-  private completeQuest(): void {
-    const q = this.quest!;
-    if (!this.pc.spend(q.itemId, 1)) {
-      this.say(`You were supposed to have the ${ITEM_BY_ID.get(q.itemId)?.name}. You do not. Awkward.`, MSG_BAD);
-      this.quest = null;
-      return;
-    }
-    this.pc.money += q.reward;
-    this.say(`The counterman takes it without looking and slides you $${q.reward}.`, MSG_GOOD);
-    this.quest = null;
-    if (this.pc.train('streetwise', 3)) this.say('Streetwise improves.', MSG_SYSTEM);
-    // The twist table, abbreviated.
-    if (this.rTurn.chance(0.15)) {
-      this.say('Outside, somebody peels off a wall to follow you. The package was bait, or you were.', MSG_BAD);
-      this.heat += 1;
-      for (let i = 0; i < this.aCount; i++) {
-        if (this.aAlive[i] && this.aKind[i] === AK.NPC && this.archOf(i).mugger) {
-          this.aState[i] = ST_HOSTILE;
-          break;
+  private completeQuest(q: Quest): void {
+    if (q.kind === 'collect') {
+      if (this.rTurn.chance(0.3)) {
+        this.say('The name on the slip argues the arithmetic. Loudly. Then less loudly.', MSG_BAD);
+        this.spawnHostiles('enforcer', 1, 'An associate of the debtor detaches from the doorway across the street.');
+      }
+      this.pc.money += q.reward;
+      this.say(`Debt collected: $${q.reward}. ${q.giver} gets theirs. This is yours.`, MSG_GOOD);
+    } else {
+      for (let k = 0; k < q.qty; k++) {
+        if (!this.pc.spend(q.itemId, 1)) {
+          this.say(`You were supposed to have the ${ITEM_BY_ID.get(q.itemId)?.name}. You do not. Awkward.`, MSG_BAD);
+          this.quests = this.quests.filter((x) => x !== q);
+          return;
         }
       }
+      this.pc.money += q.reward;
+      this.say(q.kind === 'errand'
+        ? `You set it on the altar. Somewhere behind the candles, somebody approves. $${q.reward}, folded small.`
+        : `The counterman takes it without looking and slides you $${q.reward}.`, MSG_GOOD);
+    }
+    this.quests = this.quests.filter((x) => x !== q);
+    if (q.faction) {
+      this.standing[q.faction] = (this.standing[q.faction] ?? 0) + 1;
+      const pack = FACTIONS.find((p) => p.id === q.faction);
+      this.say(`${pack?.name ?? 'They'} will remember the work. (standing ${this.standing[q.faction]})`, 0xc0a890);
+    }
+    if (q.faith) {
+      this.favor[q.faith] = (this.favor[q.faith] ?? 0) + 1;
+      this.say(`The congregation counts it as devotion. (favor ${this.favor[q.faith]})`, 0xb8a0d8);
+    }
+    if (this.pc.train('streetwise', 3)) this.say('Streetwise improves.', MSG_SYSTEM);
+    if (q.twist) {
+      this.say('Outside, somebody peels off a wall to follow you. The package was bait, or you were.', MSG_BAD);
+      this.heat += 1;
+      this.spawnHostiles('hustler', 1);
+    }
+    // Work begets work: a fifth of jobs come with a name attached.
+    if (this.quests.length < QUEST_CAP && this.rTurn.chance(0.2)) {
+      const cur = this.seedById.get(this.hoodId)!;
+      const target = this.rTurn.pick(cur.adjacent);
+      const targetName = this.seedById.get(target)?.name ?? target;
+      const reward = 45 + this.rTurn.int(0, 45);
+      const recent = this.world.chronicle[this.world.chronicle.length - 1 - this.rTurn.int(0, Math.min(8, this.world.chronicle.length - 1))];
+      this.quests.push({
+        id: `chain:${this.questSerial++}`,
+        kind: 'deliver',
+        desc: `Get the follow-up package to a counter in ${targetName}. No questions — especially not about ${q.giver}.`,
+        itemId: 'package', qty: 1, targetHood: target, reward, giver: q.giver,
+        twist: this.rTurn.chance(0.25),
+      });
+      this.pc.gain('package', 1);
+      this.say(`Word comes back fast: ${q.giver} has a follow-up. "${recent ? `It's about what happened — ${recent.text.slice(0, 60)}…` : 'Same terms.'}" Another package, ${targetName}, $${reward}.`, 0xd8c850);
     }
     this.endTurn();
   }
 
   private maybeOfferQuest(npcIdx: number): boolean {
-    if (this.quest || !this.rTurn.chance(0.35)) return false;
+    if (this.quests.length >= QUEST_CAP) return false;
+    const marked = (this.aFlags[npcIdx] & AF_QUESTGIVER) !== 0;
+    if (!marked && !this.rTurn.chance(0.25)) return false;
     const arch = this.archOf(npcIdx);
+    const cur = this.seedById.get(this.hoodId)!;
+    // Where faction work and faith errands could point.
+    const factionTarget = cur.adjacent.find((id) => {
+      const st = this.world.neighborhoods[id];
+      return st && Object.values(st.control).some((v) => v > 0.2);
+    });
+    const faithTarget = [this.hoodId, ...cur.adjacent].find((id) => {
+      const st = this.world.neighborhoods[id];
+      return st && Object.values(st.faiths).some((v) => v > 0.2);
+    });
+    const fits = QUEST_TEMPLATES.filter((t) => {
+      if (!t.givers.includes(arch.id)) return false;
+      if (this.quests.some((x) => x.id.startsWith(`${t.id}:`))) return false;
+      if (t.needsFaction && !factionTarget) return false;
+      if (t.needsFaith && !faithTarget) return false;
+      return true;
+    });
+    if (!fits.length) return false;
+    let total = 0;
+    for (const t of fits) total += t.weight;
+    let roll = this.rTurn.float() * total;
+    let tpl: QuestTemplateDef = fits[fits.length - 1];
+    for (const t of fits) { roll -= t.weight; if (roll <= 0) { tpl = t; break; } }
     const name = this.npcName(npcIdx);
-    if (arch.id === 'vendor' || arch.id === 'hustler' || arch.id === 'dockworker') {
-      const cur = this.seedById.get(this.hoodId)!;
-      const target = this.rTurn.pick(cur.adjacent);
-      const targetName = this.seedById.get(target)?.name ?? target;
-      const reward = 35 + this.rTurn.int(0, 30);
-      this.quest = { kind: 'deliver', itemId: 'package', targetHood: target, reward, giver: name };
-      this.pc.gain('package', 1);
-      this.say(`${name} slides a package across. "Counter of any bodega in ${targetName}. Today. $${reward} when it lands. Don't open it."`, 0xd8c850);
-      return true;
-    }
-    if (arch.id === 'technician' || arch.id === 'street_medic') {
-      const want = arch.id === 'technician' ? 'salvage_battery' : 'medkit';
-      const def = ITEM_BY_ID.get(want)!;
-      const reward = Math.round(def.value * 1.8);
-      this.quest = { kind: 'fetch', itemId: want, reward, giver: name };
-      this.say(`${name}: "Find me a ${def.name} and there's $${reward} in it. Check the ruins, check the dead."`, 0xd8c850);
-      return true;
-    }
-    return false;
+    const targetHood = tpl.kind === 'errand' ? faithTarget!
+      : tpl.kind === 'task' ? factionTarget!
+      : tpl.kind === 'fetch' || tpl.kind === 'scavenge' ? undefined
+      : this.rTurn.pick(cur.adjacent);
+    const targetName = targetHood ? this.seedById.get(targetHood)?.name ?? targetHood : '';
+    const qty = tpl.qty ? this.rTurn.int(tpl.qty[0], tpl.qty[1]) : 1;
+    const carried = tpl.kind === 'deliver' || tpl.kind === 'task' || tpl.kind === 'errand';
+    const itemId = tpl.itemId ?? (carried ? 'package' : '');
+    const reward = this.rTurn.int(tpl.reward[0], tpl.reward[1]);
+    const ctx = {
+      name, target: targetName, qty, reward,
+      item: itemId ? ITEM_BY_ID.get(itemId)?.name ?? itemId : '',
+    };
+    const faction = tpl.kind === 'task' && targetHood
+      ? Object.entries(this.world.neighborhoods[targetHood].control).sort((a, b) => b[1] - a[1])[0]?.[0]
+      : undefined;
+    const faith = tpl.kind === 'errand' && targetHood
+      ? Object.entries(this.world.neighborhoods[targetHood].faiths).sort((a, b) => b[1] - a[1])[0]?.[0]
+      : undefined;
+    this.quests.push({
+      id: `${tpl.id}:${this.questSerial++}`,
+      kind: tpl.kind,
+      desc: this.grammar.expand(tpl.desc, this.rTurn, ctx),
+      itemId, qty, targetHood, reward, giver: name, faction, faith,
+      twist: tpl.twist ? this.rTurn.chance(tpl.twist) : false,
+    });
+    if (carried && itemId) this.pc.gain(itemId, 1);
+    this.say(`${name}: ${this.grammar.expand(tpl.offer, this.rTurn, ctx)}`, 0xd8c850);
+    this.say('Noted in your journal. [J]', MSG_SYSTEM);
+    return true;
   }
 
   private openCharSheet(): void {
@@ -1396,6 +1518,15 @@ export class Game {
     }
     if (SKILLS.every((s) => pc.skill(s) === 0)) lines.push({ text: '  nothing yet. The city will teach you.', fg: 0x76869a });
     lines.push({ text: '', fg: 0 });
+    const standings = Object.entries(this.standing).filter(([, v]) => v > 0);
+    if (standings.length) {
+      lines.push({ text: 'STANDING', fg: 0xc0a890 });
+      for (const [fid, v] of standings) {
+        const pack = FACTIONS.find((p) => p.id === fid);
+        lines.push({ text: `  ${(pack?.name ?? fid).padEnd(28)} ${'▓'.repeat(Math.min(8, v))}${v >= 2 ? '  (checkpoints wave you through)' : ''}`, fg: 0xa8a8b0 });
+      }
+      lines.push({ text: '', fg: 0 });
+    }
     if (pc.injuries.length) {
       lines.push({ text: 'INJURIES', fg: 0xc05a50 });
       for (const inj of pc.injuries) {
@@ -1456,6 +1587,15 @@ export class Game {
 
   private openJournal(): void {
     const lines: Msg[] = [];
+    if (this.quests.length) {
+      lines.push({ text: 'ACTIVE BUSINESS', fg: 0xd8c850 });
+      for (const q of this.quests) {
+        const have = q.itemId ? this.pc.inventory.find((s) => s.id === q.itemId)?.qty ?? 0 : 0;
+        const progress = q.kind === 'scavenge' ? ` (${Math.min(have, q.qty)}/${q.qty})` : '';
+        lines.push({ text: `• ${q.desc}${progress} — $${q.reward}, for ${q.giver}`, fg: 0xb8b8b8 });
+      }
+      lines.push({ text: '', fg: 0 });
+    }
     let lastYear = 0;
     for (const c of this.world.chronicle) {
       if (c.year !== lastYear) {
@@ -1611,27 +1751,59 @@ export class Game {
       const nx = this.px + dx, ny = this.py + dy;
       if (!this.map.inBounds(nx, ny)) continue;
       const t = this.map.t(nx, ny);
-      if (t === T.Station || t === T.DoorClosed || t === T.DoorOpen || t === T.Shrine || t === T.Altar || t === T.Counter) {
+      if (t === T.Station || t === T.DoorClosed || t === T.DoorOpen || t === T.DoorLocked
+        || t === T.Shrine || t === T.Altar || t === T.Counter) {
+        out.push({ x: nx, y: ny, t });
+      } else if ((t === T.Trash || t === T.Rubble) && !this.searchedHere().has(this.map.idx(nx, ny))) {
         out.push({ x: nx, y: ny, t });
       }
     }
     return out;
   }
 
+  /** The first quest that can resolve here, by venue. */
+  private completableAt(venue: 'counter' | 'altar'): Quest | null {
+    if (!this.pc) return null;
+    for (const q of this.quests) {
+      if (venue === 'altar') {
+        if (q.kind === 'errand' && q.targetHood === this.hoodId && this.pc.inventory.some((s) => s.id === q.itemId)) return q;
+        continue;
+      }
+      switch (q.kind) {
+        case 'collect':
+          if (q.targetHood === this.hoodId) return q;
+          break;
+        case 'deliver':
+        case 'task':
+          if (q.targetHood === this.hoodId && this.pc.inventory.some((s) => s.id === q.itemId)) return q;
+          break;
+        case 'fetch':
+        case 'scavenge': {
+          const have = this.pc.inventory.find((s) => s.id === q.itemId)?.qty ?? 0;
+          if (have >= q.qty) return q;
+          break;
+        }
+        default:
+          break;
+      }
+    }
+    return null;
+  }
+
   private questDeliverableHere(): boolean {
-    return !!this.quest && (
-      (this.quest.kind === 'deliver' && this.quest.targetHood === this.hoodId) ||
-      (this.quest.kind === 'fetch' && this.pc.inventory.some((s) => s.id === this.quest!.itemId))
-    );
+    return !!this.completableAt('counter');
   }
 
   private eHintFor(t: T): string {
     switch (t) {
       case T.Station: return 'subway';
       case T.DoorClosed: return 'open door';
+      case T.DoorLocked: return 'force the lock';
       case T.DoorOpen: return 'close door';
+      case T.Trash: return 'dig through';
+      case T.Rubble: return 'search the rubble';
       case T.Shrine: return 'tend shrine';
-      case T.Altar: return 'worship';
+      case T.Altar: return this.completableAt('altar') ? 'deliver' : 'worship';
       case T.Counter: return this.questDeliverableHere() ? 'deliver' : 'shop';
       default: return 'interact';
     }
@@ -1673,7 +1845,10 @@ export class Game {
       if (ai < 0 || !this.aAlive[ai]) continue;
       if (this.aKind[ai] === AK.NPC) {
         if (this.aState[ai] === ST_HOSTILE) hostile = true;
-        else if (!talk) talk = this.npcName(ai).split(' ')[0];
+        else if (!talk) {
+          const hasWork = (this.aFlags[ai] & AF_QUESTGIVER) !== 0 && this.quests.length < QUEST_CAP;
+          talk = this.npcName(ai).split(' ')[0] + (hasWork ? ' (has work)' : '');
+        }
       } else if (this.aKind[ai] === AK.Cat && !talk) {
         talk = 'the cat';
       }
@@ -1716,6 +1891,10 @@ export class Game {
         this.endTurn();
         return;
       }
+      if (t === T.DoorLocked) {
+        this.forceLock(nx, ny);
+        return;
+      }
       if (t === T.DoorOpen) {
         this.map.closeDoor(nx, ny);
         this.say('You pull the door shut behind you.');
@@ -1728,12 +1907,23 @@ export class Game {
         return;
       }
       if (t === T.Altar) {
+        const q = this.completableAt('altar');
+        if (q) {
+          this.completeQuest(q);
+          return;
+        }
         this.openAltarMenu(nx, ny);
         return;
       }
       if (t === T.Counter) {
-        if (this.questDeliverableHere()) {
-          this.completeQuest();
+        const h = this.hourOfDay();
+        if (h >= 0 && h < 6) {
+          this.say('The grate is down until six. A cat guards the inventory.');
+          return;
+        }
+        const q = this.completableAt('counter');
+        if (q) {
+          this.completeQuest(q);
           return;
         }
         this.openShop();
@@ -1743,8 +1933,86 @@ export class Game {
         this.say('Whatever this commemorated, somebody sold the plaque.');
         return;
       }
+      if ((t === T.Trash || t === T.Rubble) && !this.searchedHere().has(this.map.idx(nx, ny))) {
+        this.searchTile(nx, ny, t);
+        return;
+      }
     }
     this.pickup();
+  }
+
+  private searchedHere(): Set<number> {
+    let set = this.searched.get(this.hoodId);
+    if (!set) { set = new Set(); this.searched.set(this.hoodId, set); }
+    return set;
+  }
+
+  /** Dumpster diving: every drift of garbage is one roll, once. */
+  private searchTile(x: number, y: number, t: T): void {
+    this.searchedHere().add(this.map.idx(x, y));
+    const r = this.rTurn;
+    const roll = r.float();
+    if (roll < 0.03) {
+      this.pc.hp = Math.max(1, this.pc.hp - 1);
+      this.say('Something in there bites back and is gone. (-1)', MSG_BAD);
+    } else if (roll < (t === T.Rubble ? 0.12 : 0.08)) {
+      const id = r.pick(['copper_coil', 'watch_old', 'salvage_battery']);
+      this.pc.gain(id, 1);
+      this.say(`Under the top layer: ${ITEM_BY_ID.get(id)!.name}. The block has been holding out on you.`, MSG_GOOD);
+    } else if (roll < 0.2) {
+      const id = r.pick(['beans', 'tallboy', 'street_dumpling']);
+      this.pc.gain(id, 1);
+      this.say(`You find ${ITEM_BY_ID.get(id)!.name}. Still sealed. Probably.`, MSG_GOOD);
+    } else if (roll < 0.55) {
+      const id = r.pick(['scrap_metal', 'phone_dead', 'umbrella', 'flask', 'box_cutter']);
+      this.pc.gain(id, 1);
+      this.say(`You come up with ${ITEM_BY_ID.get(id)!.name}.`, MSG_GOOD);
+    } else {
+      this.say(r.chance(0.5) ? 'Wet cardboard all the way down.' : 'Nothing. A rat watches you do it anyway, taking notes.');
+    }
+    if (this.pc.train('streetwise', 1)) this.say('Streetwise improves.', MSG_SYSTEM);
+    this.endTurn();
+  }
+
+  /** A locked door is a question. Crowbars are an answer; shoulders are a guess. */
+  private forceLock(x: number, y: number): void {
+    const pc = this.pc;
+    const crowbar = pc.inventory.some((s) => s.id === 'crowbar');
+    let opened = false;
+    if (crowbar) {
+      opened = true;
+      this.say('The crowbar asks once. The frame gives.', MSG_GOOD);
+    } else {
+      if (pc.stamina < 8) {
+        this.say('Your shoulder declines the assignment. Stamina first.');
+        return;
+      }
+      pc.stamina -= 8;
+      const odds = 0.25 + pc.stats.STR * 0.06 + pc.skill('athletics') * 0.03;
+      if (this.rTurn.chance(Math.min(0.9, odds))) {
+        opened = true;
+        this.say('Wood splinters. The locks hold; the door around them does not.', MSG_GOOD);
+      } else {
+        this.say('The door takes the hit and keeps its opinion. Your shoulder files a complaint.', MSG_BAD);
+      }
+    }
+    if (opened) {
+      this.map.openDoor(x, y);
+      const ti = this.map.idx(x, y);
+      const rs = new Rand(this.seed, `stashloot:${this.hoodId}:${ti}`);
+      const pile = this.map.items.get(ti) ?? [];
+      const n = 2 + rs.int(0, 2);
+      for (let k = 0; k < n; k++) {
+        const roll = rs.float();
+        if (roll < 0.12) pile.push({ id: rs.pick(RELIC_IDS), qty: 1 });
+        else if (roll < 0.4) pile.push({ id: rs.pick(['copper_coil', 'salvage_battery', 'watch_old', 'medkit', 'bullets']), qty: 1 });
+        else pile.push({ id: rs.pick(['blackout_candle', 'flask', 'painkillers', 'scrap_metal', 'bandage']), qty: 1 });
+      }
+      if (rs.chance(0.5)) pile.push({ id: 'cash', qty: 5 + rs.int(0, 40) });
+      this.map.items.set(ti, pile);
+      this.say('Inside: somebody\'s whole contingency plan, abandoned. [g] take', 0x9aa8d0);
+    }
+    this.endTurn();
   }
 
   private endTurn(silent = false): void {
@@ -2059,6 +2327,22 @@ export class Game {
     this.say(this.grammar.expand(text, this.director.r, { neighborhood: this.hoodName() }), FG[def.behavior] ?? MSG_AMBIENT);
   }
 
+  /** What this person might say to you, given what you visibly are right now. */
+  private barkPool(arch: { barks: string[]; piety: number }): string[] {
+    const pool = [...arch.barks];
+    const add = (slot: string) => { if (GRAMMAR_RULES[slot]) pool.push(...GRAMMAR_RULES[slot]); };
+    const weapon = this.pc.weapon ? ITEM_BY_ID.get(this.pc.weapon) : null;
+    if (weapon?.kind === 'gun') add('bark_sees_gun');
+    if (this.pc.has('bleeding') || this.pc.hp < this.pc.maxHp * 0.4) add('bark_sees_blood');
+    if (this.heat >= 3) add('bark_high_heat');
+    if (this.faith && arch.piety >= 6) add('bark_same_faith');
+    if (this.daylight() < 0.25) add('bark_night');
+    if (this.pc.money >= 800) add('bark_rich');
+    if (this.pc.money < 5) add('bark_broke');
+    if (this.rTurn.chance(0.1)) add('bark_rain_omen');
+    return pool;
+  }
+
   /** Keep a scene actor orbiting its anchor. */
   private sceneLoiter(i: number): void {
     const r = this.rTurn;
@@ -2294,7 +2578,7 @@ export class Game {
         this.say('You walk through their checkpoint like it isn\'t one. They notice.', MSG_BAD);
         if (enc.dest) {
           this.walkTravel(enc.dest);
-          this.spawnCheckpointEnforcers(enc.faction);
+          this.spawnHostiles('enforcer', 2);
         }
         break;
       case 'toll_back':
@@ -2323,10 +2607,11 @@ export class Game {
     this.passiveRecover(minutes * 10);
   }
 
-  private spawnCheckpointEnforcers(_factionId?: string): void {
-    const archIdx = ARCHETYPES.findIndex((a) => a.id === 'enforcer');
+  private spawnHostiles(archId: string, count: number, msg?: string): void {
+    const archIdx = ARCHETYPES.findIndex((a) => a.id === archId);
     if (archIdx < 0) return;
-    for (let k = 0; k < 2; k++) {
+    let spawned = 0;
+    for (let k = 0; k < count; k++) {
       const i = this.allocActor();
       if (i < 0) return;
       let sx = -1, sy = -1;
@@ -2350,8 +2635,11 @@ export class Game {
       this.aState[i] = ST_HOSTILE;
       this.aBarkCd[i] = 0;
       this.occ[this.map.idx(sx, sy)] = i;
+      spawned++;
     }
-    this.say('Two sets of boots leave the checkpoint behind you, unhurried.', MSG_BAD);
+    if (spawned > 0) {
+      this.say(msg ?? `${spawned > 1 ? 'Sets of boots leave' : 'A set of boots leaves'} the checkpoint behind you, unhurried.`, MSG_BAD);
+    }
   }
 
   private removeActor(i: number): void {
@@ -2515,7 +2803,7 @@ export class Game {
                 break;
               }
               if (seen && dist <= 2 && this.aBarkCd[i] === 0 && r.chance(0.05)) {
-                this.say(`${this.npcName(i)}: ${r.pick(arch.barks)}`, MSG_BARK);
+                this.say(`${this.npcName(i)}: ${this.grammar.expand(r.pick(this.barkPool(arch)), r)}`, MSG_BARK);
                 this.aBarkCd[i] = 90;
               }
               const [tx, ty] = this.scheduleTarget(i);
@@ -2698,7 +2986,8 @@ export class Game {
       const vi = vy * viewW + vx;
       glyph[vi] = ACTOR_GLYPH[this.aKind[i]];
       const hostile = this.aKind[i] === AK.NPC && this.aState[i] === ST_HOSTILE;
-      fg[vi] = hostile ? 0xff5040 : tint(this.aColor[i]);
+      const giver = this.aKind[i] === AK.NPC && (this.aFlags[i] & AF_QUESTGIVER) !== 0 && this.quests.length < QUEST_CAP;
+      fg[vi] = hostile ? 0xff5040 : giver ? 0xd8c850 : tint(this.aColor[i]);
       if (hostile) {
         bg[vi] = 0x200808;
         // Imminent danger breathes: pulse hostiles in arm's reach.
@@ -2986,12 +3275,14 @@ export class Game {
       hoods,
       chronicle: this.world.chronicle,
       graves: this.world.graves,
-      faith: this.faith, favor: this.favor, quest: this.quest, bets: this.bets,
+      faith: this.faith, favor: this.favor, quests: this.quests, questSerial: this.questSerial,
+      standing: this.standing, bets: this.bets,
       heat: this.heat, heatByBorough: this.heatByBorough,
       lastDay: this.lastDay, lastT2: this.lastT2, lastRitual: this.lastRitual,
       lastPulse: this.lastPulse, lastEditionBand: this.lastEditionBand,
       pendingHeadlines: this.pendingHeadlines,
       director: { lastBeat: this.director.lastBeat, lastEncounter: this.director.lastEncounter },
+      searched: Object.fromEntries([...this.searched].map(([k, v]) => [k, [...v]])),
       city: this.city.dump(),
       maps,
     };
@@ -3029,7 +3320,17 @@ export class Game {
     this.clockMin = d.clockMin;
     this.faith = d.faith;
     this.favor = d.favor ?? {};
-    this.quest = d.quest;
+    this.quests = d.quests ?? (d.quest ? [{
+      id: 'legacy:0',
+      kind: d.quest.kind as QuestKind,
+      desc: d.quest.kind === 'deliver'
+        ? `Get the package to a counter in ${this.seedById.get(d.quest.targetHood ?? '')?.name ?? 'the next neighborhood over'}.`
+        : `Bring ${d.quest.giver} a ${ITEM_BY_ID.get(d.quest.itemId)?.name ?? d.quest.itemId}.`,
+      itemId: d.quest.itemId, qty: 1, targetHood: d.quest.targetHood,
+      reward: d.quest.reward, giver: d.quest.giver,
+    }] : []);
+    this.questSerial = d.questSerial ?? this.quests.length;
+    this.standing = d.standing ?? {};
     this.bets = d.bets ?? [];
     this.heat = d.heat;
     this.heatByBorough = d.heatByBorough ?? {};
@@ -3041,6 +3342,7 @@ export class Game {
     this.pendingHeadlines = d.pendingHeadlines ?? [];
     this.director.lastBeat = d.director?.lastBeat ?? d.turn;
     this.director.lastEncounter = d.director?.lastEncounter ?? d.turn;
+    this.searched = new Map(Object.entries(d.searched ?? {}).map(([k, v]) => [k, new Set(v)]));
     this.pendingMapDiffs = d.maps;
     this.menu = null;
     this.mode = 'play';
@@ -3060,7 +3362,7 @@ export class Game {
     if (explored.length === m.explored.length) m.explored.set(explored);
     m.items = new Map(diff.items);
     for (const i of diff.doors) {
-      if (m.terrain[i] === T.DoorClosed) m.openDoor(i % m.w, Math.floor(i / m.w));
+      if (m.terrain[i] === T.DoorClosed || m.terrain[i] === T.DoorLocked) m.openDoor(i % m.w, Math.floor(i / m.w));
     }
   }
 

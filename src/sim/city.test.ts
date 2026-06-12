@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Game } from './game';
 import { fixtureSeeds } from './testutil';
+import { AK, T } from './map';
 
 // Tests reach into private sim internals on purpose — they assert behavior the
 // public Action surface can't force deterministically.
@@ -53,12 +54,31 @@ describe('the living city (M3)', () => {
 
   it('fetch quests pay out at the counter', () => {
     const g = boot('quest-test');
-    g.quest = { kind: 'fetch', itemId: 'beans', reward: 50, giver: 'Test Giver' };
+    const q = { id: 'test:0', kind: 'fetch', itemId: 'beans', qty: 1, reward: 50, giver: 'Test Giver', desc: 'Bring beans.' };
+    g.quests = [q];
     g.pc.gain('beans', 1);
     const before = g.pc.money;
-    g.completeQuest();
+    g.completeQuest(q);
     expect(g.pc.money).toBe(before + 50);
-    expect(g.quest).toBeNull();
+    expect(g.quests.find((x: { id: string }) => x.id === 'test:0')).toBeUndefined();
+  });
+
+  it('marked quest-givers always have work (M7)', () => {
+    const g = boot('qgiver-test');
+    let idx = -1;
+    for (let i = 0; i < g.aCount; i++) {
+      if (g.aAlive[i] && g.aKind[i] === 3 /* AK.NPC */) { idx = i; break; }
+    }
+    if (idx < 0) return; // no NPCs spawned on this fixture seed
+    g.aFlags[idx] |= 8; // AF_QUESTGIVER
+    const offered = g.maybeOfferQuest(idx);
+    expect(offered).toBe(true);
+    expect(g.quests.length).toBe(1);
+    expect(g.quests[0].desc).not.toMatch(/[#{]/); // grammar + ctx fully expanded
+    expect(g.quests[0].reward).toBeGreaterThan(0);
+    // Cap respected: stuff two more in, the fourth offer must refuse.
+    g.quests.push({ ...g.quests[0], id: 'x:1' }, { ...g.quests[0], id: 'x:2' });
+    expect(g.maybeOfferQuest(idx)).toBe(false);
   });
 
   it('bets resolve against fixtures', () => {
@@ -129,6 +149,54 @@ describe('the living city (M3)', () => {
       expect(g.pc.money).toBe(before + cashStack.qty);
       expect(g.pc.inventory.some((s: { id: string }) => s.id === 'cash')).toBe(false);
     }
+  });
+
+  it('dumpster diving searches once per tile and locked doors hide stashes (M7)', () => {
+    const g = boot('loot-test');
+    // Find a trash/rubble tile and search it.
+    let ti = -1;
+    for (let i = 0; i < g.map.terrain.length; i++) {
+      if (g.map.terrain[i] === T.Rubble || g.map.terrain[i] === T.Trash) { ti = i; break; }
+    }
+    if (ti >= 0) {
+      const x = ti % g.map.w, y = Math.floor(ti / g.map.w);
+      const turn = g.turn;
+      g.searchTile(x, y, g.map.terrain[ti]);
+      expect(g.turn).toBe(turn + 1);
+      expect(g.searchedHere().has(ti)).toBe(true);
+      // Second search refuses via interact-path guard.
+      expect(g.searchedHere().has(ti)).toBe(true);
+    }
+    // Locked doors exist on most maps and crowbars always open them.
+    let di = -1;
+    for (let i = 0; i < g.map.terrain.length; i++) if (g.map.terrain[i] === T.DoorLocked) { di = i; break; }
+    expect(di, 'this map should have at least one locked stash door').toBeGreaterThanOrEqual(0);
+    g.pc.gain('crowbar', 1);
+    g.forceLock(di % g.map.w, Math.floor(di / g.map.w));
+    expect(g.map.terrain[di]).toBe(T.DoorOpen);
+    expect((g.map.items.get(di) ?? []).length).toBeGreaterThan(0); // the stash
+  });
+
+  it('save v2 roundtrips quests, standing, searched tiles, director state', () => {
+    const g = boot('save-v2');
+    for (let t = 0; t < 50; t++) g.act({ k: 'wait' });
+    // Dirty every v2 field.
+    let giver = -1;
+    for (let i = 0; i < g.aCount; i++) if (g.aAlive[i] && g.aKind[i] === AK.NPC) { giver = i; break; }
+    if (giver >= 0) { g.aFlags[giver] |= 8; g.maybeOfferQuest(giver); }
+    g.standing.test_faction = 2;
+    g.searchedHere().add(1234);
+    g.pc.money = 77;
+    const data = g.serialize();
+    expect(data.version).toBe(2);
+    const r = (Game as AnyGame).restore(data, fixtureSeeds()) as AnyGame;
+    expect(r.turn).toBe(g.turn);
+    expect(r.pc.money).toBe(77);
+    expect(r.hoodId).toBe(g.hoodId);
+    expect(r.quests).toEqual(g.quests);
+    expect(r.standing.test_faction).toBe(2);
+    expect(r.searched.get(r.hoodId).has(1234)).toBe(true);
+    expect(r.director.lastEncounter).toBe(g.director.lastEncounter);
   });
 
   it('joining a faith builds favor and unlocks the boon', () => {

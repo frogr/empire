@@ -1,0 +1,102 @@
+{
+  "grammars": {
+    "bark_sees_gun": [
+      "\"Hey. Hey. I didn't see that.\"",
+      "\"Keep it pointed somewhere else, friend.\"",
+      "\"I got kids in this building. Just so you know.\"",
+      "\"The way you're carrying that, something's going to happen today.\"",
+      "\"Nah, I'm good, I'm walking the other way, have a good one.\"",
+      "\"You got a permit for that or you got the other thing.\"",
+      "\"Used to be you'd at least put it in a bag.\"",
+      "\"I'm not looking, you're not here, we're both fine.\"",
+      "\"My cousin caught one on this block. You mind moving along.\"",
+      "\"Whatever you need it for, I hope it works out for you.\"",
+      "\"That's a conversation I don't want to be part of. Excuse me.\""
+    ],
+    "bark_sees_blood": [
+      "\"You need a hospital or you need me to not ask.\"",
+      "\"That's a lot of red for a Tuesday.\"",
+      "\"Clinic on Myrtle's still open, if whatever happened didn't follow you.\"",
+      "\"I got a towel. Don't argue, just take the towel.\"",
+      "\"You walk past me bleeding and I'm supposed to do what, exactly.\"",
+      "\"My sister's a nurse. Was. She'd tell you to sit down.\"",
+      "\"The 36 still has a medic in the third car if you can make the platform.\"",
+      "\"That happened to you or you happened to it.\"",
+      "\"You're leaving a trail. Somebody's going to follow that.\"",
+      "\"I'm not calling anyone. But somebody will.\"",
+      "\"Worst I've seen since the seawall night. And you're walking. Good.\""
+    ],
+    "bark_high_heat": [
+      "\"Word came down fast. You got somewhere to be that isn't here.\"",
+      "\"I don't know you. I especially don't know you right now.\"",
+      "\"The corner knows. Which means the precinct knows. Which means go.\"",
+      "\"Whatever you did, do it somewhere they're not already looking.\"",
+      "\"My landlord calls them for a broken step. You think he won't call for this.\"",
+      "\"I'm just saying there's a car been sitting there since you walked up.\"",
+      "\"Run or don't run. Either way, do it somewhere else.\"",
+      "\"They got the new face-match running on the bodega cameras. Just so you know.\"",
+      "\"Heard your name twice already this morning. That's not good.\"",
+      "\"I got warrants too. Let's both act like we're nowhere near each other.\""
+    ],
+    "bark_same_faith": [
+      "\"You keep the hours too. I can tell.\"",
+      "\"Peace to you. Not a lot of us left on this block.\"",
+      "\"I saw your mark. My grandmother wore the same one.\"",
+      "\"We don't have to say anything. But it's good to see you.\"",
+      "\"You're welcome at the table if you need a meal. No questions.\"",
+      "\"Stay safe. I mean that the specific way, you understand.\"",
+      "\"We used to meet on Thursdays. Place got flooded. We still meet.\"",
+      "\"Blessing on you. And on whoever's waiting for you.\"",
+      "\"Hard decade to keep faith. You're keeping it. That means something.\"",
+      "\"If you need the words, I still have them. They didn't take the words.\""
+    ],
+    "bark_night": [
+      "\"Nothing good brought either of us out here at this hour.\"",
+      "\"You see the sky tonight? That's not clouds. That's smoke from Jersey again.\"",
+      "\"I used to be scared of this. Now it's just when I get things done.\"",
+      "\"Stay in the light. The lights that still work.\"",
+      "\"Third night running I've seen you out here. You sleeping?\"",
+      "\"Curfew's a suggestion now but the wrong people still enforce it.\"",
+      "\"My kid thinks I work nights. I work nights.\"",
+      "\"Be somewhere before four. Things that are out at four aren't going home.\"",
+      "\"This used to feel dangerous. Now it just feels like the city.\"",
+      "\"You want company to the next block or you're better off alone.\""
+    ],
+    "bark_rich": [
+      "\"Look at you. Somebody's eating.\"",
+      "\"Nice coat. Pre-flood or post-flood.\"",
+      "\"You got that face people get when they stopped worrying about the small stuff.\"",
+      "\"Whatever you're doing, don't tell me, I'll want to do it too.\"",
+      "\"Dressed like that, you sure you're on the right block.\"",
+      "\"People on this street are going to remember you. Make sure that's okay.\"",
+      "\"Good for you. I mean it. Genuinely. How'd you manage it.\"",
+      "\"You carry that well. Some people can't. You can.\"",
+      "\"My mother used to say dress for the city you want. You're doing that.\"",
+      "\"Keep moving. Looking like that, you're a target and a story simultaneously.\""
+    ],
+    "bark_broke": [
+      "\"I got half a dollar and I'm not going to need it today. Take it.\"",
+      "\"You look like I looked in thirty-one. It passes. Slowly, but it passes.\"",
+      "\"The kitchen on Flushing does a plate, no ID, until two.\"",
+      "\"Don't tell me it's fine. It's not fine. That's okay, it's not fine.\"",
+      "\"I got a couch if tonight's the bad kind of night.\"",
+      "\"The decade did this to a lot of people. You're not the first I've seen.\"",
+      "\"I'm not going to pretend I don't see you.\"",
+      "\"There's work at the seawall if you can swing a bag of salt. Ugly work. Work.\"",
+      "\"Eat something. Everything else is easier with something in you.\"",
+      "\"You're still here. That counts. I'm not being cute, that actually counts.\""
+    ],
+    "bark_rain_omen": [
+      "\"Smells like the harbor. When it smells like the harbor, pay attention.\"",
+      "\"This rain is different from regular rain. I know the difference now.\"",
+      "\"My building's got a water line on the wall from thirty-three. I measure every storm.\"",
+      "\"They said hundred-year flood. Then fifty-year. Now they stopped saying.\"",
+      "\"I keep my papers on the third shelf. I moved them up after Queens.\"",
+      "\"The old-timers knew by the birds. Birds still know. Watch the birds.\"",
+      "\"City put in new drains on this block. They look nice. We'll see.\"",
+      "\"Every time it rains like this, someone on my floor moves uptown.\"",
+      "\"The decade had good years. Not many, but some. This isn't one.\"",
+      "\"I'm not going inside until I see which way it's moving. You shouldn't either.\""
+    ]
+  }
+}
