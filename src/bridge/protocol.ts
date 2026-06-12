@@ -21,6 +21,15 @@ export interface FrameMeta {
   seed: string;
 }
 
+export interface SaveMeta {
+  seed: string;
+  charName: string;
+  networth: number;
+  alive: boolean;
+  version: number;
+  turn: number;
+}
+
 export type WorkerMsg =
   | {
       t: 'frame';
@@ -32,7 +41,9 @@ export type WorkerMsg =
       meta: FrameMeta;
     }
   | { t: 'progress'; text: string }
-  | { t: 'text'; kind: 'journal' | 'news'; title: string; lines: Msg[] };
+  | { t: 'text'; kind: 'journal' | 'news'; title: string; lines: Msg[] }
+  | { t: 'saved'; data: ArrayBuffer; meta: SaveMeta }
+  | { t: 'loaderr'; error: string };
 
 export type Action =
   | { k: 'move'; dx: number; dy: number }
@@ -53,6 +64,8 @@ export type Action =
 
 export type MainMsg =
   | { t: 'init'; seed: string; viewW: number; viewH: number }
+  | { t: 'load'; data: ArrayBuffer; viewW: number; viewH: number }
+  | { t: 'save' }
   | { t: 'resize'; viewW: number; viewH: number }
   | { t: 'act'; a: Action }
   | { t: 'ret'; glyph: ArrayBuffer; fg: ArrayBuffer; bg: ArrayBuffer };

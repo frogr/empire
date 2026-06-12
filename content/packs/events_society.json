@@ -1,0 +1,280 @@
+{
+  "events": [
+    {
+      "id": "evt_mayor_indicted",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 3,
+      "once": true,
+      "tags": ["scandal"],
+      "preconditions": { "year_min": 2028 },
+      "effects": { "stats": { "crime": 0.02, "prosperity": -0.02 } },
+      "chronicle": "The mayor was indicted in {year} for #indictment_charge#. Approval ticked up two points; the city respects hustle.",
+      "news": "HIZZONER IN THE HOT SEAT"
+    },
+    {
+      "id": "evt_scrip_economy",
+      "scope": "borough",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["scrip"],
+      "preconditions": { "requires_tag": ["crash"] },
+      "effects": { "stats": { "prosperity": 0.04, "crime": 0.03 } },
+      "chronicle": "{borough} merchants began honoring #scrip_name# in {year}. The Treasury objected from a distance, in writing, postage due."
+    },
+    {
+      "id": "evt_water_privatized",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 3,
+      "once": true,
+      "tags": ["water", "privatization"],
+      "preconditions": { "year_min": 2029 },
+      "effects": { "stats": { "prosperity": -0.05, "crime": 0.02 }, "found": [{ "kind": "faction", "chance": 0.4 }] },
+      "chronicle": "The water system got a parent company in {year}. The first bill came with a logo, a mascot, and a late fee."
+    },
+    {
+      "id": "evt_casino_pier",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["casino", "boom"],
+      "preconditions": { "coastal": true },
+      "effects": { "stats": { "prosperity": 0.1, "crime": 0.08 } },
+      "chronicle": "The {neighborhood} casino opened in {year} on a pier rated for half its weight. The house always wins. The harbor is patient.",
+      "news": "ALL BETS ON, ALL PILINGS QUESTIONABLE"
+    },
+    {
+      "id": "evt_eviction_algorithm",
+      "scope": "borough",
+      "phase": ["history"],
+      "weight": 4,
+      "tags": ["housing_war"],
+      "preconditions": { "year_min": 2028 },
+      "effects": { "stats": { "prosperity": 0.03, "crime": 0.04 }, "population": -0.04 },
+      "residue": [
+        { "type": "banner", "density": "low", "grammar": "#tenant_banner#" }
+      ],
+      "chronicle": "In {year} the {borough} eviction docket went automated. Four hundred families a week, processed without error or eye contact."
+    },
+    {
+      "id": "evt_squatter_charter",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["housing_war", "squat"],
+      "preconditions": { "stat": { "prosperity": { "lt": 0.4 } } },
+      "effects": { "stats": { "prosperity": 0.04, "crime": -0.02 } },
+      "residue": [
+        { "type": "banner", "density": "med", "grammar": "#squat_banner#" }
+      ],
+      "chronicle": "{neighborhood}'s squats got paper in {year} — adverse possession, fast-tracked. Landlords called it theft. Tenants called it Tuesday."
+    },
+    {
+      "id": "evt_grocery_cartel",
+      "scope": "borough",
+      "phase": ["history"],
+      "weight": 4,
+      "tags": ["food_racket"],
+      "preconditions": { "year_min": 2028 },
+      "effects": { "stats": { "prosperity": -0.04, "crime": 0.05 }, "found": [{ "kind": "faction", "chance": 0.5 }] },
+      "chronicle": "By {year} three distributors decided what {borough} ate and when. The price of eggs became an instrument of policy."
+    },
+    {
+      "id": "evt_general_strike",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 3,
+      "once": true,
+      "tags": ["strike"],
+      "preconditions": { "year_min": 2028 },
+      "effects": { "stats": { "prosperity": -0.06, "crime": 0.03 } },
+      "residue": [
+        { "type": "banner", "density": "med", "grammar": "#strike_banner#" }
+      ],
+      "chronicle": "The general strike of {year} held #duration#. The city learned which jobs were essential. So did the people doing them."
+    },
+    {
+      "id": "evt_repo_crews",
+      "scope": "borough",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["debt"],
+      "preconditions": { "requires_tag": ["crash"] },
+      "effects": { "stats": { "crime": 0.06 }, "found": [{ "kind": "faction", "chance": 0.5 }] },
+      "chronicle": "Debt went door-to-door in {year}. {borough} repo crews wear body cams for marketing purposes."
+    },
+    {
+      "id": "evt_marathon_outlaw",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 2,
+      "once": true,
+      "tags": ["league", "league_running"],
+      "preconditions": { "year_min": 2029 },
+      "effects": { "stats": { "cult": 0.02 } },
+      "chronicle": "The Marathon lost its permit in {year} and ran anyway — at night, unmarshaled, course negotiable. Times improved."
+    },
+    {
+      "id": "evt_rooftop_farms",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["harvest"],
+      "effects": { "stats": { "prosperity": 0.06, "infrastructure": 0.03 } },
+      "chronicle": "{neighborhood} put its roofs to work in {year}: #rooftop_crop#. The bodegas started stocking local and meaning it."
+    },
+    {
+      "id": "evt_bodega_federation",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["militia", "shopkeepers"],
+      "preconditions": { "stat": { "crime": { "gt": 0.5 } } },
+      "effects": { "stats": { "crime": -0.05 }, "found": [{ "kind": "faction", "chance": 0.45 }] },
+      "chronicle": "The {neighborhood} shopkeepers federated in {year}, after the third unanswered robbery. Their flag is a cat. Their dues are not optional."
+    },
+    {
+      "id": "evt_kidnap_wave",
+      "scope": "borough",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["kidnapping"],
+      "preconditions": { "stat": { "crime": { "gt": 0.55 } } },
+      "effects": { "stats": { "prosperity": -0.05, "crime": 0.06 } },
+      "chronicle": "Kidnap insurance became a {borough} small-business expense in {year}. The premiums were negotiable, which was the tell."
+    },
+    {
+      "id": "evt_chop_economy",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["chop_shop"],
+      "preconditions": { "area_type": ["industrial"] },
+      "effects": { "stats": { "crime": 0.06, "prosperity": 0.03 } },
+      "residue": [
+        { "type": "graffiti", "density": "med", "grammar": "#chop_graffiti#" }
+      ],
+      "chronicle": "By {year} a car left overnight in {neighborhood} returned to its elements by morning. Recycling rates led the nation."
+    },
+    {
+      "id": "evt_tabloid_war",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["broadcast", "media_war"],
+      "effects": { "stats": { "cult": 0.02 } },
+      "chronicle": "Two tabloids went to war in {year} over #tabloid_feud#. Circulation doubled. The libel suits were settled in headlines.",
+      "news": "PAPER WAR: READ BOTH, TRUST NEITHER"
+    },
+    {
+      "id": "evt_film_permit_boom",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 2,
+      "tags": ["culture"],
+      "preconditions": { "stat": { "prosperity": { "lt": 0.45 } } },
+      "effects": { "stats": { "prosperity": 0.05 } },
+      "chronicle": "The studios discovered {neighborhood}'s ruins in {year}. Locals charge by the hour to stay out of frame, and more to stay in it."
+    },
+    {
+      "id": "evt_council_brawl",
+      "scope": "citywide",
+      "phase": ["history", "live"],
+      "weight": 2,
+      "tags": ["scandal", "politics"],
+      "effects": { "stats": { "prosperity": -0.01 } },
+      "chronicle": "The Council's {year} budget session ended in #brawl_detail#. The public-access feed posted record numbers."
+    },
+    {
+      "id": "evt_pension_run",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 3,
+      "once": true,
+      "tags": ["bank_run"],
+      "preconditions": { "requires_tag": ["crash"] },
+      "effects": { "stats": { "prosperity": -0.08, "crime": 0.04 } },
+      "residue": [
+        { "type": "graffiti", "density": "low", "grammar": "#crash_graffiti#" }
+      ],
+      "chronicle": "The pension fund admitted the math in {year}. The checks kept coming, #pension_fate#."
+    },
+    {
+      "id": "evt_numbers_legalized",
+      "scope": "borough",
+      "phase": ["history"],
+      "weight": 2,
+      "tags": ["numbers"],
+      "preconditions": { "year_min": 2029 },
+      "effects": { "stats": { "prosperity": 0.03, "crime": -0.02 } },
+      "chronicle": "{borough} legalized the numbers racket it already had in {year}. The runners got laminated badges and kept their routes."
+    },
+    {
+      "id": "evt_dollar_van_annexation",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["jitney"],
+      "preconditions": { "requires_tag": ["transit_collapse"] },
+      "effects": { "stats": { "prosperity": 0.03 } },
+      "chronicle": "After the trains stopped, the dollar vans annexed {neighborhood}'s routes in {year}. The schedule is oral tradition. The fare is a mood."
+    }
+  ],
+  "grammars": {
+    "indictment_charge": [
+      "seventeen counts of being the mayor",
+      "a bridge nobody can locate",
+      "selling the same air rights four times",
+      "a charity that owned a marina upstate"
+    ],
+    "scrip_name": [
+      "Kings Notes",
+      "borough dollars",
+      "merchant scrip with the old bridge on it",
+      "Fulton credits"
+    ],
+    "squat_banner": [
+      "POSSESSION IS ALL TENTHS",
+      "WE FIXED THE BOILER OURSELVES",
+      "DEED OR NO DEED, WE'RE HOME",
+      "ABANDONED MEANS OURS"
+    ],
+    "strike_banner": [
+      "NOTHING MOVES WITHOUT US",
+      "ESSENTIAL MEANS PAID",
+      "THE CITY RUNS ON OUR BACKS, LET IT WALK",
+      "DAY FORTY AND HOLDING"
+    ],
+    "rooftop_crop": [
+      "beans, hops, and surveillance-grade sunflowers",
+      "tomatoes with a skyline view and a security detail",
+      "greens, chickens, and one unsanctioned goat",
+      "enough peppers to be worth robbing"
+    ],
+    "chop_graffiti": [
+      "PARTS IS PARTS",
+      "WE BUY ANYTHING WITH A VIN",
+      "LOCK IT OR LOSE IT (YOU'LL LOSE IT)",
+      "YOUR CAR IS IN A BETTER PLACE"
+    ],
+    "tabloid_feud": [
+      "which of them had invented a serial arsonist",
+      "the mayor's missing year",
+      "whose miracle photos were staged",
+      "a byline both papers claimed"
+    ],
+    "brawl_detail": [
+      "a thrown gavel and two broken livestreams",
+      "fists over the parks budget, of all things",
+      "a folding chair, deployed ceremonially",
+      "an attempted exorcism, ruled out of order"
+    ],
+    "pension_fate": [
+      "indexed to a number that no longer printed",
+      "honored in scrip",
+      "real, but smaller, like everything",
+      "backed by a parking garage across the river"
+    ]
+  }
+}

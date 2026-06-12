@@ -2,9 +2,19 @@
 // back composited view buffers as transferables. Buffers ping-pong through a
 // small pool so steady-state play allocates nothing.
 
-import { Game } from './game';
+import { Game, SaveData } from './game';
 import { loadNeighborhoods } from './content/neighborhoods';
 import type { MainMsg, WorkerMsg } from '../bridge/protocol';
+
+async function gzip(text: string): Promise<ArrayBuffer> {
+  const stream = new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
+  return new Response(stream).arrayBuffer();
+}
+
+async function gunzip(data: ArrayBuffer): Promise<string> {
+  const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Response(stream).text();
+}
 
 interface BufSet { glyph: ArrayBuffer; fg: ArrayBuffer; bg: ArrayBuffer }
 
@@ -40,7 +50,7 @@ function sendFrame(turnMs: number): void {
   );
 }
 
-self.onmessage = (e: MessageEvent<MainMsg>) => {
+self.onmessage = async (e: MessageEvent<MainMsg>) => {
   const m = e.data;
   switch (m.t) {
     case 'init': {
@@ -49,6 +59,27 @@ self.onmessage = (e: MessageEvent<MainMsg>) => {
       game = new Game(m.seed, loadNeighborhoods(), (text) => post({ t: 'progress', text }));
       post({ t: 'progress', text: `World ready in ${Math.round(performance.now() - t0)}ms.` });
       sendFrame(0);
+      break;
+    }
+    case 'load': {
+      viewW = m.viewW; viewH = m.viewH;
+      try {
+        const data = JSON.parse(await gunzip(m.data)) as SaveData;
+        game = Game.restore(data, loadNeighborhoods(), (text) => post({ t: 'progress', text }));
+        sendFrame(0);
+      } catch (err) {
+        post({ t: 'loaderr', error: String(err) });
+      }
+      break;
+    }
+    case 'save': {
+      if (!game) break;
+      const payload = await gzip(JSON.stringify(game.serialize()));
+      const sm = game.saveMeta();
+      post(
+        { t: 'saved', data: payload, meta: { seed: game.seed, version: 1, ...sm } },
+        [payload],
+      );
       break;
     }
     case 'resize': {

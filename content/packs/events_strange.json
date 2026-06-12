@@ -1,0 +1,311 @@
+{
+  "events": [
+    {
+      "id": "evt_static_parish",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 4,
+      "tags": ["static", "signal"],
+      "effects": { "stats": { "cult": 0.08, "faith": 0.03 }, "found": [{ "kind": "religion", "chance": 0.6 }] },
+      "residue": [
+        { "type": "shrine", "density": "med", "grammar": "#signal_shrine#" }
+      ],
+      "chronicle": "In {year} a {neighborhood} repair shop started keeping hours for the hum. People brought radios that worked fine, and left them there, and stayed."
+    },
+    {
+      "id": "evt_fire_sermon",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 4,
+      "once": true,
+      "tags": ["fire_cult", "prophecy"],
+      "preconditions": { "requires_tag": ["fire"] },
+      "effects": { "stats": { "cult": 0.1 }, "found": [{ "kind": "religion", "chance": 0.6 }] },
+      "residue": [
+        { "type": "shrine", "density": "med", "grammar": "#fire_shrine#" }
+      ],
+      "chronicle": "After the fire, a {neighborhood} survivor preached that the burn had been a first draft. By {year} the congregation carried matchbooks like rosaries."
+    },
+    {
+      "id": "evt_last_train",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "once": true,
+      "tags": ["departure", "vision"],
+      "preconditions": { "requires_tag": ["transit_collapse"] },
+      "effects": { "stats": { "cult": 0.08 }, "found": [{ "kind": "religion", "chance": 0.5 }] },
+      "residue": [
+        { "type": "graffiti", "density": "med", "grammar": "#departure_graffiti#" }
+      ],
+      "chronicle": "Riders swear a train still runs the dead {neighborhood} line at 3:14 a.m. In {year} people began waiting for it with luggage.",
+      "news": "GHOST TRAIN RUNS ON TIME, SAYS EVERYONE BUT THE MTA'S HEIRS"
+    },
+    {
+      "id": "evt_weeping_standpipe",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["miracle", "water"],
+      "effects": { "stats": { "cult": 0.06, "faith": 0.06 }, "found": [{ "kind": "religion", "chance": 0.3 }] },
+      "residue": [
+        { "type": "shrine", "density": "med", "grammar": "#water_shrine#" }
+      ],
+      "chronicle": "A standpipe on #street# began running in {year} — tested, potable, unexplained. The line forms at dawn and nobody gets sick, which is the part nobody can explain.",
+      "news": "#tabloid_strange#"
+    },
+    {
+      "id": "evt_pigeon_augury",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["augury"],
+      "effects": { "stats": { "cult": 0.05 } },
+      "chronicle": "A {neighborhood} man started reading pigeon flocks in {year} and called #augury_hit#. He takes no money, which everyone agrees makes it worse."
+    },
+    {
+      "id": "evt_dream_census",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 2,
+      "once": true,
+      "tags": ["vision"],
+      "preconditions": { "year_min": 2031 },
+      "effects": { "stats": { "cult": 0.06 } },
+      "residue": [
+        { "type": "graffiti", "density": "low", "grammar": "#vision_graffiti#" }
+      ],
+      "chronicle": "The {year} household survey included, without explanation, a question about dreams. #dream_census_result#"
+    },
+    {
+      "id": "evt_grid_saint",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["miracle"],
+      "preconditions": { "requires_tag": ["blackout"] },
+      "effects": { "stats": { "faith": 0.07, "cult": 0.04 } },
+      "residue": [
+        { "type": "shrine", "density": "med", "grammar": "a lineman's ladder painted gold and bolted to the wall, climbed by no one since {year}" }
+      ],
+      "chronicle": "A lineman died bringing {neighborhood}'s power back in {year} and the block declined to move on. His ladder is painted gold. Outages route around the shrine, mostly."
+    },
+    {
+      "id": "evt_tunnel_choir",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["signal", "echo"],
+      "preconditions": { "requires_tag": ["transit_collapse"] },
+      "effects": { "stats": { "cult": 0.06 } },
+      "chronicle": "Singing started in the dead tunnels under {neighborhood} in {year}. Acoustics, said the city. The acoustics take requests, said the neighbors."
+    },
+    {
+      "id": "evt_dead_zone",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["signal", "silence"],
+      "effects": { "stats": { "cult": 0.04 } },
+      "residue": [
+        { "type": "graffiti", "density": "med", "grammar": "#silence_graffiti#" }
+      ],
+      "chronicle": "Phones die on one block of #street#, reliably, since {year}. The carriers blame each other. The block holds its meetings there."
+    },
+    {
+      "id": "evt_prophet_trial",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["prophecy"],
+      "preconditions": { "requires_tag": ["prophecy"] },
+      "effects": { "stats": { "cult": 0.06, "crime": 0.02 } },
+      "chronicle": "The {neighborhood} prophet stood trial for fraud in {year}. The prosecution proved the miracles were staged. Attendance doubled."
+    },
+    {
+      "id": "evt_departure_date",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 2,
+      "once": true,
+      "tags": ["departure", "prophecy"],
+      "preconditions": { "year_min": 2030 },
+      "effects": { "stats": { "cult": 0.05 } },
+      "residue": [
+        { "type": "graffiti", "density": "med", "grammar": "#date_graffiti#" }
+      ],
+      "chronicle": "A date went around in {year} — chalked on walls, printed on cards, never sourced. Nothing happened on it. The faithful call that the strongest sign yet."
+    },
+    {
+      "id": "evt_relic_heist",
+      "scope": "borough",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["relic"],
+      "preconditions": { "requires_tag": ["relic"] },
+      "effects": { "stats": { "crime": 0.04, "cult": 0.03 } },
+      "chronicle": "Someone took the #stolen_relic# from its {borough} shrine in {year}. Three crews claimed the job. Four returned it."
+    },
+    {
+      "id": "evt_tongues_callcenter",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 2,
+      "tags": ["glossolalia", "signal"],
+      "effects": { "stats": { "cult": 0.05 }, "found": [{ "kind": "religion", "chance": 0.25 }] },
+      "chronicle": "A {neighborhood} call center broke into tongues in {year}, all forty seats at once, mid-shift. The calls were recorded. The recordings disagree.",
+      "news": "CALL CENTER SPEAKS IN TONGUES; HOLD TIMES UNAFFECTED"
+    },
+    {
+      "id": "evt_fasting_order",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 2,
+      "tags": ["asceticism"],
+      "effects": { "stats": { "cult": 0.05, "faith": 0.03 }, "found": [{ "kind": "religion", "chance": 0.3 }] },
+      "chronicle": "An order of fasters took a {neighborhood} storefront in {year}. They eat nothing, on camera, and look wonderful. The waitlist runs two thousand names."
+    },
+    {
+      "id": "evt_saint_petition",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 2,
+      "tags": ["canonization"],
+      "effects": { "stats": { "faith": 0.08 } },
+      "residue": [
+        { "type": "shrine", "density": "med", "grammar": "a sidewalk altar with a framed photograph, fresh candles, and a petition clipboard, kept dry since {year}" }
+      ],
+      "chronicle": "{neighborhood} petitioned Rome in {year} to open a cause for #saint_candidate#. Rome said such things take centuries. The block built the shrine anyway, to save time."
+    },
+    {
+      "id": "evt_rooftop_ark",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["water", "prophecy"],
+      "preconditions": { "requires_tag": ["flood"] },
+      "effects": { "stats": { "cult": 0.07 }, "found": [{ "kind": "religion", "chance": 0.4 }] },
+      "residue": [
+        { "type": "banner", "density": "low", "grammar": "#ark_banner#" }
+      ],
+      "chronicle": "A {neighborhood} congregation started building a boat on a roof in {year}. They agree it will never touch water. That isn't what it's for."
+    },
+    {
+      "id": "evt_ledger_faith",
+      "scope": "borough",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["ledger", "signal"],
+      "preconditions": { "year_min": 2029 },
+      "effects": { "stats": { "cult": 0.06 }, "found": [{ "kind": "religion", "chance": 0.35 }] },
+      "residue": [
+        { "type": "graffiti", "density": "low", "grammar": "#ledger_graffiti#" }
+      ],
+      "chronicle": "By {year} a dead {borough} bookkeeper's margin notes were circulating as scripture. The doctrine is one line: everything is counted. The comfort and the terror are the same fact."
+    },
+    {
+      "id": "evt_fog_procession",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 2,
+      "tags": ["vision", "procession"],
+      "effects": { "stats": { "cult": 0.05, "faith": 0.03 } },
+      "chronicle": "The {year} fog procession came back to {neighborhood} with #procession_oddity#."
+    },
+    {
+      "id": "evt_bells_unrung",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 2,
+      "tags": ["miracle", "bells"],
+      "effects": { "stats": { "faith": 0.06, "cult": 0.04 } },
+      "residue": [
+        { "type": "shrine", "density": "low", "grammar": "a rope of fresh flowers tied to a bell that is not there, renewed since {year}" }
+      ],
+      "chronicle": "The bells of the deconsecrated church on #street# rang in {year}. The tower had been sealed; the bells had been sold. Both facts were checked that same morning.",
+      "news": "#tabloid_strange#"
+    },
+    {
+      "id": "evt_quiet_apostasy",
+      "scope": "borough",
+      "phase": ["history"],
+      "weight": 2,
+      "tags": ["apostasy", "quiet"],
+      "effects": { "stats": { "faith": -0.08, "cult": -0.05 } },
+      "chronicle": "Nobody preached it, but in {year} {borough} quietly stopped. Shrines went untended; pews thinned. Asked why, people mostly said it felt rude to keep asking for more."
+    }
+  ],
+  "grammars": {
+    "fire_shrine": [
+      "a ring of matchbooks under glass, one struck",
+      "char scraped into a spiral, renewed after every rain",
+      "a doorframe burned black and oiled like good furniture"
+    ],
+    "departure_graffiti": [
+      "3:14 NO TRANSFERS",
+      "HAVE YOUR FARE READY",
+      "THE LAST TRAIN IS LOCAL",
+      "PACK LIGHT"
+    ],
+    "augury_hit": [
+      "two fires and a wedding",
+      "the bridge closure to the day",
+      "the landlord's heart attack",
+      "three indictments, in order"
+    ],
+    "dream_census_result": [
+      "Eleven percent reported the door. The question was not repeated.",
+      "The results were sealed. The seal has a waiting list.",
+      "Two precincts answered identically, word for word.",
+      "The agency that asked has no record of asking."
+    ],
+    "silence_graffiti": [
+      "NO BARS NO MASTERS",
+      "LEAVE YOUR PHONE, TAKE THE QUIET",
+      "CAN'T HEAR YOU. GOOD.",
+      "THE BLOCK IS LISTENING"
+    ],
+    "date_graffiti": [
+      "THE DATE HOLDS",
+      "NOT CANCELED. MOVED.",
+      "ASK ABOUT THE DATE",
+      "NOT YET IS NOT NO"
+    ],
+    "stolen_relic": [
+      "blackout candle",
+      "founder's antenna",
+      "jar of '31 floodwater",
+      "last subway token"
+    ],
+    "saint_candidate": [
+      "a nurse who stayed through the water",
+      "the lineman of the long dark",
+      "a bodega keeper who fed three blocks through the Crash",
+      "a conductor who went back into the tunnel"
+    ],
+    "ark_banner": [
+      "DRY IS A PROMISE NOBODY KEPT",
+      "ALL ABOARD MEANS ALL",
+      "BUILD HIGH",
+      "THE KEEL POINTS UPSTREAM"
+    ],
+    "ledger_graffiti": [
+      "EVERYTHING IS COUNTED",
+      "AUDIT THE SOUL",
+      "CARRIED FORWARD",
+      "NO LINE LEFT BLANK"
+    ],
+    "procession_oddity": [
+      "more marchers than it left with, by every count but the official one",
+      "candles still lit that had been out at the turn",
+      "a banner nobody remembered sewing",
+      "one fewer, and no one missing"
+    ],
+    "tabloid_strange": [
+      "SAINT OR STUNT?",
+      "MIRACLE ON TAP, CITY DENIES",
+      "HOLY HUM HAS THEM LINING UP",
+      "BLESSED IF WE KNOW"
+    ]
+  }
+}

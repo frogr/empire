@@ -15,13 +15,35 @@ import type {
 } from './types';
 import type { GrammarRules } from './grammar';
 
-export const EVENTS = eventsJson.events as unknown as EventTemplate[];
-export const RELIGIONS = religionsJson.religions as unknown as ReligionPack[];
-export const FACTIONS = factionsJson.factions as unknown as FactionPack[];
+import { loadPacks } from './packs';
+
+const packs = loadPacks();
+
+function merged<T>(base: T[], pick: (p: ReturnType<typeof loadPacks>[number]) => T[] | undefined): T[] {
+  const out = [...base];
+  for (const p of packs) {
+    const extra = pick(p);
+    if (extra) out.push(...extra);
+  }
+  return out;
+}
+
+export const EVENTS = merged(eventsJson.events as unknown as EventTemplate[], (p) => p.events);
+export const RELIGIONS = merged(religionsJson.religions as unknown as ReligionPack[], (p) => p.religions);
+export const FACTIONS = merged(factionsJson.factions as unknown as FactionPack[], (p) => p.factions);
 export const LEAGUES = leaguesJson.leagues as unknown as LeaguePack[];
-export const GRAMMAR_RULES = grammarsJson as GrammarRules;
+export const GRAMMAR_RULES: GrammarRules = (() => {
+  const rules: GrammarRules = { ...(grammarsJson as GrammarRules) };
+  for (const p of packs) {
+    if (!p.grammars) continue;
+    for (const [k, v] of Object.entries(p.grammars)) {
+      rules[k] = rules[k] ? rules[k].concat(v) : [...v];
+    }
+  }
+  return rules;
+})();
 export const NAMES = namesJson as { first: string[]; last: string[]; epithet: string[] };
-export const ITEMS = itemsJson.items as unknown as ItemDef[];
+export const ITEMS = merged(itemsJson.items as unknown as ItemDef[], (p) => p.items);
 export const ORIGINS = originsJson.origins as unknown as OriginDef[];
 export const ITEM_BY_ID = new Map(ITEMS.map((i) => [i.id, i]));
-export const ARCHETYPES = archetypesJson.archetypes as unknown as ArchetypeDef[];
+export const ARCHETYPES = merged(archetypesJson.archetypes as unknown as ArchetypeDef[], (p) => p.archetypes);

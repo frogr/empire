@@ -251,6 +251,29 @@ export class CitySim {
   expandRumor(text: string): string {
     return this.grammar.expand(text, this.r);
   }
+
+  // --- persistence ------------------------------------------------------------
+
+  dump(): unknown {
+    return {
+      rumors: this.rumors,
+      fixtures: this.fixtures,
+      standings: [...this.standings].map(([k, v]) => [k, [...v]]),
+      firedLive: [...this.firedLive],
+    };
+  }
+
+  load(d: unknown): void {
+    const data = d as {
+      rumors: Rumor[]; fixtures: LeagueGame[];
+      standings: [string, [string, { w: number; l: number }][]][];
+      firedLive: string[];
+    };
+    this.rumors = data.rumors ?? [];
+    this.fixtures = data.fixtures ?? [];
+    this.standings = new Map((data.standings ?? []).map(([k, v]) => [k, new Map(v)]));
+    this.firedLive = new Set(data.firedLive ?? []);
+  }
 }
 
 function clamp01(v: number): number {

@@ -15,7 +15,49 @@ import {
   AMBIENT, PED_BARKS, BUMP_PED, INTRO, TRAVEL_WALK, TRAVEL_SUBWAY, ARRIVE,
 } from './flavor';
 import type { Action, FrameMeta, Msg } from '../bridge/protocol';
-import type { NeighborhoodSeed, OriginDef, WorldState } from './content/types';
+import type {
+  ChronicleEntry, Grave, NeighborhoodSeed, NeighborhoodState, OriginDef, WorldState,
+} from './content/types';
+
+export interface SaveData {
+  version: number;
+  seed: string;
+  turn: number;
+  clockMin: number;
+  hoodId: string;
+  px: number;
+  py: number;
+  pc: Record<string, unknown>;
+  hoods: Record<string, Pick<NeighborhoodState, 'stats' | 'population' | 'flooded' | 'subway' | 'faiths' | 'control'>>;
+  chronicle: ChronicleEntry[];
+  graves: Grave[];
+  faith: string | null;
+  favor: Record<string, number>;
+  quest: Quest | null;
+  bets: { league: string; team: string; stake: number; odds: number; day: number }[];
+  heat: number;
+  heatByBorough: Record<string, number>;
+  lastDay: number;
+  lastT2: number;
+  lastRitual: number;
+  city: unknown;
+  maps: Record<string, { explored: string; items: [number, { id: string; qty: number }[]][]; doors: number[] }>;
+}
+
+function b64encode(bytes: Uint8Array): string {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 8192) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + 8192));
+  }
+  return btoa(bin);
+}
+
+function b64decode(s: string): Uint8Array {
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
 
 const MAX_ACTORS = 160;
 const MAP_CACHE_CAP = 6;
@@ -293,6 +335,7 @@ export class Game {
     const gen = this.localGen(id);
     this.hoodId = id;
     this.map = gen.map;
+    this.applyMapDiff(id, gen.map);
     this.visible = new Uint8Array(this.map.w * this.map.h);
     this.occ = new Int32Array(this.map.w * this.map.h).fill(-1);
     // Candidate tiles for NPC homes, posts, and worship.
@@ -2038,6 +2081,105 @@ export class Game {
         glyph[vi] = name.charCodeAt(k);
         fg[vi] = 0xd8c850;
       }
+    }
+  }
+
+  // --- persistence (PRD §7: world geometry regenerates from seed; only diffs) ---
+
+  serialize(): SaveData {
+    const maps: SaveData['maps'] = {};
+    for (const [id, cached] of this.hoodCache) {
+      const m = cached.gen.map;
+      const doors: number[] = [];
+      for (let i = 0; i < m.terrain.length; i++) if (m.terrain[i] === T.DoorOpen) doors.push(i);
+      maps[id] = {
+        explored: b64encode(m.explored),
+        items: [...m.items.entries()],
+        doors,
+      };
+    }
+    const hoods: SaveData['hoods'] = {};
+    for (const [id, n] of Object.entries(this.world.neighborhoods)) {
+      hoods[id] = {
+        stats: n.stats, population: n.population, flooded: n.flooded,
+        subway: n.subway, faiths: n.faiths, control: n.control,
+      };
+    }
+    return {
+      version: 1,
+      seed: this.seed,
+      turn: this.turn, clockMin: this.clockMin, hoodId: this.hoodId, px: this.px, py: this.py,
+      pc: { ...this.pc },
+      hoods,
+      chronicle: this.world.chronicle,
+      graves: this.world.graves,
+      faith: this.faith, favor: this.favor, quest: this.quest, bets: this.bets,
+      heat: this.heat, heatByBorough: this.heatByBorough,
+      lastDay: this.lastDay, lastT2: this.lastT2, lastRitual: this.lastRitual,
+      city: this.city.dump(),
+      maps,
+    };
+  }
+
+  saveMeta(): { charName: string; networth: number; alive: boolean; turn: number } {
+    return {
+      charName: this.pc?.name ?? '',
+      networth: this.pc?.netWorth() ?? 0,
+      alive: !!this.pc && this.pc.hp > 0,
+      turn: this.turn,
+    };
+  }
+
+  static restore(data: SaveData, seeds: NeighborhoodSeed[], onProgress?: (text: string) => void): Game {
+    const g = new Game(data.seed, seeds, onProgress);
+    onProgress?.('Remembering where you left off…');
+    g.applySave(data);
+    return g;
+  }
+
+  private pendingMapDiffs: SaveData['maps'] | null = null;
+
+  private applySave(d: SaveData): void {
+    this.city = new CitySim(this.seed, this.world, this.seeds);
+    this.city.load(d.city);
+    for (const [id, ns] of Object.entries(d.hoods)) {
+      const n = this.world.neighborhoods[id];
+      if (n) Object.assign(n, ns);
+    }
+    this.world.chronicle = d.chronicle;
+    this.world.graves = d.graves;
+    this.pc = Object.assign(Object.create(PlayerChar.prototype) as PlayerChar, d.pc);
+    this.turn = d.turn;
+    this.clockMin = d.clockMin;
+    this.faith = d.faith;
+    this.favor = d.favor ?? {};
+    this.quest = d.quest;
+    this.bets = d.bets ?? [];
+    this.heat = d.heat;
+    this.heatByBorough = d.heatByBorough ?? {};
+    this.lastDay = d.lastDay;
+    this.lastT2 = d.lastT2;
+    this.lastRitual = d.lastRitual;
+    this.pendingMapDiffs = d.maps;
+    this.menu = null;
+    this.mode = 'play';
+    this.enterHood(d.hoodId, 'spawn');
+    this.px = d.px;
+    this.py = d.py;
+    this.computeVision();
+    this.say('You pick the night back up where it left you.', MSG_SYSTEM);
+  }
+
+  /** Re-apply saved per-map diffs after a map regenerates. */
+  private applyMapDiff(id: string, m: GameMap): void {
+    const diff = this.pendingMapDiffs?.[id];
+    if (!diff) return;
+    delete this.pendingMapDiffs![id];
+    const explored = b64decode(diff.explored);
+    if (explored.length === m.explored.length) m.explored.set(explored);
+    m.items = new Map(diff.items);
+    for (const i of diff.doors) {
+      if (m.terrain[i] === T.DoorClosed) m.openDoor(i % m.w, Math.floor(i / m.w));
     }
   }
 

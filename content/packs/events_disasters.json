@@ -1,0 +1,343 @@
+{
+  "events": [
+    {
+      "id": "evt_water_main_blowout",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 4,
+      "tags": ["water", "main_break"],
+      "preconditions": { "stat": { "infrastructure": { "lt": 0.6 } } },
+      "effects": { "stats": { "infrastructure": -0.08, "prosperity": -0.03 } },
+      "residue": [
+        { "type": "graffiti", "density": "med", "grammar": "#water_graffiti#" }
+      ],
+      "chronicle": "A water main older than the borough let go under #street# in {year}. {neighborhood} got #main_gift#.",
+      "news": "OLD FAITHFUL, OUTER BOROUGH EDITION"
+    },
+    {
+      "id": "evt_steam_explosion",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["explosion"],
+      "preconditions": { "area_type": ["grid_dense", "civic"] },
+      "effects": { "stats": { "infrastructure": -0.07, "prosperity": -0.04 }, "population": -0.01 },
+      "residue": [
+        { "type": "burn", "density": "low" }
+      ],
+      "chronicle": "The steam line under #street# went up on a #weekday# in {year}. #steam_consequence#"
+    },
+    {
+      "id": "evt_bridge_condemned",
+      "scope": "borough",
+      "phase": ["history"],
+      "weight": 3,
+      "once": true,
+      "tags": ["bridge_out", "transit_collapse"],
+      "preconditions": { "year_min": 2029, "stat": { "infrastructure": { "lt": 0.5 } } },
+      "effects": { "stats": { "prosperity": -0.08, "infrastructure": -0.06 }, "kill_subway": 0.2 },
+      "chronicle": "Engineers condemned the #bridge_name# Bridge in {year}. Traffic disagreed for #duration#, then the bridge settled the argument."
+    },
+    {
+      "id": "evt_sinkhole",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["sinkhole"],
+      "effects": { "stats": { "infrastructure": -0.06, "cult": 0.02 } },
+      "residue": [
+        { "type": "barricade", "density": "low" }
+      ],
+      "chronicle": "A sinkhole opened on #street# in {year}, #sinkhole_size#. #sinkhole_consequence#"
+    },
+    {
+      "id": "evt_deep_freeze",
+      "scope": "citywide",
+      "phase": ["history", "live"],
+      "weight": 4,
+      "tags": ["freeze"],
+      "preconditions": { "year_min": 2027 },
+      "effects": { "stats": { "infrastructure": -0.05, "crime": 0.03, "faith": 0.02 } },
+      "chronicle": "The freeze of {year} held for #duration#. #freeze_consequence#",
+      "news": "#tabloid_freeze#"
+    },
+    {
+      "id": "evt_blizzard_shutin",
+      "scope": "citywide",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["storm", "snow"],
+      "effects": { "stats": { "prosperity": -0.04, "infrastructure": -0.04 } },
+      "chronicle": "The blizzard of {year} dropped #snow_depth#. The plows #plow_excuse#."
+    },
+    {
+      "id": "evt_cooling_tower_fever",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["outbreak"],
+      "preconditions": { "stat": { "infrastructure": { "lt": 0.55 } } },
+      "effects": { "stats": { "prosperity": -0.05, "faith": 0.04 }, "population": -0.02 },
+      "residue": [
+        { "type": "memorial", "density": "low", "grammar": "a list of names taped inside a bus shelter, laminated against the weather of {year}" }
+      ],
+      "chronicle": "A fever walked out of a {neighborhood} cooling tower in {year}. #outbreak_consequence#",
+      "news": "TOWER FLU: DON'T BREATHE THE MIST"
+    },
+    {
+      "id": "evt_rat_ascendancy",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["vermin"],
+      "preconditions": { "stat": { "infrastructure": { "lt": 0.5 } } },
+      "effects": { "stats": { "prosperity": -0.03, "cult": 0.02 } },
+      "chronicle": "The rats reorganized in {year}. {neighborhood} exterminators described the colonies as 'coordinated' and declined follow-up questions.",
+      "news": "RAT CONGRESS NOW IN SESSION"
+    },
+    {
+      "id": "evt_facade_collapse",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["collapse"],
+      "preconditions": { "stat": { "infrastructure": { "lt": 0.45 } } },
+      "effects": { "stats": { "infrastructure": -0.05, "prosperity": -0.03 } },
+      "residue": [
+        { "type": "memorial", "density": "low", "grammar": "a hard hat filled with cement and plastic roses, set where the cornice came down in {year}" }
+      ],
+      "chronicle": "A cornice let go over #street# in {year}. #collapse_consequence#"
+    },
+    {
+      "id": "evt_smoke_season",
+      "scope": "citywide",
+      "phase": ["history", "live"],
+      "weight": 4,
+      "tags": ["smoke", "haze"],
+      "preconditions": { "year_min": 2027 },
+      "effects": { "stats": { "prosperity": -0.03, "cult": 0.03 } },
+      "chronicle": "Smoke from #smoke_source# sat on the city for #duration# in {year}. The sun went small and orange and everyone photographed it like it was new.",
+      "news": "#tabloid_smoke#"
+    },
+    {
+      "id": "evt_brownout_summer",
+      "scope": "citywide",
+      "phase": ["history", "live"],
+      "weight": 4,
+      "tags": ["blackout", "brownout"],
+      "preconditions": { "year_min": 2028, "stat": { "infrastructure": { "lt": 0.55 } } },
+      "effects": { "stats": { "crime": 0.05, "prosperity": -0.05, "infrastructure": -0.03 } },
+      "residue": [
+        { "type": "graffiti", "density": "med", "grammar": "#blackout_graffiti#" }
+      ],
+      "chronicle": "Rolling brownouts owned the summer of {year}. The grid kept office hours. #brownout_consequence#"
+    },
+    {
+      "id": "evt_sewage_tide",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["water", "stink"],
+      "preconditions": { "coastal": true },
+      "effects": { "stats": { "prosperity": -0.07, "infrastructure": -0.05 } },
+      "residue": [
+        { "type": "graffiti", "density": "low", "grammar": "#water_graffiti#" }
+      ],
+      "chronicle": "The outfall reversed in {year} and the harbor returned a decade of deposits to {neighborhood}. Listings called it 'waterfront character.'"
+    },
+    {
+      "id": "evt_gas_main_blast",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["fire", "explosion"],
+      "effects": { "stats": { "infrastructure": -0.08, "faith": 0.02 }, "population": -0.01 },
+      "residue": [
+        { "type": "burn", "density": "high" },
+        { "type": "memorial", "density": "med", "grammar": "#street_memorial#" }
+      ],
+      "chronicle": "Number #building_number# #street# stopped existing on a #weekday# morning in {year}. The gas company's lawyers beat the fire trucks by eleven minutes."
+    },
+    {
+      "id": "evt_landfill_burn",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 2,
+      "tags": ["fire", "smoke"],
+      "preconditions": { "area_type": ["industrial", "suburban"] },
+      "effects": { "stats": { "prosperity": -0.05, "infrastructure": -0.04, "cult": 0.03 } },
+      "residue": [
+        { "type": "burn", "density": "med" }
+      ],
+      "chronicle": "The {neighborhood} landfill caught in {year} and went on burning underground for #duration#. The hills steam in winter. Locals don't name it."
+    },
+    {
+      "id": "evt_microburst",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 3,
+      "tags": ["storm"],
+      "effects": { "stats": { "infrastructure": -0.06, "prosperity": -0.03 } },
+      "chronicle": "A microburst took {neighborhood} apart for ninety seconds in {year}. #microburst_loss# went up. Most of it came down."
+    },
+    {
+      "id": "evt_salt_front",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 3,
+      "once": true,
+      "tags": ["water", "salt"],
+      "preconditions": { "year_min": 2030 },
+      "effects": { "stats": { "prosperity": -0.06, "cult": 0.04 } },
+      "chronicle": "The salt front reached the intakes in {year} and the tap water turned estuary. The bottled-water men became briefly, intensely important.",
+      "news": "CITY ON THE ROCKS: TAP GOES BRACKISH"
+    },
+    {
+      "id": "evt_tunnel_flood",
+      "scope": "neighborhood",
+      "phase": ["history"],
+      "weight": 3,
+      "tags": ["flood", "transit_collapse"],
+      "preconditions": { "coastal": true },
+      "effects": { "stats": { "infrastructure": -0.1, "prosperity": -0.06 }, "kill_subway": 0.5 },
+      "residue": [
+        { "type": "flood", "density": "med" },
+        { "type": "graffiti", "density": "low", "grammar": "#transit_graffiti#" }
+      ],
+      "chronicle": "The river found the {neighborhood} tunnel in {year}. The pumps fought for #duration#, then filed for retirement."
+    },
+    {
+      "id": "evt_scaffold_perpetual",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 2,
+      "tags": ["scaffold"],
+      "effects": { "stats": { "prosperity": -0.02 } },
+      "chronicle": "The scaffolding over #street# entered its #scaffold_year# year in {year}. A generation has been born, schooled, and married under it. The permit is current."
+    },
+    {
+      "id": "evt_tremor",
+      "scope": "citywide",
+      "phase": ["history"],
+      "weight": 2,
+      "once": true,
+      "tags": ["quake"],
+      "effects": { "stats": { "infrastructure": -0.05, "faith": 0.05, "cult": 0.04 } },
+      "chronicle": "The {year} tremor lasted eleven seconds. Damage was minor. Theology was extensive."
+    },
+    {
+      "id": "evt_harbor_glow",
+      "scope": "neighborhood",
+      "phase": ["history", "live"],
+      "weight": 2,
+      "tags": ["glow", "water"],
+      "preconditions": { "coastal": true },
+      "effects": { "stats": { "cult": 0.06, "faith": 0.03 }, "found": [{ "kind": "religion", "chance": 0.25 }] },
+      "residue": [
+        { "type": "shrine", "density": "low", "grammar": "#water_shrine#" }
+      ],
+      "chronicle": "The harbor went green off {neighborhood} for #duration# in {year}. The scientists said algae. The attendance said otherwise.",
+      "news": "#tabloid_glow#"
+    }
+  ],
+  "grammars": {
+    "main_gift": [
+      "a geyser, briefly the borough's tallest landmark",
+      "free rapids and a boil order",
+      "a lake with a parking problem",
+      "river service, door to door"
+    ],
+    "water_graffiti": [
+      "BOIL EVERYTHING",
+      "THE PIPES ARE OLDER THAN THE LIES",
+      "FREE WATER (INVOLUNTARY)",
+      "DON'T DRINK THE STREET"
+    ],
+    "steam_consequence": [
+      "The crater steamed for a month and acquired a fan club.",
+      "Keep your windows shut, said the flyers, three days late.",
+      "The utility mailed apology magnets.",
+      "Three manhole covers were never recovered. One cleared a four-story building."
+    ],
+    "bridge_name": ["Anchorage", "Meridian", "Old Ferry", "Ironworks", "Catechism"],
+    "sinkhole_size": [
+      "a school bus deep",
+      "two lanes wide and patient",
+      "deep enough to echo",
+      "the size of a brownstone footprint"
+    ],
+    "sinkhole_consequence": [
+      "The city fenced it. The fence became a tollbooth within the week.",
+      "Things were thrown in. Lists were thrown in.",
+      "It swallowed a parked cruiser and made the front page as a hero.",
+      "Engineers found older brick down there, and under that, older brick."
+    ],
+    "freeze_consequence": [
+      "Pipes burst in alphabetical order, or so it felt.",
+      "The warming centers filled, then the precincts, then the churches, in that order of last resort.",
+      "Hydrants froze mid-leak into monuments.",
+      "Heating oil moved under armed escort, like it had earned it."
+    ],
+    "tabloid_freeze": [
+      "CITY ON ICE: WHO GETS THE HEAT?",
+      "PIPES BURST, PROMISES FROZEN",
+      "WINTER IS A LANDLORD",
+      "BUNDLE UP, PAY UP"
+    ],
+    "snow_depth": [
+      "thirty inches",
+      "four feet",
+      "enough to lose a car in",
+      "two storms' worth in one"
+    ],
+    "plow_excuse": [
+      "plowed the donor blocks first",
+      "had been sold for scrap the previous spring, it emerged",
+      "made it as far as the depot exit",
+      "were declared 'strategically staged'"
+    ],
+    "outbreak_consequence": [
+      "Forty blocks learned to cough into their elbows and distrust mist.",
+      "The tower was drained, blessed, and drained again.",
+      "Masks came back like an old fashion.",
+      "The health department's map had a hole where the data should be."
+    ],
+    "collapse_consequence": [
+      "Nobody under it, that time.",
+      "The sidewalk shed went up the next day and will outlive us all.",
+      "Inspection records surfaced, pre-signed, in bulk.",
+      "The bricks were sold as souvenirs within the month."
+    ],
+    "smoke_source": [
+      "pine barrens burning two states south",
+      "the refinery fires across the water",
+      "northern forests, again",
+      "an upstate landfill fire nobody claimed"
+    ],
+    "tabloid_smoke": [
+      "SKY GOES ORANGE, CITY SHRUGS",
+      "BREATHE AT YOUR OWN RISK",
+      "THE SUN, BUT SMALLER",
+      "SMOKE 'EM IF THE SKY'S GOT 'EM"
+    ],
+    "brownout_consequence": [
+      "Ice became a currency with a melt rate.",
+      "Elevator buildings emptied downward, floor by floor.",
+      "The wattmen raised rates at dusk, like tides.",
+      "Sleep moved to the roofs, and the city got quieter and meaner at once."
+    ],
+    "building_number": ["84", "117", "212", "330", "1408"],
+    "microburst_loss": [
+      "Two roofs, a steeple, and every umbrella in the neighborhood",
+      "The pier shed and a flock of laundry",
+      "A revival tent and three billboards",
+      "Most of a scrapyard, sorted by weight"
+    ],
+    "scaffold_year": ["ninth", "eleventh", "fourteenth", "nineteenth"],
+    "tabloid_glow": [
+      "HARBOR LIGHTS UP, OFFICIALS DIM",
+      "GREEN WATER, GREENER CROWDS",
+      "GLOW FORTH AND MULTIPLY"
+    ]
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "grammars": {
+    "street": [
+      "Flatbush",
+      "Delancey",
+      "Pitkin",
+      "Roosevelt",
+      "Gun Hill",
+      "Kingsbridge",
+      "Metropolitan",
+      "Knickerbocker",
+      "Utica",
+      "Jamaica",
+      "Mermaid",
+      "Sutphin",
+      "Webster",
+      "Greenpoint",
+      "Arthur Kill"
+    ],
+    "cargo": [
+      "pallets of pre-crash sneakers",
+      "diesel, blessed and unblessed",
+      "hothouse lemons",
+      "vaccine coolers, seals intact",
+      "Quebec batteries",
+      "cigarettes wearing three states' tax stamps",
+      "transformer oil",
+      "pigeon feed by the ton",
+      "copper of disputed provenance",
+      "somebody's evidence locker"
+    ],
+    "blackout_graffiti": [
+      "I MET MY NEIGHBORS IN THE DARK",
+      "THE GRID CHOSE SIDES",
+      "CANDLELIGHT IS UNION LIGHT",
+      "WATTS FOR THE WATTLESS",
+      "NIGHT SHIFT NEVER ENDED",
+      "THE METER STOPPED. THE BILL DIDN'T.",
+      "GENERATORS HUM, LANDLORDS COUNT",
+      "TOP FLOORS SAW IT COMING"
+    ],
+    "flood_graffiti": [
+      "BUY A BOAT, LANDLORD",
+      "THE RIVER TOOK THE LOBBY FIRST",
+      "SECOND FLOOR PEOPLE NOW",
+      "WE BAILED. NOBODY BAILED US OUT.",
+      "SALT IN THE WALLS",
+      "THE HARBOR WANTS ITS LOT BACK",
+      "MOSES BUILT TOO LOW",
+      "DRY IS A RENT BRACKET"
+    ],
+    "turf_graffiti": [
+      "PAY THE CORNER, NOT THE CITY",
+      "EVERYTHING EAST OF THE BQE",
+      "YOUR MAP IS WRONG NOW",
+      "CROSS HERE AND BE COUNTED",
+      "WE COLLECT THURSDAYS",
+      "THE BLOCK ANSWERS TO THE BLOCK",
+      "TOLL AHEAD. SMILE.",
+      "GUESTS CHECK IN AT THE CORNER"
+    ],
+    "transit_graffiti": [
+      "SWIPE FOR OLD TIMES' SAKE",
+      "THE G WENT FIRST. REMEMBER THE G.",
+      "RAILS DON'T RUST, EXCUSES DO",
+      "FOUR HOURS TO MIDTOWN, PACK LUNCH",
+      "PLATFORM FOR SALE, LIGHTLY HAUNTED",
+      "STAND CLEAR OF NOTHING"
+    ],
+    "exodus_graffiti": [
+      "TAKE THE STOOP, IT'S GOOD LUCK",
+      "GONE UPSTATE TO BE SOMEONE'S PROBLEM",
+      "THE MOVING TRUCK ATE MY DEPOSIT",
+      "MAILBOX FULL FOREVER",
+      "WE LEFT THE KEYS IN THE RIVER",
+      "STAYING IS ALSO LEAVING, SLOWER"
+    ],
+    "vision_graffiti": [
+      "THE DOOR IS ON THE LAST CAR",
+      "I WOKE UP KNOWING THE TIDE",
+      "DRAW WHAT YOU SAW",
+      "THE LIGHT UNDER FULTON IS REAL",
+      "SLEEP FACING THE HARBOR",
+      "IT KNOWS YOUR TRANSFER POINT"
+    ],
+    "radio_content": [
+      "a man listing bridges in the order they'll go",
+      "shipping forecasts for the old coastline",
+      "a child's voice doing the stock report, accurately",
+      "two hours of tide tables, sung",
+      "apologies, very specific ones, from nobody who gives a name",
+      "the old station IDs, played at the wrong speed, on purpose"
+    ],
+    "miracle_desc": [
+      "a hydrant that ran clean through the bad water week, only for children",
+      "frost on one window spelling a name the tenant wouldn't say",
+      "the ferry horn answering a funeral, three times, no ferry in sight",
+      "a blackout candle that burned nine days on one inch of wax",
+      "pigeons spelling a letter, briefly, photographed badly",
+      "the same dog at three corners at once, sworn to by separate witnesses"
+    ],
+    "surge_flotsam": [
+      "a confession booth, door latched from inside",
+      "forty mannequins, holding formation",
+      "a deli counter, scale still accurate",
+      "an upright freezer full of wedding cake",
+      "the pawnshop safe, open and empty and polished",
+      "a carousel horse, still smiling, missing a leg"
+    ],
+    "relic_examples": [
+      "rebar from the seawall breach, tied with ribbon",
+      "the last farecard sold, laminated, disputed",
+      "bolts off the old boardwalk wheel",
+      "a slice of the truce table, lacquered",
+      "transformer glass from the night the grid died",
+      "harbor pearls, which are oyster buttons, which is not advertised"
+    ],
+    "tabloid_blackout": [
+      "GRID QUITS, CITY SHRUGS",
+      "EDISON ROLLS OVER",
+      "FLASHLIGHT KINGS NAME THEIR PRICE",
+      "SUBWAY SLEEPS IN",
+      "BLACKOUT BABIES BOOM",
+      "MOON DECLINES COMMENT"
+    ],
+    "tabloid_heat": [
+      "TAR MELTS, RENT DOESN'T",
+      "ICE TRUCK MOBBED IN QUEENS",
+      "HEAT WAVE OUTLASTS MAYOR",
+      "PIGEONS WALK IN SHADE ONLY",
+      "CITY SWEATS, COUNCIL RECESSES",
+      "BLACKTOP BUBBLES, BROKER SELLS THE VIEW"
+    ]
+  }
+}

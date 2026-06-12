@@ -1,0 +1,204 @@
+{
+  "archetypes": [
+    {
+      "id": "subway_busker",
+      "label": "subway busker",
+      "weight": 3,
+      "hp": [9, 16], "damage": [1, 3], "skill": 1,
+      "aggression": 0, "courage": 4, "greed": 5, "piety": 5,
+      "schedule": "corner",
+      "loot": [["cassette_unlabeled", 0.5], ["hooch_jar", 0.2], ["dead_metrocard", 0.4]],
+      "barks": [
+        "\"Requests cost a dollar. Silence costs five.\"",
+        "\"I played the last train out of Myrtle. Nobody clapped. They were busy crying.\"",
+        "\"The tunnels sing back if you're honest with them.\"",
+        "\"Tips fund the encore. The encore is me eating.\""
+      ]
+    },
+    {
+      "id": "scaffold_rigger",
+      "label": "scaffold rigger",
+      "weight": 3,
+      "hp": [16, 26], "damage": [2, 5], "skill": 2,
+      "aggression": 2, "courage": 7, "greed": 4, "piety": 3,
+      "schedule": "worker",
+      "loot": [["pipe_wrench", 0.25], ["noodle_brick", 0.4], ["copper_coil", 0.2]],
+      "barks": [
+        "\"That scaffold's held since '30. The building behind it, less so.\"",
+        "\"The city wears more scaffold than skin at this point.\"",
+        "\"Don't walk under anything I built in winter. I'll tell you which ones.\""
+      ]
+    },
+    {
+      "id": "drone_spotter",
+      "label": "drone spotter",
+      "weight": 2,
+      "hp": [10, 16], "damage": [1, 3], "skill": 1,
+      "aggression": 1, "courage": 3, "greed": 6, "piety": 2,
+      "schedule": "roamer",
+      "loot": [["salvage_battery", 0.4], ["cold_drive", 0.15], ["cricket_bar", 0.3]],
+      "barks": [
+        "\"That one's a courier bird. That one's somebody's eye. That one's mine.\"",
+        "\"The sky's the only honest newspaper left.\"",
+        "\"I log flight paths. People pay. I don't ask which people twice.\""
+      ]
+    },
+    {
+      "id": "relic_dealer",
+      "label": "relic dealer",
+      "weight": 2,
+      "hp": [10, 17], "damage": [1, 3], "skill": 1,
+      "aggression": 1, "courage": 4, "greed": 9, "piety": 6,
+      "schedule": "stall",
+      "loot": [["blackout_candle", 0.5], ["flood_water", 0.3], ["subway_token", 0.25], ["church_candlesticks", 0.1]],
+      "barks": [
+        "\"Authenticated. By me. Just now.\"",
+        "\"This candle burned through the dark years. Or a dark week. Memory is a market.\"",
+        "\"Relics, friend. The past is the only thing still in production.\"",
+        "\"Touch with your eyes. Buy with your grief.\""
+      ]
+    },
+    {
+      "id": "bike_courier",
+      "label": "bike courier",
+      "weight": 3,
+      "hp": [11, 18], "damage": [1, 4], "skill": 2,
+      "aggression": 2, "courage": 5, "greed": 6, "piety": 1,
+      "schedule": "roamer",
+      "loot": [["package", 0.4], ["dead_metrocard", 0.3], ["cricket_bar", 0.3]],
+      "barks": [
+        "\"Bridge toll went up. My rates follow physics.\"",
+        "\"Don't ask what's in the bag. The bag pays better than you.\"",
+        "\"Fastest thing left in this city is a bike and a grudge.\""
+      ]
+    },
+    {
+      "id": "ferry_hand",
+      "label": "ferry hand",
+      "weight": 3,
+      "hp": [14, 24], "damage": [2, 5], "skill": 2,
+      "aggression": 2, "courage": 6, "greed": 4, "piety": 5,
+      "schedule": "worker",
+      "loot": [["smoked_eel", 0.4], ["tallboy", 0.3], ["ferry_bell", 0.05]],
+      "barks": [
+        "\"Harbor's calm today. That's how it lies.\"",
+        "\"We run when the tide says, not when the schedule says. The schedule drowned.\"",
+        "\"Hold the rail. The rail held me through two surges.\""
+      ]
+    },
+    {
+      "id": "generator_man",
+      "label": "generator man",
+      "weight": 2,
+      "hp": [13, 21], "damage": [2, 4], "skill": 2,
+      "aggression": 1, "courage": 5, "greed": 7, "piety": 3,
+      "schedule": "worker",
+      "loot": [["salvage_battery", 0.5], ["copper_coil", 0.4], ["hooch_jar", 0.2]],
+      "barks": [
+        "\"Power's two dollars an hour. Fumes included free.\"",
+        "\"When the grid died I became a utility. Smallest one in history, best uptime.\"",
+        "\"Don't touch the red one. The red one is why I have these gloves and this limp.\""
+      ]
+    },
+    {
+      "id": "bookmaker",
+      "label": "bookmaker",
+      "weight": 2,
+      "hp": [12, 19], "damage": [1, 4], "skill": 2,
+      "aggression": 2, "courage": 4, "greed": 10, "piety": 2,
+      "schedule": "corner",
+      "loot": [["pre_crash_hundred", 0.3], ["losing_scratchers", 0.5], ["watch_old", 0.15]],
+      "barks": [
+        "\"Odds on anything. Weather, fights, ferry times, you making it home.\"",
+        "\"The house wins. The house is a folding table, but it wins.\"",
+        "\"Everybody pays Thursday. The ones who don't, you stop seeing Tuesdays.\""
+      ]
+    },
+    {
+      "id": "gleaner",
+      "label": "gleaner",
+      "weight": 3,
+      "hp": [9, 16], "damage": [1, 3], "skill": 1,
+      "aggression": 1, "courage": 3, "greed": 6, "piety": 4,
+      "schedule": "roamer",
+      "loot": [["scrap_metal", 0.5], ["unknown_keys", 0.3], ["hydrant_cap_brass", 0.1]],
+      "barks": [
+        "\"The city throws nothing away. It just sets it down and forgets.\"",
+        "\"Copper Tuesday, brass Friday. The week has a flavor if you work it.\"",
+        "\"Everything I own was a building once.\""
+      ]
+    },
+    {
+      "id": "retired_cop",
+      "label": "retired cop",
+      "weight": 1,
+      "hp": [16, 26], "damage": [2, 6], "skill": 4,
+      "aggression": 2, "courage": 7, "greed": 3, "piety": 4,
+      "schedule": "roamer",
+      "law": true,
+      "loot": [["pocket_22", 0.1], ["bandage", 0.3], ["flask", 0.25]],
+      "barks": [
+        "\"Retired. The badge didn't get the memo and neither did the knees.\"",
+        "\"Thirty years on the job, and the job left town before I did.\"",
+        "\"I still walk the beat. Nobody pays me. So it's a calling or a condition.\""
+      ]
+    },
+    {
+      "id": "parkour_kid",
+      "label": "parkour kid",
+      "weight": 3,
+      "hp": [8, 14], "damage": [1, 3], "skill": 2,
+      "aggression": 4, "courage": 5, "greed": 7, "piety": 1,
+      "schedule": "roamer",
+      "mugger": true,
+      "loot": [["unknown_keys", 0.3], ["dead_metrocard", 0.4], ["single_pearl_earring", 0.05]],
+      "barks": [
+        "\"Your pockets ride lower than you think, old timer.\"",
+        "\"Ground floor's for paying customers. I take the express.\"",
+        "\"Catch me. Go ahead. The fire escape votes for me.\""
+      ]
+    },
+    {
+      "id": "fortune_teller",
+      "label": "fortune teller",
+      "weight": 2,
+      "hp": [9, 15], "damage": [1, 2], "skill": 0,
+      "aggression": 0, "courage": 4, "greed": 7, "piety": 8,
+      "schedule": "stall",
+      "loot": [["blackout_candle", 0.3], ["single_pearl_earring", 0.1], ["skyline_snowglobe", 0.2]],
+      "barks": [
+        "\"The cards say flood. The cards have said flood since '31. The cards pay attention.\"",
+        "\"Five dollars for the future. Ten if you want the good one.\"",
+        "\"I told him yes, she still thinks of you. You sell what restocks.\""
+      ]
+    },
+    {
+      "id": "union_steward",
+      "label": "union steward",
+      "weight": 2,
+      "hp": [15, 24], "damage": [2, 5], "skill": 3,
+      "aggression": 3, "courage": 8, "greed": 3, "piety": 3,
+      "schedule": "worker",
+      "loot": [["claw_hammer", 0.3], ["egg_on_roll", 0.3], ["pre_crash_hundred", 0.1]],
+      "barks": [
+        "\"Scale wages or no wages. That's the whole sermon.\"",
+        "\"The local's older than the grid and it'll outlive the grid. Already did once.\"",
+        "\"You work, you're covered. You scab, you're cardio.\""
+      ]
+    },
+    {
+      "id": "night_fisherman",
+      "label": "night fisherman",
+      "weight": 2,
+      "hp": [12, 20], "damage": [2, 5], "skill": 2,
+      "aggression": 1, "courage": 6, "greed": 4, "piety": 6,
+      "schedule": "worker",
+      "loot": [["smoked_eel", 0.5], ["fillet_knife", 0.3], ["ambergris_lump", 0.02]],
+      "barks": [
+        "\"The river gives at night. Daytime it just takes.\"",
+        "\"The eels never left. We left the eels.\"",
+        "\"Some nights the net comes up heavy and you pray it's fish.\""
+      ]
+    }
+  ]
+}
