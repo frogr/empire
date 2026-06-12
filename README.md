@@ -44,3 +44,6 @@ WASD/arrows move · `.`/space wait · `r` rest · `e` interact · `g` pick up ·
 `i` inventory · `c` character · `t` talk · `f` fight · `v` vault · `x` examine ·
 `m` city map/travel · `J` chronicle · `N` news · `?` help · `F9` perf ·
 `F10` CRT · `shift+Q` save & quit
+
+You don't need to memorize any of that: the hint bar above the message log
+always shows what you can press right now.

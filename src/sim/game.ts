@@ -9,12 +9,12 @@ import { simulateHistory } from './worldgen/history';
 import { CitySim } from './city';
 import { Rand } from './rng';
 import { Grammar } from './content/grammar';
-import { GRAMMAR_RULES, RELIGIONS, FACTIONS, ORIGINS, NAMES, ITEM_BY_ID, ARCHETYPES, LEAGUES } from './content';
+import { GRAMMAR_RULES, RELIGIONS, FACTIONS, ORIGINS, NAMES, ITEM_BY_ID, ARCHETYPES, LEAGUES, CITYMAP } from './content';
 import { PlayerChar, SKILLS, STATS, INJURY_LABEL, ItemStack } from './player';
 import {
   AMBIENT, PED_BARKS, BUMP_PED, INTRO, TRAVEL_WALK, TRAVEL_SUBWAY, ARRIVE,
 } from './flavor';
-import type { Action, FrameMeta, Msg } from '../bridge/protocol';
+import type { Action, FrameMeta, Hint, Msg, PulseCell } from '../bridge/protocol';
 import type {
   ChronicleEntry, Grave, NeighborhoodSeed, NeighborhoodState, OriginDef, WorldState,
 } from './content/types';
@@ -116,6 +116,7 @@ const BLOCK_MSG: Partial<Record<T, string>> = {
 };
 
 const PED_TILES = new Set<T>([T.Sidewalk, T.Crosswalk, T.Road, T.Alley, T.Path, T.Pier]);
+const VAULTABLE = new Set<T>([T.Car, T.Fence, T.Bench, T.Barricade, T.Counter, T.Hydrant]);
 const PIGEON_TILES = new Set<T>([T.Road, T.Sidewalk, T.Crosswalk, T.Grass, T.Path, T.Scrub, T.Pier]);
 const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
 
@@ -180,6 +181,7 @@ export class Game {
   private heatByBorough: Record<string, number> = {};
   private targets: number[] = [];
   private targetSel = 0;
+  private pulseCells: PulseCell[] = []; // rebuilt by fillView/fillCityMap, shipped in meta
   private city!: CitySim;
   private lastDay = -1;
   private lastT2 = 0;
@@ -855,7 +857,6 @@ export class Game {
       return;
     }
     const over = this.map.t(ox, oy);
-    const VAULTABLE = new Set<T>([T.Car, T.Fence, T.Bench, T.Barricade, T.Counter, T.Hydrant]);
     if (!VAULTABLE.has(over)) {
       this.say('Nothing vaultable that way.');
       return;
@@ -1325,7 +1326,8 @@ export class Game {
     for (const s of this.seeds) {
       if (s.id === cur.id) continue;
       const dx = s.pos[0] - cur.pos[0];
-      const dy = s.pos[1] - cur.pos[1];
+      // The drawn map compresses y 2:1; match it so w/s feel like they look.
+      const dy = (s.pos[1] - cur.pos[1]) * 0.5;
       const dot = dx * a.dx + dy * a.dy;
       if (dot <= 0.1) continue;
       const dist = Math.hypot(dx, dy);
@@ -1506,6 +1508,100 @@ export class Game {
     }
   }
 
+  /** Tiles around (and under) the player that [e] would act on, in interact()'s scan order. */
+  private interactablesNear(): { x: number; y: number; t: T }[] {
+    const out: { x: number; y: number; t: T }[] = [];
+    if (!this.map) return out;
+    for (const [dx, dy] of [[0, 0], ...DIRS] as number[][]) {
+      const nx = this.px + dx, ny = this.py + dy;
+      if (!this.map.inBounds(nx, ny)) continue;
+      const t = this.map.t(nx, ny);
+      if (t === T.Station || t === T.DoorClosed || t === T.DoorOpen || t === T.Shrine || t === T.Altar || t === T.Counter) {
+        out.push({ x: nx, y: ny, t });
+      }
+    }
+    return out;
+  }
+
+  private questDeliverableHere(): boolean {
+    return !!this.quest && (
+      (this.quest.kind === 'deliver' && this.quest.targetHood === this.hoodId) ||
+      (this.quest.kind === 'fetch' && this.pc.inventory.some((s) => s.id === this.quest!.itemId))
+    );
+  }
+
+  private eHintFor(t: T): string {
+    switch (t) {
+      case T.Station: return 'subway';
+      case T.DoorClosed: return 'open door';
+      case T.DoorOpen: return 'close door';
+      case T.Shrine: return 'tend shrine';
+      case T.Altar: return 'worship';
+      case T.Counter: return this.questDeliverableHere() ? 'deliver' : 'shop';
+      default: return 'interact';
+    }
+  }
+
+  /** What you can press right now — drawn in the bar above the message log. */
+  contextHints(): Hint[] {
+    if (this.mode === 'menu') {
+      if (!this.menu) return [];
+      const h: Hint[] = [{ key: 'w/s', label: 'choose' }, { key: 'e', label: 'confirm' }];
+      if (this.menu.kind !== 'origin') h.push({ key: 'Esc', label: 'back' });
+      return h;
+    }
+    if (this.mode === 'citymap') {
+      return [
+        { key: 'wasd', label: 'pick a neighborhood' },
+        { key: 'e', label: 'travel there' },
+        { key: 'Esc', label: 'back to the street' },
+      ];
+    }
+    if (this.mode === 'look') return [{ key: 'wasd', label: 'inspect' }, { key: 'Esc', label: 'done looking' }];
+    if (this.mode === 'target') {
+      return [
+        { key: 'e', label: 'attack' },
+        { key: 'f/wasd', label: 'next target' },
+        { key: 'Esc', label: 'never mind' },
+      ];
+    }
+    if (!this.pc || !this.map) return [];
+    if (this.pendingVault) return [{ key: 'wasd', label: 'vault that way' }, { key: 'any', label: 'never mind' }];
+    const h: Hint[] = [];
+    if (this.map.items.get(this.map.idx(this.px, this.py))?.length) h.push({ key: 'g', label: 'take' });
+    let talk: string | null = null;
+    let hostile = false;
+    for (const [dx, dy] of DIRS) {
+      const nx = this.px + dx, ny = this.py + dy;
+      if (!this.map.inBounds(nx, ny)) continue;
+      const ai = this.occ[this.map.idx(nx, ny)];
+      if (ai < 0 || !this.aAlive[ai]) continue;
+      if (this.aKind[ai] === AK.NPC) {
+        if (this.aState[ai] === ST_HOSTILE) hostile = true;
+        else if (!talk) talk = this.npcName(ai).split(' ')[0];
+      } else if (this.aKind[ai] === AK.Cat && !talk) {
+        talk = 'the cat';
+      }
+    }
+    if (hostile) h.push({ key: 'f', label: 'fight' });
+    if (talk) h.push({ key: 't', label: `talk to ${talk}` });
+    const near = this.interactablesNear();
+    if (near.length) h.push({ key: 'e', label: this.eHintFor(near[0].t) });
+    if (h.length < 4) {
+      for (const [dx, dy] of DIRS) {
+        const ox = this.px + dx, oy = this.py + dy;
+        const lx = this.px + dx * 2, ly = this.py + dy * 2;
+        if (!this.map.inBounds(ox, oy) || !this.map.inBounds(lx, ly)) continue;
+        if (VAULTABLE.has(this.map.t(ox, oy)) && this.map.walkable(lx, ly) && this.occ[this.map.idx(lx, ly)] < 0) {
+          h.push({ key: 'v', label: 'vault' });
+          break;
+        }
+      }
+    }
+    if (!h.length) return [{ key: 'm', label: 'city map' }, { key: 'x', label: 'examine' }, { key: 'i', label: 'bag' }];
+    return h.slice(0, 5);
+  }
+
   private interact(): void {
     const { px: x, py: y } = this;
     for (const [dx, dy] of [[0, 0], ...DIRS] as number[][]) {
@@ -1541,10 +1637,7 @@ export class Game {
         return;
       }
       if (t === T.Counter) {
-        if (this.quest && (
-          (this.quest.kind === 'deliver' && this.quest.targetHood === this.hoodId) ||
-          (this.quest.kind === 'fetch' && this.pc.inventory.some((s) => s.id === this.quest!.itemId))
-        )) {
+        if (this.questDeliverableHere()) {
           this.completeQuest();
           return;
         }
@@ -1912,6 +2005,7 @@ export class Game {
   // --- view compositing -----------------------------------------------------------------
 
   fillView(viewW: number, viewH: number, glyph: Uint16Array, fg: Uint32Array, bg: Uint32Array): void {
+    this.pulseCells = [];
     if (this.mode === 'menu' && this.menu) {
       this.fillMenu(viewW, viewH, glyph, fg, bg);
       return;
@@ -1948,7 +2042,11 @@ export class Game {
           const pile = this.map.items.get(i);
           if (pile?.length) {
             const def = ITEM_BY_ID.get(pile[pile.length - 1].id);
-            if (def) { glyph[vi] = def.glyph.charCodeAt(0); fg[vi] = tint(parseInt(def.color.slice(1), 16)); }
+            if (def) {
+              glyph[vi] = def.glyph.charCodeAt(0);
+              fg[vi] = tint(parseInt(def.color.slice(1), 16));
+              bg[vi] = blend(bg[vi], 0x2a3650, 0.55); // cool slab — loot reads at a glance
+            }
           }
         } else { glyph[vi] = m.glyph[i]; fg[vi] = dimFg(m.fg[i]); bg[vi] = dimBg(m.bg[i]); }
       }
@@ -1983,7 +2081,37 @@ export class Game {
       glyph[vi] = ACTOR_GLYPH[this.aKind[i]];
       const hostile = this.aKind[i] === AK.NPC && this.aState[i] === ST_HOSTILE;
       fg[vi] = hostile ? 0xff5040 : tint(this.aColor[i]);
-      if (hostile) bg[vi] = 0x200808;
+      if (hostile) {
+        bg[vi] = 0x200808;
+        // Imminent danger breathes: pulse hostiles in arm's reach.
+        if (Math.abs(x - this.px) + Math.abs(y - this.py) === 1) {
+          this.pulseCells.push({ x: vx, y: vy, bg: 0x401010 });
+        }
+      }
+    }
+    if (this.mode === 'play' && this.pc) {
+      // Quiet affordance tints (bg only — fillRect layer, atlas untouched):
+      // warm = [e] works there, teal = somebody adjacent will talk.
+      for (const it of this.interactablesNear()) {
+        if (it.x === this.px && it.y === this.py) continue;
+        const vx = it.x - camX, vy = it.y - camY;
+        if (vx < 0 || vy < 0 || vx >= viewW || vy >= viewH) continue;
+        if (!this.visible[m.idx(it.x, it.y)]) continue;
+        const vi = vy * viewW + vx;
+        bg[vi] = blend(bg[vi], 0x4a4420, 0.45);
+      }
+      for (const [dx, dy] of DIRS) {
+        const nx = this.px + dx, ny = this.py + dy;
+        if (!m.inBounds(nx, ny)) continue;
+        const ai = this.occ[m.idx(nx, ny)];
+        if (ai < 0 || !this.aAlive[ai]) continue;
+        const talkable = (this.aKind[ai] === AK.NPC && this.aState[ai] !== ST_HOSTILE) || this.aKind[ai] === AK.Cat;
+        if (!talkable) continue;
+        const vx = nx - camX, vy = ny - camY;
+        if (vx < 0 || vy < 0 || vx >= viewW || vy >= viewH) continue;
+        const vi = vy * viewW + vx;
+        bg[vi] = blend(bg[vi], 0x1e3a30, 0.5);
+      }
     }
     if (this.mode === 'target' && this.targets.length) {
       const ti = this.targets[this.targetSel];
@@ -2043,45 +2171,172 @@ export class Game {
         }
       }
     }
-    y++;
-    write(cx, Math.min(viewH - 1, y), 'w/s choose · e confirm' + (m.kind !== 'origin' ? ' · Esc back' : ''), 0x47616e);
   }
 
   private fillCityMap(viewW: number, viewH: number, glyph: Uint16Array, fg: Uint32Array, bg: Uint32Array): void {
+    const WATER_BG = 0x060d16;
+    const VOID_BG = 0x04060a;
     glyph.fill(0);
     fg.fill(0);
-    bg.fill(0x05070c);
-    const margin = 3;
-    const sx = (viewW - margin * 2) / 100;
-    const sy = (viewH - margin * 2) / 100;
+    bg.fill(VOID_BG);
+    const panelW = viewW >= 76 ? 30 : 0;
+    const mapW = viewW - panelW;
+    // Project the hand-tuned NYC silhouette (2:1 cell aspect baked into the
+    // template) into the map area, centered, aspect preserved.
+    const tw = CITYMAP.w, th = CITYMAP.h;
+    const scale = Math.min((mapW - 2) / tw, (viewH - 2) / th, 1.3);
+    const ox = Math.floor((mapW - tw * scale) / 2);
+    const oy = Math.floor((viewH - th * scale) / 2);
+    const CHAR_BOROUGH: Record<string, string> = { m: 'manhattan', b: 'brooklyn', q: 'queens', x: 'bronx', s: 'staten_island' };
+    for (let vy = 0; vy < viewH; vy++) {
+      for (let vx = 0; vx < mapW; vx++) {
+        const tx = Math.floor((vx - ox) / scale), ty = Math.floor((vy - oy) / scale);
+        if (tx < 0 || ty < 0 || tx >= tw || ty >= th) continue;
+        const vi = vy * viewW + vx;
+        const c = CITYMAP.rows[ty].charAt(tx);
+        if (c === '~') {
+          bg[vi] = WATER_BG;
+          // Sparse wave texture: enough to read as water, cheap to blit.
+          if ((tx * 7 + ty * 13) % 11 === 0) { glyph[vi] = '≈'.charCodeAt(0); fg[vi] = 0x16344a; }
+        } else {
+          const b = CHAR_BOROUGH[c];
+          bg[vi] = b ? blend(VOID_BG, BOROUGH_COLOR[b], 0.13) : WATER_BG;
+        }
+      }
+    }
+    // pos space → view cells; one shared projection for hoods, lines, cursor.
     const place = (pos: [number, number]) => ({
-      x: Math.min(viewW - 1, Math.max(0, margin + Math.round(pos[0] * sx))),
-      y: Math.min(viewH - 1, Math.max(0, margin + Math.round(pos[1] * sy))),
+      x: Math.min(mapW - 1, Math.max(0, ox + Math.round(pos[0] * scale))),
+      y: Math.min(viewH - 1, Math.max(0, oy + Math.round((pos[1] / 2) * scale))),
     });
+    const lineTo = (a: [number, number], b: [number, number], ch: string, color: number) => {
+      const p0 = place(a), p1 = place(b);
+      let x0 = p0.x, y0 = p0.y;
+      const dx = Math.abs(p1.x - x0), dy = -Math.abs(p1.y - y0);
+      const sx = x0 < p1.x ? 1 : -1, sy = y0 < p1.y ? 1 : -1;
+      let err = dx + dy;
+      for (let guard = 0; guard < 256; guard++) {
+        const vi = y0 * viewW + x0;
+        if (glyph[vi] === 0 || glyph[vi] === '≈'.charCodeAt(0)) { glyph[vi] = ch.charCodeAt(0); fg[vi] = color; }
+        if (x0 === p1.x && y0 === p1.y) break;
+        const e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+      }
+    };
+    const cur = this.seedById.get(this.hoodId)!;
+    const curState = this.world.neighborhoods[this.hoodId];
+    const sel = this.seedById.get(this.selectedHood)!;
+    const selState = this.world.neighborhoods[this.selectedHood];
+    // Where you could go from the selected hood — and how you'd get to it.
+    for (const adjId of sel.adjacent) {
+      const adj = this.seedById.get(adjId);
+      if (adj) lineTo(sel.pos, adj.pos, '·', 0x2e4250);
+    }
+    const sharedLines = curState.subway.filter((l) => selState.subway.includes(l));
+    if (sel.id !== cur.id && sharedLines.length) lineTo(cur.pos, sel.pos, '∙', 0x3a6ad0);
+    // Neighborhood markers.
     for (const s of this.seeds) {
       const { x, y } = place(s.pos);
       const vi = y * viewW + x;
       const st = this.world.neighborhoods[s.id];
       glyph[vi] = st.flooded ? '≈'.charCodeAt(0) : '■'.charCodeAt(0);
-      fg[vi] = st.flooded ? 0x3a7a9a : BOROUGH_COLOR[s.borough];
-      if (st.stats.crime > 0.65 && !st.flooded) fg[vi] = blend(fg[vi], 0xff3030, 0.4);
+      let color = st.flooded ? 0x3a7a9a : BOROUGH_COLOR[s.borough];
+      if (st.stats.crime > 0.65 && !st.flooded) color = blend(color, 0xff3030, 0.4);
+      const reachable = cur.adjacent.includes(s.id)
+        || (s.id !== cur.id && curState.subway.some((l) => st.subway.includes(l)));
+      fg[vi] = reachable ? blend(color, 0xffffff, 0.25) : blend(color, 0x000000, 0.25);
     }
-    const cur = place(this.seedById.get(this.hoodId)!.pos);
-    glyph[cur.y * viewW + cur.x] = 64;
-    fg[cur.y * viewW + cur.x] = 0xffffff;
-    const sel = place(this.seedById.get(this.selectedHood)!.pos);
-    const svi = sel.y * viewW + sel.x;
+    // You, and the cursor.
+    const cv = place(cur.pos);
+    glyph[cv.y * viewW + cv.x] = 64;
+    fg[cv.y * viewW + cv.x] = 0xffffff;
+    this.pulseCells.push({ x: cv.x, y: cv.y, bg: 0x2a3a55 });
+    const sv = place(sel.pos);
+    const svi = sv.y * viewW + sv.x;
     bg[svi] = 0xc8b820;
     fg[svi] = 0x101010;
-    const name = this.seedById.get(this.selectedHood)!.name.toUpperCase();
-    const nx = sel.x + 2 + name.length > viewW ? sel.x - name.length - 2 : sel.x + 2;
-    if (nx >= 0) {
-      for (let k = 0; k < name.length && nx + k < viewW; k++) {
-        const vi = sel.y * viewW + nx + k;
-        glyph[vi] = name.charCodeAt(k);
+    this.pulseCells.push({ x: sv.x, y: sv.y, bg: 0xc8b820 });
+    const label = sel.name.toUpperCase();
+    const lx = sv.x + 2 + label.length > mapW ? sv.x - label.length - 2 : sv.x + 2;
+    if (lx >= 0) {
+      for (let k = 0; k < label.length && lx + k < mapW; k++) {
+        const vi = sv.y * viewW + lx + k;
+        glyph[vi] = label.charCodeAt(k);
         fg[vi] = 0xd8c850;
       }
     }
+    if (panelW > 0) this.fillCityPanel(viewW, viewH, mapW, glyph, fg, bg, sel, selState, cur, sharedLines);
+  }
+
+  private fillCityPanel(
+    viewW: number, viewH: number, mapW: number,
+    glyph: Uint16Array, fg: Uint32Array, bg: Uint32Array,
+    sel: NeighborhoodSeed, selState: NeighborhoodState,
+    cur: NeighborhoodSeed,
+    sharedLines: string[],
+  ): void {
+    for (let y = 0; y < viewH; y++) {
+      const bi = y * viewW + mapW;
+      glyph[bi] = '│'.charCodeAt(0);
+      fg[bi] = 0x2a3138;
+      for (let x = mapW + 1; x < viewW; x++) bg[y * viewW + x] = 0x070a10;
+    }
+    const write = (x: number, y: number, text: string, color: number) => {
+      if (y < 0 || y >= viewH) return;
+      for (let k = 0; k < text.length && x + k < viewW; k++) {
+        const vi = y * viewW + x + k;
+        glyph[vi] = text.charCodeAt(k);
+        fg[vi] = color;
+      }
+    };
+    const px = mapW + 2;
+    const bar = (v: number) => '▓'.repeat(Math.max(0, Math.min(6, Math.round(v * 6)))).padEnd(6, '░');
+    let y = 1;
+    write(px, y++, sel.name.toUpperCase(), 0xd8c850);
+    write(px, y++, BOROUGH_LABEL[sel.borough], BOROUGH_COLOR[sel.borough]);
+    y++;
+    write(px, y++, `~${Math.max(1, Math.round(selState.population / 1000))}k souls`, 0x8a9ab0);
+    write(px, y++, `crime  ${bar(selState.stats.crime)}`, selState.stats.crime > 0.6 ? 0xc05a50 : 0x76869a);
+    write(px, y++, `money  ${bar(selState.stats.prosperity)}`, 0x76869a);
+    write(px, y++, `infra  ${bar(selState.stats.infrastructure)}`, 0x76869a);
+    write(px, y++, `faith  ${bar(selState.stats.faith)}`, 0x76869a);
+    y++;
+    const topControl = Object.entries(selState.control).sort((a, b) => b[1] - a[1])[0];
+    if (topControl && topControl[1] > 0.15) {
+      const f = FACTIONS.find((p) => p.id === topControl[0]);
+      if (f) write(px, y++, `turf: ${f.name}`, 0xc08050);
+    }
+    const topFaith = Object.entries(selState.faiths).sort((a, b) => b[1] - a[1])[0];
+    if (topFaith && topFaith[1] > 0.1) {
+      const r = RELIGIONS.find((p) => p.id === topFaith[0]);
+      if (r) write(px, y++, `creed: ${r.name}`, 0x9a8ac0);
+    }
+    write(px, y++, selState.subway.length ? `lines: ${selState.subway.join(' ')}` : 'no service', selState.subway.length ? 0x3a6ad0 : 0x5a6a78);
+    if (selState.flooded) write(px, y++, `flooded since '${String((selState.floodedYear ?? 2036) % 100)}`, 0x3a7a9a);
+    y++;
+    if (sel.id === cur.id) {
+      write(px, y++, 'you are here', 0xffffff);
+    } else if (cur.adjacent.includes(sel.id)) {
+      write(px, y++, 'adjacent — [e] walk ~30min', 0x9aa8d0);
+    } else if (sharedLines.length) {
+      const minutes = Math.round(12 + Math.hypot(sel.pos[0] - cur.pos[0], sel.pos[1] - cur.pos[1]) * 1.2);
+      write(px, y++, `${sharedLines.join('/')} train — [e] ~${minutes}min`, 0x9aa8d0);
+    } else {
+      write(px, y++, 'no route from here', 0xc08050);
+    }
+    // Legend.
+    let ly = viewH - 9;
+    for (const [b, label] of Object.entries(BOROUGH_LABEL)) {
+      write(px, ly, '■', BOROUGH_COLOR[b]);
+      write(px + 2, ly++, label, 0x5a6a78);
+    }
+    write(px, ly, '≈', 0x3a7a9a);
+    write(px + 2, ly++, 'flooded out', 0x5a6a78);
+    write(px, ly, '@', 0xffffff);
+    write(px + 2, ly++, 'you', 0x5a6a78);
+    write(px, ly, '·', 0x2e4250);
+    write(px + 2, ly++, 'connections', 0x5a6a78);
   }
 
   // --- persistence (PRD §7: world geometry regenerates from seed; only diffs) ---
@@ -2212,6 +2467,8 @@ export class Game {
       turnMs,
       msgs,
       seed: this.seed,
+      hints: this.contextHints(),
+      pulse: this.pulseCells,
     };
   }
 }

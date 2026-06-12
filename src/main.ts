@@ -9,6 +9,9 @@ import type { Action, FrameMeta, MainMsg, Msg, SaveMeta, WorkerMsg } from './bri
 const STATUS_FG = 0x6fa8b8;
 const STATUS_DIM = 0x47616e;
 const SEP_FG = 0x2a3138;
+const HINT_KEY_FG = 0xffe9a0;
+const HINT_LABEL_FG = 0x6f7e8a;
+const PULSE_PHASES = [1, 0.8, 0.55, 0.8];
 const LOG_FADE = [1.0, 0.85, 0.7, 0.58, 0.48, 0.4];
 const LOG_ROWS = 6;
 const LS = {
@@ -47,7 +50,7 @@ const view = { w: 0, h: 0, glyph: new Uint16Array(0), fg: new Uint32Array(0), bg
 let meta: FrameMeta | null = null;
 let progressText = '';
 const log: LogEntry[] = [];
-let helpOpen = false;
+let helpTab: number | null = null; // null = closed; 0 keys, 1 reading, 2 the city
 let perfOpen = false;
 let textOverlay: TextOverlay | null = null;
 let lastSavedTurn = -1;
@@ -383,9 +386,19 @@ function handleGameKeys(e: KeyboardEvent): void {
     e.preventDefault();
     return;
   }
-  if (e.key === '?') { helpOpen = !helpOpen; e.preventDefault(); return; }
-  if (e.key === 'Escape' && helpOpen) { helpOpen = false; e.preventDefault(); return; }
-  if (helpOpen) return;
+  if (e.key === '?') {
+    // Open on the tab that matches what you're looking at.
+    helpTab = helpTab !== null ? null : meta?.mode === 'citymap' ? 2 : 0;
+    e.preventDefault();
+    return;
+  }
+  if (helpTab !== null) {
+    if (e.key === 'Escape') helpTab = null;
+    else if (e.key === 'a' || e.key === 'ArrowLeft') helpTab = (helpTab + HELP_TABS.length - 1) % HELP_TABS.length;
+    else if (e.key === 'd' || e.key === 'ArrowRight' || e.key === 'Tab') helpTab = (helpTab + 1) % HELP_TABS.length;
+    e.preventDefault();
+    return;
+  }
   if (e.key === 'Q') { // capital Q only — shift is implied by the capital
     // Quit to title; the autosave keeps the city where you left it.
     requestSave();
@@ -514,6 +527,7 @@ function drawOnboarding(): void {
     '†  streetlamps · Ω hydrants · ☼ shrines · ♥ memorials. People died here. You can too.',
     '',
     'The top line is where and when you are. The bottom lines are what is happening.',
+    'The dim bar above the log always shows what you can press right now.',
     'Money is your score. Death is permanent. The city is not waiting for you.',
     '',
     'press any key',
@@ -559,6 +573,20 @@ function drawStatus(): void {
 function drawLog(): void {
   const sepY = renderer.rows - LOG_ROWS - 1;
   for (let x = 0; x < renderer.cols; x++) renderer.set(x, sepY, '─'.charCodeAt(0), SEP_FG);
+  // The separator row doubles as the hint bar: what you can press, right now.
+  const helpChip = '[?] help';
+  const helpX = renderer.cols - helpChip.length - 1;
+  let x = 1;
+  for (const h of meta?.hints ?? []) {
+    const chunk = `[${h.key}] ${h.label}`;
+    if (x + chunk.length + 3 >= helpX) break;
+    if (x > 1) { renderer.write(x, sepY, '·', SEP_FG); x += 2; }
+    renderer.write(x, sepY, `[${h.key}]`, HINT_KEY_FG);
+    renderer.write(x + h.key.length + 2, sepY, ` ${h.label}`, HINT_LABEL_FG);
+    x += chunk.length + 1;
+  }
+  renderer.write(helpX, sepY, '[?]', HINT_KEY_FG);
+  renderer.write(helpX + 3, sepY, ' help', HINT_LABEL_FG);
   const tail = log.slice(-LOG_ROWS);
   for (let i = 0; i < tail.length; i++) {
     const entry = tail[i];
@@ -590,23 +618,59 @@ function drawTextOverlay(o: TextOverlay): void {
   renderer.write(x0 + w - hint.length - 2, y0 + h - 1, ` ${hint} `, STATUS_DIM, 0x0c0f15);
 }
 
-function drawHelp(): void {
-  const lines = [
-    'EMPIRE://36 — keys',
+const HELP_TABS = ['KEYS', 'READING THE SCREEN', 'THE CITY'];
+
+function helpLines(tab: number): string[] {
+  if (tab === 0) {
+    return [
+      'WASD / arrows   move · bump opens doors · bump hostiles to brawl',
+      '. or space      wait one turn · r rest awhile',
+      'e               interact (doors, counters, altars, stations)',
+      'g               pick up · i inventory · c who you are',
+      't               talk · f fight (target, then body part) · v vault',
+      'x               examine · m city map & travel · J chronicle · N news',
+      'shift+Q         save and quit to title',
+      '?               this help · F9 perf · F10 CRT',
+      '',
+      'The dim bar above the log always shows what you can press right now.',
+    ];
+  }
+  if (tab === 1) {
+    return [
+      '@  is you. Everything else is New York.',
+      '☻  people with names, jobs, opinions. t talks. Most are not your problem.',
+      '☺  crowds passing through. r rats. ^ pigeons. c a bodega cat (do not fight it).',
+      '▒  spray paint — x examines it; the walls remember the decade.',
+      '+  doors (bump to open) · > a subway entrance, if the line survived',
+      '†  streetlamps · Ω hydrants · ☼ shrines · ♥ memorials. People died here. You can too.',
+      '',
+      'A cool-lit tile holds something worth taking [g].',
+      'A warm-lit tile is something [e] works on. Teal means someone will talk [t].',
+      'Red means it is already too late for talking.',
+    ];
+  }
+  return [
+    '[m] opens the five boroughs. wasd picks a neighborhood; [e] travels.',
+    'Walk to adjacent neighborhoods, or ride whatever subway lines survived.',
+    'Bright squares are reachable from where you stand. ≈ drowned in the floods.',
     '',
-    'WASD / arrows   move · bump opens doors · bump hostiles to brawl',
-    '. or space      wait one turn · r rest awhile',
-    'e               interact (doors, counters, altars, stations)',
-    'g               pick up · i inventory · c who you are',
-    't               talk · f fight (target, then body part) · v vault',
-    'x               examine · m city map & travel · J chronicle · N news',
-    'shift+Q         save and quit to title',
-    '?               this help · F9 perf · F10 CRT',
+    'Every world simulates 2026→2036 before you arrive: the chronicle is [J],',
+    'the news and league standings are [N]. The city keeps moving without you.',
+    '',
+    'Money is your score. Death is permanent — you leave a grave, a stash, an',
+    'obituary, and someone else picks the city back up.',
     '',
     `world seed: ${seed} — share with ?seed=${seed}`,
   ];
-  const w = Math.max(...lines.map((l) => l.length)) + 4;
-  const h = lines.length + 2;
+}
+
+function drawHelp(): void {
+  const tab = helpTab ?? 0;
+  const lines = helpLines(tab);
+  const header = HELP_TABS.map((t, i) => (i === tab ? `[ ${t} ]` : `  ${t}  `)).join(' ');
+  const footer = 'a/d switch · Esc close';
+  const w = Math.max(header.length, footer.length, ...lines.map((l) => l.length)) + 6;
+  const h = lines.length + 6;
   const x0 = Math.max(0, (renderer.cols - w) >> 1);
   const y0 = Math.max(0, (renderer.rows - h) >> 1);
   renderer.fillBg(x0, y0, x0 + w - 1, y0 + h - 1, 0x10151c);
@@ -614,9 +678,16 @@ function drawHelp(): void {
     renderer.set(x, y0, '─'.charCodeAt(0), STATUS_FG, 0x10151c);
     renderer.set(x, y0 + h - 1, '─'.charCodeAt(0), STATUS_FG, 0x10151c);
   }
-  for (let i = 0; i < lines.length; i++) {
-    renderer.write(x0 + 2, y0 + 1 + i, lines[i], i === 0 ? STATUS_FG : 0xb8c4cc, 0x10151c);
+  let hx = x0 + 3;
+  for (let i = 0; i < HELP_TABS.length; i++) {
+    const label = i === tab ? `[ ${HELP_TABS[i]} ]` : `  ${HELP_TABS[i]}  `;
+    renderer.write(hx, y0 + 2, label, i === tab ? 0xd8c850 : 0x5a6a78, 0x10151c);
+    hx += label.length + 1;
   }
+  for (let i = 0; i < lines.length; i++) {
+    renderer.write(x0 + 3, y0 + 4 + i, lines[i], 0xb8c4cc, 0x10151c);
+  }
+  renderer.write(x0 + w - footer.length - 3, y0 + h - 1, ` ${footer} `, STATUS_DIM, 0x10151c);
 }
 
 function drawPerf(): void {
@@ -635,6 +706,15 @@ function frame(): void {
     case 'game': {
       if (meta) {
         renderer.blit(view, 0, mapTop);
+        if (meta.pulse?.length) {
+          const phase = PULSE_PHASES[Math.floor(performance.now() / 280) % PULSE_PHASES.length];
+          for (const p of meta.pulse) {
+            const py = mapTop + p.y;
+            if (p.x >= 0 && py >= 0 && p.x < renderer.cols && py < renderer.rows) {
+              renderer.bg[py * renderer.cols + p.x] = dimmed(p.bg, phase);
+            }
+          }
+        }
         drawStatus();
         drawLog();
       } else {
@@ -642,7 +722,7 @@ function frame(): void {
         renderer.write((renderer.cols - msg.length) >> 1, renderer.rows >> 1, msg, STATUS_FG);
       }
       if (textOverlay) drawTextOverlay(textOverlay);
-      if (helpOpen) drawHelp();
+      if (helpTab !== null) drawHelp();
       if (onboarding) drawOnboarding();
       break;
     }

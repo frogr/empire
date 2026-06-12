@@ -6,6 +6,17 @@ export interface Msg {
   fg: number; // 24-bit RGB
 }
 
+export interface Hint {
+  key: string;   // what to press, e.g. "t"
+  label: string; // what it does, e.g. "talk Marisol"
+}
+
+export interface PulseCell {
+  x: number;  // view-grid coords (worker view space; render thread offsets by mapTop)
+  y: number;
+  bg: number; // full-bright color; render thread modulates it per frame
+}
+
 export interface FrameMeta {
   turn: number;
   clock: string; // "Oct 14 · 19:12"
@@ -19,6 +30,8 @@ export interface FrameMeta {
   turnMs: number; // worker-side resolution time for the last turn
   msgs: Msg[];
   seed: string;
+  hints: Hint[];      // contextual keys, worker-computed (≤5; render adds [?] help)
+  pulse: PulseCell[]; // cells the render thread pulses, bg only (atlas-safe)
 }
 
 export interface SaveMeta {

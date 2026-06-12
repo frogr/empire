@@ -52,7 +52,10 @@ Terse, concrete, darkly funny, no purple sludge. Reads like a great message
 log, not a novel. All flavor banks currently in `src/sim/flavor.ts` — these
 migrate to JSON content packs under `/content/` in M1 (schemas in PRD §6).
 
-## Keys (M0 subset)
+## Keys
 
-WASD/arrows move (bump opens doors) · `.`/space wait · `e` interact ·
-`x` examine · `?` help · `F9` perf overlay
+WASD/arrows move (bump opens doors) · `.`/space wait · `r` rest · `e` interact ·
+`g` pick up · `i` inventory · `c` character · `t` talk · `f` fight · `v` vault ·
+`x` examine · `m` city map/travel · `J` chronicle · `N` news · `?` tabbed help ·
+`F9` perf · `F10` CRT · `shift+Q` save & quit. A contextual hint bar above the
+log (worker-computed `FrameMeta.hints`) always shows what works right now.
