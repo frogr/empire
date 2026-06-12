@@ -133,6 +133,72 @@ export interface LeaguePack {
   season_games: number;
 }
 
+// --- items & origins ----------------------------------------------------------
+
+export type ItemKind = 'weapon' | 'gun' | 'ammo' | 'armor' | 'food' | 'medical' | 'valuable' | 'junk';
+
+export interface ItemDef {
+  id: string;
+  name: string;
+  glyph: string;
+  color: string;
+  kind: ItemKind;
+  damage?: [number, number];
+  bleed?: number; // chance to inflict bleeding on hit
+  stun?: number;
+  armor?: number;
+  agi?: number;
+  heal?: number;
+  stopBleed?: boolean;
+  food?: number;
+  stamina?: number;
+  nerve?: number;
+  qtyRange?: [number, number];
+  value: number;
+  desc: string;
+}
+
+export type SkillId =
+  | 'melee' | 'firearms' | 'sneak' | 'streetwise' | 'tech'
+  | 'theology' | 'athletics' | 'trade' | 'medicine';
+
+export type StatId = 'STR' | 'AGI' | 'END' | 'WIT' | 'CHA' | 'NRV';
+
+export interface OriginDef {
+  id: string;
+  name: string;
+  blurb: string;
+  stats: Record<StatId, number>;
+  skills: Partial<Record<SkillId, number>>;
+  money: [number, number];
+  items: { id: string; qty: number }[];
+  /** start neighborhood preference: an area type or 'cult' | 'crime' | 'poor' */
+  start_pref: string;
+}
+
+// --- NPC archetypes -------------------------------------------------------------
+
+export type ScheduleKind = 'worker' | 'stall' | 'roamer' | 'worship' | 'corner';
+
+export interface ArchetypeDef {
+  id: string;
+  label: string;
+  weight: number;
+  hp: [number, number];
+  damage: [number, number];
+  skill: number; // 0..5 fighting competence
+  aggression: number; // 0..10
+  courage: number;
+  greed: number;
+  piety: number;
+  schedule: ScheduleKind;
+  loot: [string, number][]; // item id, drop chance
+  barks: string[];
+  mugger?: boolean;
+  law?: boolean;
+  service?: string;
+}
+
 // --- world state (output of the 2026→2036 history sim) -----------------------
 
 export interface ResidueStamp {
@@ -178,6 +244,17 @@ export interface Notable {
   alive: boolean;
 }
 
+export interface Grave {
+  hood: string;
+  x: number;
+  y: number;
+  name: string;
+  origin: string;
+  cause: string;
+  day: number; // in-game day of death
+  worth: number;
+}
+
 export interface WorldState {
   seed: string;
   year: number;
@@ -188,4 +265,6 @@ export interface WorldState {
   leagues: { packId: string; teams: string[] }[];
   notables: Notable[];
   tags: string[];
+  /** dead player characters, in this world, in this session+save */
+  graves: Grave[];
 }

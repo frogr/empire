@@ -1,0 +1,340 @@
+{
+  "items": [
+    {
+      "id": "pipe",
+      "name": "length of pipe",
+      "glyph": "/",
+      "color": "#8a8a96",
+      "kind": "weapon",
+      "damage": [
+        2,
+        6
+      ],
+      "value": 8,
+      "desc": "Galvanized persuasion. Was holding up a sink once."
+    },
+    {
+      "id": "kitchen_knife",
+      "name": "kitchen knife",
+      "glyph": "/",
+      "color": "#b8b8c4",
+      "kind": "weapon",
+      "damage": [
+        2,
+        5
+      ],
+      "bleed": 0.35,
+      "value": 12,
+      "desc": "Somebody's mother chopped onions with this for twenty years."
+    },
+    {
+      "id": "box_cutter",
+      "name": "box cutter",
+      "glyph": "/",
+      "color": "#c8a040",
+      "kind": "weapon",
+      "damage": [
+        1,
+        4
+      ],
+      "bleed": 0.45,
+      "value": 6,
+      "desc": "Union issue, once."
+    },
+    {
+      "id": "bat",
+      "name": "aluminum bat",
+      "glyph": "/",
+      "color": "#9ab0c0",
+      "kind": "weapon",
+      "damage": [
+        3,
+        7
+      ],
+      "stun": 0.2,
+      "value": 25,
+      "desc": "Pre-war Little League. The dents are post-war."
+    },
+    {
+      "id": "machete",
+      "name": "machete",
+      "glyph": "/",
+      "color": "#7da06a",
+      "kind": "weapon",
+      "damage": [
+        4,
+        9
+      ],
+      "bleed": 0.5,
+      "value": 60,
+      "desc": "Sold as a gardening tool. The receipt says gardening tool."
+    },
+    {
+      "id": "crowbar",
+      "name": "crowbar",
+      "glyph": "/",
+      "color": "#b05050",
+      "kind": "weapon",
+      "damage": [
+        3,
+        7
+      ],
+      "value": 30,
+      "desc": "Opens doors, arguments, and skulls, in that order of warranty."
+    },
+    {
+      "id": "zip_pistol",
+      "name": "zip pistol",
+      "glyph": "⌐",
+      "color": "#a08858",
+      "kind": "gun",
+      "damage": [
+        5,
+        12
+      ],
+      "value": 120,
+      "desc": "Hand-machined in somebody's basement. Loud in every sense."
+    },
+    {
+      "id": "revolver",
+      "name": "harbor revolver",
+      "glyph": "⌐",
+      "color": "#788090",
+      "kind": "gun",
+      "damage": [
+        7,
+        15
+      ],
+      "value": 320,
+      "desc": "Fished out of the East River and lovingly restored. Mostly."
+    },
+    {
+      "id": "bullets",
+      "name": "loose cartridges",
+      "glyph": "‼",
+      "color": "#c0a040",
+      "kind": "ammo",
+      "qtyRange": [
+        3,
+        9
+      ],
+      "value": 4,
+      "desc": "Mixed calibers, mixed decades, mixed results."
+    },
+    {
+      "id": "work_jacket",
+      "name": "canvas work jacket",
+      "glyph": "[",
+      "color": "#8a7a5a",
+      "kind": "armor",
+      "armor": 1,
+      "value": 20,
+      "desc": "Smells like every job site since 2029."
+    },
+    {
+      "id": "stab_vest",
+      "name": "stab vest",
+      "glyph": "[",
+      "color": "#5a6a7a",
+      "kind": "armor",
+      "armor": 2,
+      "value": 90,
+      "desc": "Decommissioned. The stamp says WHY is scratched out."
+    },
+    {
+      "id": "drone_pads",
+      "name": "drone-crew pads",
+      "glyph": "[",
+      "color": "#5a8a8a",
+      "kind": "armor",
+      "armor": 1,
+      "agi": 1,
+      "value": 70,
+      "desc": "Crash gear from the Circuit. Lighter than it looks."
+    },
+    {
+      "id": "beans",
+      "name": "can of beans",
+      "glyph": "%",
+      "color": "#a08858",
+      "kind": "food",
+      "food": 35,
+      "value": 4,
+      "desc": "The label is a different brand than the can. Both lie."
+    },
+    {
+      "id": "bacalao_roll",
+      "name": "bacalao roll",
+      "glyph": "%",
+      "color": "#d0b070",
+      "kind": "food",
+      "food": 30,
+      "value": 6,
+      "desc": "Still warm. The bodega's one indisputable miracle."
+    },
+    {
+      "id": "coffee",
+      "name": "real coffee, small",
+      "glyph": "u",
+      "color": "#7a5c34",
+      "kind": "food",
+      "food": 8,
+      "stamina": 20,
+      "value": 9,
+      "desc": "Real beans. You can tell because of the price."
+    },
+    {
+      "id": "street_dumpling",
+      "name": "cart dumplings",
+      "glyph": "%",
+      "color": "#c8a878",
+      "kind": "food",
+      "food": 25,
+      "value": 5,
+      "desc": "Six for five dollars. The filling is best enjoyed unidentified."
+    },
+    {
+      "id": "tallboy",
+      "name": "tallboy",
+      "glyph": "u",
+      "color": "#c0c0c8",
+      "kind": "food",
+      "food": 5,
+      "nerve": 10,
+      "value": 3,
+      "desc": "Brewed in Queens under a name you almost recognize."
+    },
+    {
+      "id": "bandage",
+      "name": "bandage roll",
+      "glyph": "+",
+      "color": "#d0d0d8",
+      "kind": "medical",
+      "heal": 6,
+      "stopBleed": true,
+      "value": 8,
+      "desc": "Sterile-ish."
+    },
+    {
+      "id": "medkit",
+      "name": "street medkit",
+      "glyph": "+",
+      "color": "#d05050",
+      "kind": "medical",
+      "heal": 18,
+      "stopBleed": true,
+      "value": 45,
+      "desc": "Assembled by someone who has seen things go wrong professionally."
+    },
+    {
+      "id": "painkillers",
+      "name": "painkillers, loose",
+      "glyph": "+",
+      "color": "#d0b0d0",
+      "kind": "medical",
+      "heal": 4,
+      "stamina": 15,
+      "value": 14,
+      "desc": "The expiry date has been thumbed off, which is its own answer."
+    },
+    {
+      "id": "phone_dead",
+      "name": "dead phone",
+      "glyph": "▯",
+      "color": "#4a4a52",
+      "kind": "junk",
+      "value": 2,
+      "desc": "Holds no charge but all your photos. Heavier than it weighs."
+    },
+    {
+      "id": "copper_coil",
+      "name": "copper coil",
+      "glyph": "*",
+      "color": "#c87838",
+      "kind": "valuable",
+      "value": 18,
+      "desc": "The city's most honest currency."
+    },
+    {
+      "id": "salvage_battery",
+      "name": "salvaged battery",
+      "glyph": "*",
+      "color": "#70a050",
+      "kind": "valuable",
+      "value": 35,
+      "desc": "Holds a charge. In this economy that's jewelry."
+    },
+    {
+      "id": "blackout_candle",
+      "name": "blackout candle",
+      "glyph": "*",
+      "color": "#d8c87a",
+      "kind": "valuable",
+      "value": 12,
+      "desc": "Authenticated relic of the dark years, says the wax stamp. The stamp is wax."
+    },
+    {
+      "id": "subway_token",
+      "name": "subway token, last run",
+      "glyph": "*",
+      "color": "#b8a060",
+      "kind": "valuable",
+      "value": 40,
+      "desc": "From the final fare of a dead line. The faithful pay double."
+    },
+    {
+      "id": "flood_water",
+      "name": "vial of '31 floodwater",
+      "glyph": "!",
+      "color": "#3a7a9a",
+      "kind": "valuable",
+      "value": 28,
+      "desc": "Sealed in a baby-food jar. Provenance: trust me."
+    },
+    {
+      "id": "watch_old",
+      "name": "mechanical watch",
+      "glyph": "*",
+      "color": "#c8b060",
+      "kind": "valuable",
+      "value": 85,
+      "desc": "Keeps time without asking a network's permission."
+    },
+    {
+      "id": "scrap_metal",
+      "name": "scrap bundle",
+      "glyph": "*",
+      "color": "#6a6a72",
+      "kind": "junk",
+      "value": 5,
+      "desc": "Rebar, tin, the skeleton of a folding chair."
+    },
+    {
+      "id": "umbrella",
+      "name": "black umbrella",
+      "glyph": "⌠",
+      "color": "#5a5a64",
+      "kind": "junk",
+      "value": 4,
+      "desc": "One spoke bent. It has outlived three owners and knows it."
+    },
+    {
+      "id": "flask",
+      "name": "engraved flask",
+      "glyph": "u",
+      "color": "#a8a8b0",
+      "kind": "valuable",
+      "value": 22,
+      "desc": "\"TO V., WHO STAYED.\" Empty."
+    },
+    {
+      "id": "corpse",
+      "name": "a body",
+      "glyph": "☻",
+      "color": "#6a3030",
+      "kind": "junk",
+      "value": 0,
+      "desc": "Someone who ran out of decade."
+    }
+  ]
+}

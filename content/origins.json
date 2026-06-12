@@ -1,0 +1,64 @@
+{
+  "origins": [
+    {
+      "id": "fresh_arrival",
+      "name": "Fresh Arrival",
+      "blurb": "You stepped off the Dragon Express with two bags and an address that turned out not to exist.",
+      "stats": { "STR": 5, "AGI": 5, "END": 5, "WIT": 6, "CHA": 6, "NRV": 5 },
+      "skills": { "trade": 1, "streetwise": 0 },
+      "money": [220, 300],
+      "items": [{ "id": "beans", "qty": 2 }, { "id": "phone_dead", "qty": 1 }, { "id": "umbrella", "qty": 1 }],
+      "start_pref": "rowhouse"
+    },
+    {
+      "id": "laid_off_doorman",
+      "name": "Laid-off Doorman",
+      "blurb": "Eighteen years holding the door for people who never learned your name. The building went private-grid and so did your job.",
+      "stats": { "STR": 7, "AGI": 4, "END": 7, "WIT": 5, "CHA": 5, "NRV": 6 },
+      "skills": { "melee": 2, "streetwise": 1 },
+      "money": [120, 180],
+      "items": [{ "id": "work_jacket", "qty": 1 }, { "id": "pipe", "qty": 1 }, { "id": "coffee", "qty": 1 }],
+      "start_pref": "grid_dense"
+    },
+    {
+      "id": "defrocked_priest",
+      "name": "Defrocked Priest of a New Faith",
+      "blurb": "You heard the signal too. Then you heard yourself explaining the donations, and the Receivers heard that.",
+      "stats": { "STR": 4, "AGI": 4, "END": 5, "WIT": 7, "CHA": 8, "NRV": 5 },
+      "skills": { "theology": 3, "streetwise": 1 },
+      "money": [80, 140],
+      "items": [{ "id": "blackout_candle", "qty": 2 }, { "id": "flask", "qty": 1 }, { "id": "bandage", "qty": 1 }],
+      "start_pref": "cult"
+    },
+    {
+      "id": "drone_washout",
+      "name": "Drone-League Washout",
+      "blurb": "One crash too many — the drone's, then the career's. Your hands still twitch at 400 simulated knots.",
+      "stats": { "STR": 4, "AGI": 8, "END": 5, "WIT": 7, "CHA": 4, "NRV": 6 },
+      "skills": { "tech": 2, "athletics": 2 },
+      "money": [100, 160],
+      "items": [{ "id": "drone_pads", "qty": 1 }, { "id": "salvage_battery", "qty": 1 }, { "id": "painkillers", "qty": 1 }],
+      "start_pref": "industrial"
+    },
+    {
+      "id": "night_courier",
+      "name": "Night Courier",
+      "blurb": "You carry things between people who don't meet. You don't ask what. The not-asking is most of the wage.",
+      "stats": { "STR": 5, "AGI": 7, "END": 7, "WIT": 5, "CHA": 4, "NRV": 7 },
+      "skills": { "athletics": 2, "sneak": 1, "streetwise": 2 },
+      "money": [140, 200],
+      "items": [{ "id": "box_cutter", "qty": 1 }, { "id": "street_dumpling", "qty": 2 }],
+      "start_pref": "crime"
+    },
+    {
+      "id": "clinic_dropout",
+      "name": "Clinic Dropout",
+      "blurb": "Two years from a license when the hospital system cracked. Now you stitch people in kitchens and get paid in whatever's lying around.",
+      "stats": { "STR": 4, "AGI": 5, "END": 5, "WIT": 8, "CHA": 5, "NRV": 5 },
+      "skills": { "medicine": 3, "trade": 1 },
+      "money": [110, 170],
+      "items": [{ "id": "medkit", "qty": 1 }, { "id": "bandage", "qty": 2 }, { "id": "coffee", "qty": 1 }],
+      "start_pref": "poor"
+    }
+  ]
+}

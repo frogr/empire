@@ -79,5 +79,48 @@ export const SHRINE_DESCS = [
 
 export const INTRO = [
   'You step off the bus with a dead phone and a feeling you have made a series of decisions.',
-  'Bushwick. October 2036. The neon is on; the streetlights, mostly.',
+  'October 2036. The neon is on; the streetlights, mostly.',
 ];
+
+export const TRAVEL_WALK = [
+  'You keep to the avenues and your own counsel.',
+  'Two checkpoints wave you through. A third charges you a look of contempt, no charge.',
+  'You walk. The city narrates itself: sirens, gulls, somebody practicing trumpet badly and bravely.',
+  'A dog follows you for three blocks, then loses faith.',
+  'You pass a wedding spilling out of a basement church. Rice in your hair for a mile.',
+];
+
+export const TRAVEL_SUBWAY = [
+  'The train arrives haunted and on time.',
+  'The car is empty except for a man asleep under a newspaper from a year you don\'t recognize.',
+  'Between stations the lights die and everyone keeps talking like nothing happened, because nothing did.',
+  'A busker plays the whole ride and earns every dollar nobody gives him.',
+  'The conductor announces the stops like a eulogy. Yours sounds personal.',
+];
+
+export const ARRIVE = {
+  crime: [
+    'Keep your hands visible and your reasons ready.',
+    'Three different corners are watching you arrive. None of them are police.',
+  ],
+  prosperity: [
+    'The streetlights all work. It feels like a trick.',
+    'Doormen. Actual doormen. One nods like you have an appointment.',
+  ],
+  poor: [
+    'Half these windows are plywood and the other half are watching the plywood.',
+    'The bodega has more candles than groceries. Both sell.',
+  ],
+  flooded: [
+    'The street smells like low tide even uphill. Everything below the painted line is on loan.',
+    'Boats are tied to second-floor fire escapes like it\'s normal, because it is.',
+  ],
+  cult: [
+    'Chalk symbols on every third stoop, redrawn fresh this morning.',
+    'Somebody has been tuning all the antennas on this block to point the same way.',
+  ],
+  default: [
+    'It is what it is, which around here counts as stability.',
+    'A neighborhood that survived the decade by keeping its head down. You can respect it.',
+  ],
+};

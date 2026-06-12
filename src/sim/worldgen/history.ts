@@ -42,6 +42,7 @@ export function simulateHistory(
     })),
     notables: [],
     tags: [],
+    graves: [],
   };
 
   for (const s of seeds) {

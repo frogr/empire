@@ -1,0 +1,148 @@
+{
+  "archetypes": [
+    {
+      "id": "resident",
+      "label": "resident",
+      "weight": 10,
+      "hp": [10, 18], "damage": [1, 3], "skill": 1,
+      "aggression": 1, "courage": 3, "greed": 3, "piety": 4,
+      "schedule": "worker",
+      "loot": [["phone_dead", 0.3], ["beans", 0.3], ["tallboy", 0.2]],
+      "barks": [
+        "\"Long day. Long decade.\"",
+        "\"You see the standings? Don't ask me about the standings.\"",
+        "\"My building's got heat this winter. Actual heat. I feel rich.\"",
+        "\"Don't start nothing on this block, we just repainted.\""
+      ]
+    },
+    {
+      "id": "vendor",
+      "label": "street vendor",
+      "weight": 4,
+      "hp": [12, 18], "damage": [1, 4], "skill": 2,
+      "aggression": 1, "courage": 5, "greed": 7, "piety": 3,
+      "schedule": "stall",
+      "loot": [["street_dumpling", 0.8], ["coffee", 0.4], ["bacalao_roll", 0.3]],
+      "barks": [
+        "\"Hot food! Hot-adjacent food!\"",
+        "\"Dollar gets you a dumpling, friend, and the dumpling is winning that trade.\"",
+        "\"No credit. The last machine that took credit is in the river.\""
+      ]
+    },
+    {
+      "id": "dockworker",
+      "label": "dockworker",
+      "weight": 4,
+      "hp": [16, 26], "damage": [2, 5], "skill": 2,
+      "aggression": 3, "courage": 6, "greed": 4, "piety": 3,
+      "schedule": "worker",
+      "loot": [["copper_coil", 0.4], ["pipe", 0.3], ["tallboy", 0.4]],
+      "barks": [
+        "\"Everything that crosses water, friend. Everything.\"",
+        "\"Worked the piers since before they were a crime scene.\"",
+        "\"You don't ask what's in the containers. That's the whole job.\""
+      ]
+    },
+    {
+      "id": "technician",
+      "label": "technician",
+      "weight": 3,
+      "hp": [10, 16], "damage": [1, 3], "skill": 1,
+      "aggression": 0, "courage": 2, "greed": 4, "piety": 6,
+      "schedule": "worker",
+      "loot": [["salvage_battery", 0.5], ["copper_coil", 0.3]],
+      "barks": [
+        "\"Grid's holding. Don't say that out loud, it can hear you.\"",
+        "\"I keep three blocks lit by myself. They named a sandwich after me at the deli.\"",
+        "\"The dishes on that roof? Don't point at them. They're sensitive about it.\""
+      ]
+    },
+    {
+      "id": "street_medic",
+      "label": "street medic",
+      "weight": 2,
+      "hp": [12, 18], "damage": [1, 3], "skill": 2,
+      "aggression": 0, "courage": 7, "greed": 4, "piety": 4,
+      "schedule": "roamer",
+      "loot": [["bandage", 0.8], ["medkit", 0.3], ["painkillers", 0.4]],
+      "service": "medic",
+      "barks": [
+        "\"Sit still or bleed, your call.\"",
+        "\"I don't ask how. I ask where it hurts.\"",
+        "\"Cash, barter, or a very good story. The story rate is steep.\""
+      ]
+    },
+    {
+      "id": "preacher",
+      "label": "street preacher",
+      "weight": 2,
+      "hp": [10, 16], "damage": [1, 3], "skill": 1,
+      "aggression": 1, "courage": 6, "greed": 2, "piety": 10,
+      "schedule": "worship",
+      "loot": [["blackout_candle", 0.5], ["flask", 0.2]],
+      "barks": [
+        "\"The signal went quiet but it did not go away!\"",
+        "\"The water was a knock. Who answers a knock? The READY answer!\"",
+        "\"Last days, friend. Have been for ten years. Stamina is faith.\""
+      ]
+    },
+    {
+      "id": "hustler",
+      "label": "corner hustler",
+      "weight": 4,
+      "hp": [12, 20], "damage": [2, 5], "skill": 3,
+      "aggression": 5, "courage": 4, "greed": 8, "piety": 1,
+      "schedule": "corner",
+      "loot": [["bullets", 0.2], ["watch_old", 0.2], ["tallboy", 0.3]],
+      "mugger": true,
+      "barks": [
+        "\"You look lost. Lost costs extra around here.\"",
+        "\"Buying? Selling? Breathing? Everything's a market.\"",
+        "\"Nice jacket. I'm saying that to the jacket.\""
+      ]
+    },
+    {
+      "id": "enforcer",
+      "label": "enforcer",
+      "weight": 2,
+      "hp": [20, 32], "damage": [3, 7], "skill": 4,
+      "aggression": 4, "courage": 8, "greed": 5, "piety": 2,
+      "schedule": "corner",
+      "loot": [["bat", 0.3], ["stab_vest", 0.2], ["bullets", 0.3]],
+      "barks": [
+        "\"Block's fine. Keep it fine.\"",
+        "\"You're new. New is a category we watch.\"",
+        "\"Walk on. This corner's spoken for.\""
+      ]
+    },
+    {
+      "id": "watchman",
+      "label": "patrol watchman",
+      "weight": 2,
+      "hp": [18, 28], "damage": [3, 6], "skill": 3,
+      "aggression": 2, "courage": 7, "greed": 3, "piety": 3,
+      "schedule": "roamer",
+      "law": true,
+      "loot": [["bat", 0.4], ["bandage", 0.3]],
+      "barks": [
+        "\"Coverage check. You current?\"",
+        "\"We still answer calls. Some calls.\"",
+        "\"Keep it visible and keep it moving.\""
+      ]
+    },
+    {
+      "id": "drifter",
+      "label": "drifter",
+      "weight": 3,
+      "hp": [8, 16], "damage": [1, 4], "skill": 1,
+      "aggression": 2, "courage": 2, "greed": 5, "piety": 5,
+      "schedule": "roamer",
+      "loot": [["scrap_metal", 0.5], ["umbrella", 0.2], ["flood_water", 0.1]],
+      "barks": [
+        "\"Spare a transfer? Spare anything transferable?\"",
+        "\"I had a place in the towers before the towers had a waterline.\"",
+        "\"The pigeons know things. I'm not saying what. They asked me not to.\""
+      ]
+    }
+  ]
+}

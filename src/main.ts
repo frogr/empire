@@ -2,7 +2,7 @@
 // All simulation happens in the worker; this thread only draws and reacts.
 
 import { Renderer } from './render/renderer';
-import type { Action, FrameMeta, MainMsg, WorkerMsg } from './bridge/protocol';
+import type { Action, FrameMeta, MainMsg, Msg, WorkerMsg } from './bridge/protocol';
 
 const STATUS_FG = 0x6fa8b8;
 const STATUS_DIM = 0x47616e;
@@ -11,6 +11,7 @@ const LOG_FADE = [1.0, 0.85, 0.7, 0.58, 0.48, 0.4];
 const LOG_ROWS = 6;
 
 interface LogEntry { text: string; fg: number; count: number }
+interface TextOverlay { title: string; lines: Msg[]; scroll: number }
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 const renderer = new Renderer(canvas);
@@ -23,7 +24,6 @@ const worker = new Worker(new URL('./sim/worker.ts', import.meta.url), { type: '
 const send = (m: MainMsg, transfer?: Transferable[]) =>
   worker.postMessage(m, transfer ?? []);
 
-// Local copy of the latest worker frame (buffers are returned immediately).
 const view = {
   w: 0,
   h: 0,
@@ -32,11 +32,12 @@ const view = {
   bg: new Uint32Array(0),
 };
 let meta: FrameMeta | null = null;
+let progressText = 'WAKING THE CITY…';
 const log: LogEntry[] = [];
 let helpOpen = false;
 let perfOpen = false;
+let textOverlay: TextOverlay | null = null;
 
-// Perf accounting.
 let renderMsEma = 0;
 let fps = 0;
 let frameCount = 0;
@@ -57,7 +58,14 @@ function pushLog(text: string, fg: number): void {
 
 worker.onmessage = (e: MessageEvent<WorkerMsg>) => {
   const m = e.data;
-  if (m.t !== 'frame') return;
+  if (m.t === 'progress') {
+    progressText = m.text.toUpperCase();
+    return;
+  }
+  if (m.t === 'text') {
+    textOverlay = { title: m.title, lines: m.lines, scroll: 0 };
+    return;
+  }
   const n = m.w * m.h;
   if (view.glyph.length !== n) {
     view.glyph = new Uint16Array(n);
@@ -76,7 +84,7 @@ worker.onmessage = (e: MessageEvent<WorkerMsg>) => {
 
 send({ t: 'init', seed, viewW: renderer.cols, viewH: mapH() });
 
-// --- input -------------------------------------------------------------------
+// --- input ---------------------------------------------------------------------
 
 const MOVE_KEYS: Record<string, [number, number]> = {
   w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0],
@@ -86,9 +94,21 @@ const MOVE_KEYS: Record<string, [number, number]> = {
 
 window.addEventListener('keydown', (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
-  let action: Action | null = null;
   if (e.key === 'F9') {
     perfOpen = !perfOpen;
+    e.preventDefault();
+    return;
+  }
+  // Scrollable text overlay (journal / news) captures input while open.
+  if (textOverlay) {
+    const mv = MOVE_KEYS[e.key];
+    if (e.key === 'Escape' || e.key === 'J' || e.key === 'N' || e.key === 'q') {
+      textOverlay = null;
+    } else if (mv && mv[1] !== 0) {
+      const pageRows = renderer.rows - 8;
+      const maxScroll = Math.max(0, textOverlay.lines.length - pageRows);
+      textOverlay.scroll = Math.max(0, Math.min(maxScroll, textOverlay.scroll + mv[1] * 3));
+    }
     e.preventDefault();
     return;
   }
@@ -97,20 +117,30 @@ window.addEventListener('keydown', (e) => {
     e.preventDefault();
     return;
   }
-  if (e.key === 'Escape') {
-    if (helpOpen) helpOpen = false;
-    else action = { k: 'cancel' };
+  if (e.key === 'Escape' && helpOpen) {
+    helpOpen = false;
     e.preventDefault();
-    if (!action) return;
+    return;
   }
   if (helpOpen) return;
-  if (!action) {
-    const mv = MOVE_KEYS[e.key];
-    if (mv) action = { k: 'move', dx: mv[0], dy: mv[1] };
-    else if (e.key === '.' || e.key === ' ') action = { k: 'wait' };
-    else if (e.key === 'e') action = { k: 'interact' };
-    else if (e.key === 'x') action = { k: 'look' };
-  }
+
+  let action: Action | null = null;
+  const mv = MOVE_KEYS[e.key];
+  if (mv) action = { k: 'move', dx: mv[0], dy: mv[1] };
+  else if (e.key === '.' || e.key === ' ' || e.key === 'Enter') action = { k: 'wait' };
+  else if (e.key === 'e') action = { k: 'interact' };
+  else if (e.key === 'g') action = { k: 'pickup' };
+  else if (e.key === 'i') action = { k: 'inventory' };
+  else if (e.key === 'c') action = { k: 'char' };
+  else if (e.key === 'r') action = { k: 'rest' };
+  else if (e.key === 't') action = { k: 'talk' };
+  else if (e.key === 'f') action = { k: 'fire' };
+  else if (e.key === 'v') action = { k: 'vault' };
+  else if (e.key === 'x') action = { k: 'look' };
+  else if (e.key === 'm' || e.key === 'M') action = { k: 'citymap' };
+  else if (e.key === 'J' || e.key === 'j') action = { k: 'journal' };
+  else if (e.key === 'N' || e.key === 'n') action = { k: 'news' };
+  else if (e.key === 'Escape') action = { k: 'cancel' };
   if (action) {
     e.preventDefault();
     send({ t: 'act', a: action });
@@ -126,7 +156,7 @@ window.addEventListener('resize', () => {
   }, 120);
 });
 
-// --- composition ---------------------------------------------------------------
+// --- composition -----------------------------------------------------------------
 
 function dimmed(c: number, f: number): number {
   const r = ((c >>> 16) & 255) * f, g = ((c >>> 8) & 255) * f, b = (c & 255) * f;
@@ -137,13 +167,23 @@ function drawStatus(): void {
   const m = meta;
   renderer.fillBg(0, 0, renderer.cols - 1, 0, 0x0c1116);
   if (!m) return;
-  if (m.mode === 'look') {
-    renderer.write(1, 0, `LOOK: ${m.lookText}`.slice(0, renderer.cols - 2), 0xd8c850);
+  if (m.mode === 'look' || m.mode === 'citymap' || m.mode === 'target') {
+    const label = m.mode === 'look' ? 'LOOK' : m.mode === 'target' ? 'TARGET' : 'TRAVEL';
+    renderer.write(1, 0, `${label}: ${m.lookText}`.slice(0, renderer.cols - 2), m.mode === 'target' ? 0xff7060 : 0xd8c850);
     return;
   }
-  const left = ` EMPIRE://36 │ Bushwick — ${m.loc}`;
-  const right = `$${m.money} │ ${m.clock} │ T${m.turn} `;
-  renderer.write(0, 0, left.slice(0, renderer.cols - right.length - 2), STATUS_FG);
+  if (m.mode === 'menu') {
+    renderer.write(1, 0, ' EMPIRE://36', STATUS_FG);
+    return;
+  }
+  const hpFrac = m.maxHp > 0 ? m.hp / m.maxHp : 1;
+  const hpBar = '▓'.repeat(Math.max(0, Math.round(hpFrac * 5))).padEnd(5, '░');
+  const hpColor = hpFrac > 0.6 ? 0x70c070 : hpFrac > 0.3 ? 0xd8c850 : 0xc05a50;
+  const left = ` EMPIRE://36 │ ${m.loc}`;
+  const right = `$${m.money} (Σ$${m.worth}) │ ${m.clock} │ T${m.turn} `;
+  const hpText = `HP ${hpBar} `;
+  renderer.write(0, 0, left.slice(0, renderer.cols - right.length - hpText.length - 3), STATUS_FG);
+  renderer.write(renderer.cols - right.length - hpText.length, 0, hpText, hpColor);
   renderer.write(renderer.cols - right.length, 0, right, STATUS_DIM);
 }
 
@@ -153,7 +193,7 @@ function drawLog(): void {
   const tail = log.slice(-LOG_ROWS);
   for (let i = 0; i < tail.length; i++) {
     const entry = tail[i];
-    const age = tail.length - 1 - i; // 0 = newest
+    const age = tail.length - 1 - i;
     const f = LOG_FADE[Math.min(age, LOG_FADE.length - 1)];
     const text = entry.count > 1 ? `${entry.text} (x${entry.count})` : entry.text;
     const y = renderer.rows - tail.length + i;
@@ -161,14 +201,42 @@ function drawLog(): void {
   }
 }
 
+function drawTextOverlay(o: TextOverlay): void {
+  const x0 = 2, y0 = 1;
+  const w = renderer.cols - 4;
+  const h = renderer.rows - 3;
+  renderer.fillBg(x0, y0, x0 + w - 1, y0 + h - 1, 0x0c0f15);
+  for (let x = x0; x < x0 + w; x++) {
+    renderer.set(x, y0, '─'.charCodeAt(0), STATUS_FG, 0x0c0f15);
+    renderer.set(x, y0 + h - 1, '─'.charCodeAt(0), STATUS_FG, 0x0c0f15);
+  }
+  renderer.write(x0 + 2, y0, ` ${o.title} `, 0xd8c850, 0x0c0f15);
+  const pageRows = h - 2;
+  const visible = o.lines.slice(o.scroll, o.scroll + pageRows);
+  for (let i = 0; i < visible.length; i++) {
+    renderer.write(x0 + 2, y0 + 1 + i, visible[i].text.slice(0, w - 4), visible[i].fg || 0xa8a8b0, 0x0c0f15);
+  }
+  const more = o.lines.length > o.scroll + pageRows;
+  const hint = `${o.scroll > 0 ? '↑' : ' '} w/s scroll · Esc close ${more ? '↓' : ' '}`;
+  renderer.write(x0 + w - hint.length - 2, y0 + h - 1, ` ${hint} `, STATUS_DIM, 0x0c0f15);
+}
+
 function drawHelp(): void {
   const lines = [
-    'EMPIRE://36 — M0 walking skeleton',
+    'EMPIRE://36 — how to read the street',
     '',
     'WASD / arrows   move · bump opens doors',
-    '. or space      wait one turn',
-    'e               interact (doors, shrines, altars)',
-    'x               examine (move cursor; x or Esc exits)',
+    '. or space      wait one turn · r rest awhile',
+    'e               interact (doors, shrines, stations)',
+    'g               pick up what you are standing on',
+    'i               inventory · c who you are',
+    't               talk to whoever is beside you',
+    'f               fight: pick a target, pick a body part',
+    'v               vault fences, cars, barricades',
+    'x               examine (move cursor, x/Esc exits)',
+    'm               city map & travel (e to go)',
+    'J               the chronicle — what happened 2026-2036',
+    'N               news & rumors',
     '?               toggle this help',
     'F9              performance overlay',
     '',
@@ -203,8 +271,10 @@ function frame(): void {
     drawStatus();
     drawLog();
   } else {
-    renderer.write((renderer.cols >> 1) - 11, renderer.rows >> 1, 'SIMULATING BUSHWICK…', STATUS_FG);
+    const msg = progressText;
+    renderer.write((renderer.cols - msg.length) >> 1, renderer.rows >> 1, msg, STATUS_FG);
   }
+  if (textOverlay) drawTextOverlay(textOverlay);
   if (helpOpen) drawHelp();
   if (perfOpen) drawPerf();
   renderer.render();

@@ -3,6 +3,7 @@
 // small pool so steady-state play allocates nothing.
 
 import { Game } from './game';
+import { loadNeighborhoods } from './content/neighborhoods';
 import type { MainMsg, WorkerMsg } from '../bridge/protocol';
 
 interface BufSet { glyph: ArrayBuffer; fg: ArrayBuffer; bg: ArrayBuffer }
@@ -18,6 +19,11 @@ const post = (self as unknown as {
 
 function sendFrame(turnMs: number): void {
   if (!game || viewW <= 0 || viewH <= 0) return;
+  // Journal/news screens requested this action go out before the frame.
+  for (const text of game.outbox) {
+    post({ t: 'text', kind: text.kind, title: text.title, lines: text.lines });
+  }
+  game.outbox.length = 0;
   const n = viewW * viewH;
   let bufs = pool.pop();
   if (!bufs || bufs.glyph.byteLength !== n * 2) {
@@ -39,7 +45,9 @@ self.onmessage = (e: MessageEvent<MainMsg>) => {
   switch (m.t) {
     case 'init': {
       viewW = m.viewW; viewH = m.viewH;
-      game = new Game(m.seed);
+      const t0 = performance.now();
+      game = new Game(m.seed, loadNeighborhoods(), (text) => post({ t: 'progress', text }));
+      post({ t: 'progress', text: `World ready in ${Math.round(performance.now() - t0)}ms.` });
       sendFrame(0);
       break;
     }
