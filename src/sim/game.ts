@@ -6,9 +6,10 @@ import { computeFOV } from './fov';
 import { GameMap, T, AK } from './map';
 import { generateLocalMap, GenResult } from './mapgen';
 import { simulateHistory } from './worldgen/history';
+import { CitySim } from './city';
 import { Rand } from './rng';
 import { Grammar } from './content/grammar';
-import { GRAMMAR_RULES, RELIGIONS, FACTIONS, ORIGINS, NAMES, ITEM_BY_ID, ARCHETYPES } from './content';
+import { GRAMMAR_RULES, RELIGIONS, FACTIONS, ORIGINS, NAMES, ITEM_BY_ID, ARCHETYPES, LEAGUES } from './content';
 import { PlayerChar, SKILLS, STATS, INJURY_LABEL, ItemStack } from './player';
 import {
   AMBIENT, PED_BARKS, BUMP_PED, INTRO, TRAVEL_WALK, TRAVEL_SUBWAY, ARRIVE,
@@ -91,12 +92,20 @@ interface CachedHood {
 }
 
 interface Menu {
-  kind: 'origin' | 'inventory' | 'item' | 'bodypart';
+  kind: 'origin' | 'inventory' | 'item' | 'bodypart' | 'shop' | 'bet' | 'altar';
   title: string;
-  entries: { label: string; sub?: string; fg?: number }[];
+  entries: { label: string; sub?: string; fg?: number; data?: string }[];
   sel: number;
   itemId?: string; // for item action menus
   targetIdx?: number; // for body-part menus
+}
+
+interface Quest {
+  kind: 'deliver' | 'fetch';
+  itemId: string;
+  targetHood?: string; // deliver only
+  reward: number;
+  giver: string;
 }
 
 export class Game {
@@ -125,9 +134,18 @@ export class Game {
   private grammar: Grammar;
   private hoodCache = new Map<string, CachedHood>();
   private pendingVault = false;
-  private heat = 0; // session-level law attention (per-borough in M3)
+  private heat = 0; // law attention in the current borough
+  private heatByBorough: Record<string, number> = {};
   private targets: number[] = [];
   private targetSel = 0;
+  private city!: CitySim;
+  private lastDay = -1;
+  private lastT2 = 0;
+  private quest: Quest | null = null;
+  private faith: string | null = null; // joined religion pack id
+  private favor: Record<string, number> = {};
+  private lastRitual = 0;
+  private bets: { league: string; team: string; stake: number; odds: number; day: number }[] = [];
 
   // Actors, structure-of-arrays, rebuilt per neighborhood.
   private aCount = 0;
@@ -195,6 +213,7 @@ export class Game {
     const rp = new Rand(this.seed, 'player');
     const name = `${rp.pick(NAMES.first)} ${rp.pick(NAMES.last)}`;
     this.pc = new PlayerChar(name, origin, rp);
+    if (!this.city) this.city = new CitySim(this.seed, this.world, this.seeds);
     const startHood = this.pickStartHood(origin.start_pref, rp);
     this.menu = null;
     this.mode = 'play';
@@ -257,7 +276,20 @@ export class Game {
     return gen;
   }
 
+  private hasBoon(effectId: string): boolean {
+    if (!this.faith || (this.favor[this.faith] ?? 0) < 3) return false;
+    const pack = RELIGIONS.find((p) => p.id === this.faith);
+    return pack?.boon.id === effectId;
+  }
+
   private enterHood(id: string, via: 'spawn' | 'walk' | 'subway'): void {
+    // Heat is tracked per borough; carry it across the right ledger.
+    if (this.hoodId) {
+      const oldB = this.seedById.get(this.hoodId)?.borough;
+      if (oldB) this.heatByBorough[oldB] = this.heat;
+    }
+    const newB = this.seedById.get(id)?.borough;
+    this.heat = newB ? this.heatByBorough[newB] ?? 0 : 0;
     const gen = this.localGen(id);
     this.hoodId = id;
     this.map = gen.map;
@@ -390,7 +422,8 @@ export class Game {
     if (shared.length) {
       const [ax, ay] = cur.pos, [bx, by] = dst.pos;
       const dist = Math.hypot(bx - ax, by - ay);
-      const minutes = Math.round(12 + dist * 1.2 + this.rTurn.int(0, 8));
+      let minutes = Math.round(12 + dist * 1.2 + this.rTurn.int(0, 8));
+      if (this.hasBoon('tunnel_grace')) minutes = Math.max(6, minutes >> 1);
       this.clockMin += minutes;
       this.turn += minutes * 10;
       this.mode = 'play';
@@ -727,6 +760,19 @@ export class Game {
         }
         this.say(`${this.npcName(ai)}, ${arch.label}:`, 0x8a9ab0);
         this.say(this.rTurn.pick(arch.barks), MSG_BARK);
+        if (this.maybeOfferQuest(ai)) {
+          this.endTurn();
+          return;
+        }
+        // Sometimes they pass along something from the rumor pool — the Tier 2
+        // sim speaking through the people who live in it.
+        if (this.city && this.city.rumors.length && this.rTurn.chance(0.35)) {
+          const rumor = this.rTurn.pick(this.city.rumors);
+          this.say(`"${this.city.expandRumor(rumor.text)}"`, MSG_BARK);
+          if (this.pc.train('streetwise', 1)) this.say('Streetwise improves.', MSG_SYSTEM);
+          this.endTurn();
+          return;
+        }
         // Sometimes the street tells you something true.
         if (this.rTurn.chance(0.3)) {
           const state = this.world.neighborhoods[this.hoodId];
@@ -831,6 +877,14 @@ export class Game {
         this.mode = 'play';
         if (this.aAlive[idx]) this.resolveAttack(idx, part);
         else this.say('They are no longer available for that.');
+        break;
+      }
+      case 'shop':
+      case 'bet':
+      case 'altar': {
+        const data = m.entries[m.sel]?.data;
+        if (data) this.runDataAction(data);
+        else { this.menu = null; this.mode = 'play'; }
         break;
       }
     }
@@ -978,6 +1032,211 @@ export class Game {
     return false;
   }
 
+  // --- economy, faith, quests -------------------------------------------------------
+
+  private shopPrice(base: number, buying: boolean): number {
+    const prosperity = this.world.neighborhoods[this.hoodId].stats.prosperity;
+    let mult = buying ? 0.9 + prosperity * 0.5 : 0.45 + this.pc.skill('trade') * 0.03 + (this.pc.stats.CHA - 5) * 0.01;
+    if (buying && this.hasBoon('fair_price')) mult *= 0.85;
+    return Math.max(1, Math.round(base * mult));
+  }
+
+  private openShop(): void {
+    const STOCK = ['bacalao_roll', 'beans', 'street_dumpling', 'coffee', 'tallboy', 'bandage', 'blackout_candle'];
+    const entries: Menu['entries'] = [];
+    for (const id of STOCK) {
+      const def = ITEM_BY_ID.get(id)!;
+      entries.push({
+        label: `Buy ${def.name} — $${this.shopPrice(def.value, true)}`,
+        sub: def.desc, fg: parseInt(def.color.slice(1), 16), data: `buy:${id}`,
+      });
+    }
+    for (const s of this.pc.inventory) {
+      const def = ITEM_BY_ID.get(s.id)!;
+      if (def.kind !== 'valuable' && def.kind !== 'junk') continue;
+      if (def.value <= 0) continue;
+      entries.push({
+        label: `Sell ${def.name}${s.qty > 1 ? ` (have ${s.qty})` : ''} — $${this.shopPrice(def.value, false)}`,
+        sub: def.desc, fg: 0xc0a890, data: `sell:${s.id}`,
+      });
+    }
+    if (this.world.leagues.length) {
+      entries.push({ label: 'Put money on a game', sub: 'The counterman keeps a book. Everyone knows. Nobody says.', data: 'bets' });
+    }
+    entries.push({ label: 'Leave', data: 'leave' });
+    this.menu = { kind: 'shop', title: `THE COUNTER — you have $${this.pc.money}`, entries, sel: 0 };
+    this.mode = 'menu';
+  }
+
+  private openBetMenu(): void {
+    const entries: Menu['entries'] = [];
+    for (const l of this.world.leagues) {
+      const pack = LEAGUES.find((p) => p.id === l.packId);
+      if (!pack) continue;
+      for (const team of l.teams.slice(0, 4)) {
+        const odds = this.city.odds(l.packId, team);
+        entries.push({
+          label: `${team} (${pack.sport}) — pays ${odds}×`,
+          sub: `$25 on ${team} to win their next game.`,
+          data: `bet:${l.packId}:${team}:${odds}`,
+        });
+      }
+    }
+    entries.push({ label: 'Never mind', data: 'leave' });
+    this.menu = { kind: 'bet', title: `THE BOOK — $25 a ticket, cash only`, entries, sel: 0 };
+    this.mode = 'menu';
+  }
+
+  private openAltarMenu(ax: number, ay: number): void {
+    const desc = this.map.desc.get(this.map.idx(ax, ay)) ?? '';
+    const pack = RELIGIONS.find((p) => desc.includes(p.name));
+    if (!pack) {
+      this.say("You light a candle. It can't hurt. Probably it can't hurt.");
+      if (this.pc.train('theology', 1)) this.say('Theology improves.', MSG_SYSTEM);
+      this.endTurn();
+      return;
+    }
+    const entries: Menu['entries'] = [];
+    if (this.faith === pack.id) {
+      entries.push({ label: 'Pray', sub: pack.doctrine, data: `pray:${pack.id}` });
+      entries.push({ label: 'Tithe a valuable', sub: pack.obligation, data: `tithe:${pack.id}` });
+    } else if (!this.faith) {
+      entries.push({ label: `Join the ${pack.name}`, sub: `${pack.doctrine} (You may keep one faith.)`, data: `join:${pack.id}` });
+      entries.push({ label: 'Light a candle, no commitments', data: `pray:${pack.id}` });
+    } else {
+      entries.push({ label: 'Light a candle (your faith lies elsewhere)', data: `pray:${pack.id}` });
+    }
+    entries.push({ label: 'Step back', data: 'leave' });
+    const favor = this.favor[pack.id] ?? 0;
+    this.menu = {
+      kind: 'altar',
+      title: `${pack.glyph} ${pack.name.toUpperCase()}${this.faith === pack.id ? ` — favor ${favor}` : ''}`,
+      entries, sel: 0,
+    };
+    this.mode = 'menu';
+  }
+
+  private runDataAction(data: string): void {
+    const [verb, a, b, c] = data.split(':');
+    this.menu = null;
+    this.mode = 'play';
+    switch (verb) {
+      case 'leave': break;
+      case 'buy': {
+        const def = ITEM_BY_ID.get(a)!;
+        const price = this.shopPrice(def.value, true);
+        if (this.pc.money < price) { this.say('The counterman looks at your money and shakes his head kindly.'); break; }
+        this.pc.money -= price;
+        this.pc.gain(a, 1);
+        this.say(`Bought: ${def.name}. ($${price})`, MSG_GOOD);
+        if (this.pc.train('trade', 1)) this.say('Trade improves.', MSG_SYSTEM);
+        this.openShop();
+        break;
+      }
+      case 'sell': {
+        const def = ITEM_BY_ID.get(a)!;
+        const price = this.shopPrice(def.value, false);
+        if (!this.pc.spend(a, 1)) break;
+        this.pc.money += price;
+        this.say(`Sold: ${def.name}. ($${price})`, MSG_GOOD);
+        if (this.pc.train('trade', 1)) this.say('Trade improves.', MSG_SYSTEM);
+        this.openShop();
+        break;
+      }
+      case 'bets':
+        this.openBetMenu();
+        break;
+      case 'bet': {
+        const stake = 25;
+        if (this.pc.money < stake) { this.say('Cash only, and you are short.'); break; }
+        this.pc.money -= stake;
+        this.bets.push({ league: a, team: b, stake, odds: parseFloat(c), day: this.dayOf() });
+        this.say(`Ticket written: $${stake} on ${b} at ${c}×. Results with the morning edition.`, MSG_TRAVEL);
+        break;
+      }
+      case 'join': {
+        this.faith = a;
+        this.favor[a] = (this.favor[a] ?? 0) + 1;
+        const pack = RELIGIONS.find((p) => p.id === a)!;
+        this.say(`${this.grammar.expand(this.rTurn.pick(pack.greeting), this.rTurn)}`, 0xb8a0d8);
+        this.say(`You are received into the ${pack.name}. Obligation: ${pack.obligation.toLowerCase()}`, MSG_SYSTEM);
+        this.pc.train('theology', 3);
+        this.endTurn();
+        break;
+      }
+      case 'pray': {
+        this.say("You light a candle. The wax joins a decade of wax.");
+        if (this.pc.train('theology', 1)) this.say('Theology improves.', MSG_SYSTEM);
+        this.endTurn();
+        break;
+      }
+      case 'tithe': {
+        const valuable = this.pc.inventory.find((s) => ITEM_BY_ID.get(s.id)?.kind === 'valuable');
+        if (!valuable) { this.say('You have nothing the faith would count.'); break; }
+        const def = ITEM_BY_ID.get(valuable.id)!;
+        this.pc.spend(valuable.id, 1);
+        this.favor[a] = (this.favor[a] ?? 0) + 1;
+        this.say(`You leave the ${def.name} at the altar. (favor ${this.favor[a]})`, 0xb8a0d8);
+        if (this.favor[a] === 3) {
+          const pack = RELIGIONS.find((p) => p.id === a)!;
+          this.say(`${pack.boon.name}: ${pack.boon.desc}`, 0xb8a0d8);
+        }
+        this.endTurn();
+        break;
+      }
+    }
+  }
+
+  private completeQuest(): void {
+    const q = this.quest!;
+    if (!this.pc.spend(q.itemId, 1)) {
+      this.say(`You were supposed to have the ${ITEM_BY_ID.get(q.itemId)?.name}. You do not. Awkward.`, MSG_BAD);
+      this.quest = null;
+      return;
+    }
+    this.pc.money += q.reward;
+    this.say(`The counterman takes it without looking and slides you $${q.reward}.`, MSG_GOOD);
+    this.quest = null;
+    if (this.pc.train('streetwise', 3)) this.say('Streetwise improves.', MSG_SYSTEM);
+    // The twist table, abbreviated.
+    if (this.rTurn.chance(0.15)) {
+      this.say('Outside, somebody peels off a wall to follow you. The package was bait, or you were.', MSG_BAD);
+      this.heat += 1;
+      for (let i = 0; i < this.aCount; i++) {
+        if (this.aAlive[i] && this.aKind[i] === AK.NPC && this.archOf(i).mugger) {
+          this.aState[i] = ST_HOSTILE;
+          break;
+        }
+      }
+    }
+    this.endTurn();
+  }
+
+  private maybeOfferQuest(npcIdx: number): boolean {
+    if (this.quest || !this.rTurn.chance(0.35)) return false;
+    const arch = this.archOf(npcIdx);
+    const name = this.npcName(npcIdx);
+    if (arch.id === 'vendor' || arch.id === 'hustler' || arch.id === 'dockworker') {
+      const cur = this.seedById.get(this.hoodId)!;
+      const target = this.rTurn.pick(cur.adjacent);
+      const targetName = this.seedById.get(target)?.name ?? target;
+      const reward = 35 + this.rTurn.int(0, 30);
+      this.quest = { kind: 'deliver', itemId: 'package', targetHood: target, reward, giver: name };
+      this.pc.gain('package', 1);
+      this.say(`${name} slides a package across. "Counter of any bodega in ${targetName}. Today. $${reward} when it lands. Don't open it."`, 0xd8c850);
+      return true;
+    }
+    if (arch.id === 'technician' || arch.id === 'street_medic') {
+      const want = arch.id === 'technician' ? 'salvage_battery' : 'medkit';
+      const def = ITEM_BY_ID.get(want)!;
+      const reward = Math.round(def.value * 1.8);
+      this.quest = { kind: 'fetch', itemId: want, reward, giver: name };
+      this.say(`${name}: "Find me a ${def.name} and there's $${reward} in it. Check the ruins, check the dead."`, 0xd8c850);
+      return true;
+    }
+    return false;
+  }
+
   private openCharSheet(): void {
     const pc = this.pc;
     const lines: Msg[] = [];
@@ -1073,22 +1332,23 @@ export class Game {
     const lines: Msg[] = [];
     lines.push({ text: 'THE EMPIRE LEDGER — "All the news that survived."', fg: 0x6fd4c0 });
     lines.push({ text: '', fg: 0 });
-    const recent = this.world.chronicle.filter((c) => c.year >= 2035);
-    for (const c of recent.slice(-8)) lines.push({ text: `• ${c.text}`, fg: 0xa8a8b0 });
-    lines.push({ text: '', fg: 0 });
-    lines.push({ text: 'HEARD ON THE STREET:', fg: 0xc9b458 });
-    const r = this.rTurn;
-    for (const f of this.world.religions.slice(0, 3)) {
-      const pack = RELIGIONS.find((p) => p.id === f.packId);
-      if (pack) {
-        lines.push({ text: `• ${this.grammar.expand(r.pick(pack.rumor), r, { neighborhood: this.hoodName() })}`, fg: 0x9aa8d0 });
+    const rumors = this.city ? this.city.rumors.slice(-14).reverse() : [];
+    if (rumors.length) {
+      lines.push({ text: 'HEARD ON THE STREET (newest first):', fg: 0xc9b458 });
+      for (const rumor of rumors) {
+        lines.push({ text: `• ${this.city.expandRumor(rumor.text)}`, fg: rumor.fg });
       }
+    } else {
+      lines.push({ text: 'A quiet news day. Historically, this precedes the other kind.', fg: 0x76869a });
     }
-    for (const f of this.world.factions.slice(0, 3)) {
-      const pack = FACTIONS.find((p) => p.id === f.packId);
-      if (pack) {
-        lines.push({ text: `• ${this.grammar.expand(r.pick(pack.rumor), r, { neighborhood: this.hoodName() })}`, fg: 0xc0a890 });
-      }
+    lines.push({ text: '', fg: 0 });
+    if (this.city) {
+      for (const line of this.city.standingsLines()) lines.push(line);
+    }
+    const recent = this.world.chronicle.filter((c) => c.year >= 2036 && c.tags.includes('obituary'));
+    if (recent.length) {
+      lines.push({ text: 'CLOSED ACCOUNTS:', fg: 0xc05a50 });
+      for (const c of recent.slice(-4)) lines.push({ text: `• ${c.text}`, fg: 0x9a8a8a });
     }
     this.outbox.push({ kind: 'news', title: 'NEWS & RUMORS', lines });
   }
@@ -1234,13 +1494,18 @@ export class Game {
         return;
       }
       if (t === T.Altar) {
-        this.say(this.map.desc.get(this.map.idx(nx, ny)) ?? "You light a candle. It can't hurt. Probably it can't hurt.");
-        if (this.pc.train('theology', 1)) this.say('Theology improves. The candles make slightly more sense.', MSG_SYSTEM);
-        this.endTurn();
+        this.openAltarMenu(nx, ny);
         return;
       }
       if (t === T.Counter) {
-        this.say("No one's behind the counter. The cat is watching you, though.");
+        if (this.quest && (
+          (this.quest.kind === 'deliver' && this.quest.targetHood === this.hoodId) ||
+          (this.quest.kind === 'fetch' && this.pc.inventory.some((s) => s.id === this.quest!.itemId))
+        )) {
+          this.completeQuest();
+          return;
+        }
+        this.openShop();
         return;
       }
       if (t === T.Monument) {
@@ -1281,7 +1546,78 @@ export class Game {
       if (!silent) this.say(this.rTurn.pick(AMBIENT), MSG_AMBIENT);
       this.lastAmbient = this.turn;
     }
+
+    // Tier 2: coarse tick over loaded neighborhoods every 100 turns.
+    if (this.city && this.turn - this.lastT2 >= 100) {
+      this.lastT2 = this.turn;
+      this.city.tier2Tick(this.hoodId, this.hourOfDay(), this.dayOf());
+    }
+    // Tier 3: the city turns over daily.
+    const day = this.dayOf();
+    if (this.city && day !== this.lastDay) {
+      const first = this.lastDay === -1;
+      this.lastDay = day;
+      if (!first) {
+        const { headlines } = this.city.tier3Daily(day);
+        if (!silent && headlines.length) {
+          this.say(`THE LEDGER, morning edition: ${headlines[0]}`, 0xc9b458);
+        }
+        this.resolveBets(day - 1);
+      }
+    }
+    // Worship: standing near a holy altar at ritual hour earns favor.
+    if (this.faith && this.turn - this.lastRitual > 80) {
+      const h = this.hourOfDay();
+      if (h >= 18 && h < 20) {
+        for (const ti of this.tilesAltar) {
+          const ax = ti % this.map.w, ay = (ti / this.map.w) | 0;
+          if (Math.abs(ax - this.px) + Math.abs(ay - this.py) <= 3) {
+            this.lastRitual = this.turn;
+            this.favor[this.faith] = (this.favor[this.faith] ?? 0) + 1;
+            const pack = RELIGIONS.find((p) => p.id === this.faith);
+            if (pack) {
+              this.say(this.grammar.expand(pack.ritual.text, this.rTurn), 0xb8a0d8);
+              this.say(`You stand with them through ${pack.ritual.name}. (favor ${this.favor[this.faith]})`, MSG_SYSTEM);
+              if (this.favor[this.faith] === 3) {
+                this.say(`${pack.boon.name}: ${pack.boon.desc}`, 0xb8a0d8);
+              }
+            }
+            break;
+          }
+        }
+      }
+    }
     this.computeVision();
+  }
+
+  private dayOf(): number {
+    return Math.floor(this.clockMin / (24 * 60));
+  }
+
+  private resolveBets(day: number): void {
+    if (!this.bets.length) return;
+    const remaining: typeof this.bets = [];
+    for (const bet of this.bets) {
+      const game = this.city.fixtures.find(
+        (g) => g.day >= bet.day && g.league === bet.league && (g.home === bet.team || g.away === bet.team),
+      );
+      if (!game) {
+        if (day - bet.day > 4) {
+          this.pc.money += bet.stake;
+          this.say(`Your ${bet.team} bet was scratched — no fixture. Stake returned.`, MSG_TRAVEL);
+        } else remaining.push(bet);
+        continue;
+      }
+      const winner = game.homeScore > game.awayScore ? game.home : game.away;
+      if (winner === bet.team) {
+        const payout = Math.round(bet.stake * bet.odds * (this.hasBoon('house_odds') ? 1.2 : 1));
+        this.pc.money += payout;
+        this.say(`${bet.team} won! The book pays $${payout}. ${game.home} ${game.homeScore}–${game.awayScore} ${game.away}.`, MSG_GOOD);
+      } else {
+        this.say(`${bet.team} lost (${game.home} ${game.homeScore}–${game.awayScore} ${game.away}). The book keeps your $${bet.stake} with great professionalism.`, MSG_BAD);
+      }
+    }
+    this.bets = remaining;
   }
 
   private removeActor(i: number): void {
@@ -1420,7 +1756,7 @@ export class Game {
               break;
             }
             default: {
-              if (arch.mugger && dist <= 4 && seen && r.chance(0.012 + (1 - this.daylight()) * 0.02)) {
+              if (arch.mugger && dist <= 4 && seen && r.chance((0.012 + (1 - this.daylight()) * 0.02) * (this.hasBoon('white_noise') ? 0.4 : 1))) {
                 this.aState[i] = ST_HOSTILE;
                 this.say(`${this.npcName(i)} steps out ahead of you. "Wallet. Easy way or the other way."`, MSG_BAD);
                 break;
@@ -1509,8 +1845,9 @@ export class Game {
         }
       }
     }
-    // Heat cools if you behave.
-    if (this.heat > 0 && this.turn % 200 === 0) this.heat = Math.max(0, this.heat - 1);
+    // Heat cools if you behave; certain congregations help you disappear.
+    const cool = this.hasBoon('open_doors') ? 120 : 200;
+    if (this.heat > 0 && this.turn % cool === 0) this.heat = Math.max(0, this.heat - 1);
   }
 
   private computeVision(): void {

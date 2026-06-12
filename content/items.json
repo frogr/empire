@@ -335,6 +335,15 @@
       "kind": "junk",
       "value": 0,
       "desc": "Someone who ran out of decade."
+    },
+    {
+      "id": "package",
+      "name": "sealed package",
+      "glyph": "■",
+      "color": "#c8a060",
+      "kind": "junk",
+      "value": 15,
+      "desc": "Do not open. You haven't. The not-opening is most of the wage."
     }
   ]
 }
