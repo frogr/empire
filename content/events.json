@@ -41,7 +41,7 @@
         }
       ],
       "chronicle": "In {year} the grid failed for #duration#. #blackout_consequence#",
-      "news": "GRID DOWN AGAIN \u2014 #tabloid_blackout#"
+      "news": "GRID DOWN AGAIN — #tabloid_blackout#"
     },
     {
       "id": "evt_hurricane_flood",
@@ -408,7 +408,7 @@
           }
         ]
       },
-      "chronicle": "The Department came apart in {year} \u2014 pension fight, then a contract fight, then just a fight. What patrols now wears three different shoulder patches and agrees on nothing."
+      "chronicle": "The Department came apart in {year} — pension fight, then a contract fight, then just a fight. What patrols now wears three different shoulder patches and agrees on nothing."
     },
     {
       "id": "evt_gang_war",
@@ -524,7 +524,8 @@
           "grammar": "#signal_shrine#"
         }
       ],
-      "chronicle": "During the dark, somebody in {neighborhood} heard something on a dead frequency. By {year} they had a name, a doctrine, and a rooftop full of dishes."
+      "chronicle": "During the dark, somebody in {neighborhood} heard something on a dead frequency. By {year} they had a name, a doctrine, and a rooftop full of dishes.",
+      "once": true
     },
     {
       "id": "evt_flood_sect",
@@ -560,7 +561,8 @@
           "grammar": "#water_shrine#"
         }
       ],
-      "chronicle": "After the water, a preacher in {neighborhood} said the tide had been a first knock. In {year} the congregation started leaving their doors unlocked for it."
+      "chronicle": "After the water, a preacher in {neighborhood} said the tide had been a first knock. In {year} the congregation started leaving their doors unlocked for it.",
+      "once": true
     },
     {
       "id": "evt_miracle",
@@ -794,7 +796,7 @@
           "prosperity": 0.05
         }
       },
-      "chronicle": "Drone racing went legitimate in {year} \u2014 a {borough} commissioner, a points system, gambling licenses. The crashes stayed illegitimate and that was the draw."
+      "chronicle": "Drone racing went legitimate in {year} — a {borough} commissioner, a points system, gambling licenses. The crashes stayed illegitimate and that was the draw."
     },
     {
       "id": "evt_parkour_cup",
@@ -877,7 +879,7 @@
           "grammar": "#radio_graffiti#"
         }
       ],
-      "chronicle": "A voice started broadcasting from somewhere in {neighborhood} in {year} \u2014 #radio_content#. Triangulation parties found nothing but warm rooftops."
+      "chronicle": "A voice started broadcasting from somewhere in {neighborhood} in {year} — #radio_content#. Triangulation parties found nothing but warm rooftops."
     },
     {
       "id": "evt_exodus",
@@ -935,7 +937,7 @@
           "prosperity": 0.04
         }
       },
-      "chronicle": "The buses kept coming in {year} \u2014 climate money, war money, no money. {neighborhood} absorbed #influx_count# new arrivals and invented four new cuisines doing it."
+      "chronicle": "The buses kept coming in {year} — climate money, war money, no money. {neighborhood} absorbed #influx_count# new arrivals and invented four new cuisines doing it."
     },
     {
       "id": "evt_generator_cartel",
@@ -986,7 +988,7 @@
           "crime": 0.04
         }
       },
-      "chronicle": "A {borough} workshop was caught pressing relics in {year} \u2014 #relic_examples#, aged with tea and grief. The faithful bought them anyway. Belief does its own authentication."
+      "chronicle": "A {borough} workshop was caught pressing relics in {year} — #relic_examples#, aged with tea and grief. The faithful bought them anyway. Belief does its own authentication."
     },
     {
       "id": "evt_levee_authority",
