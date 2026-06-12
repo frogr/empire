@@ -1,0 +1,3605 @@
+{
+ "neighborhoods": [
+  {
+   "id": "inwood",
+   "name": "Inwood",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    35,
+    3
+   ],
+   "adjacent": [
+    "kingsbridge",
+    "riverdale",
+    "washington_heights"
+   ],
+   "subway": [
+    "A",
+    "1"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 45000,
+    "prosperity": 0.42,
+    "crime": 0.42,
+    "infrastructure": 0.51,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "washington_heights",
+   "name": "Washington Heights",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    34,
+    6
+   ],
+   "adjacent": [
+    "hamilton_heights",
+    "highbridge",
+    "inwood",
+    "university_heights"
+   ],
+   "subway": [
+    "A",
+    "C",
+    "1"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 150000,
+    "prosperity": 0.4,
+    "crime": 0.45,
+    "infrastructure": 0.5,
+    "faith": 0.65
+   },
+   "landmarks": []
+  },
+  {
+   "id": "hamilton_heights",
+   "name": "Hamilton Heights",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    33,
+    10
+   ],
+   "adjacent": [
+    "harlem",
+    "morningside_heights",
+    "washington_heights"
+   ],
+   "subway": [
+    "A",
+    "C",
+    "1"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.42,
+    "crime": 0.48,
+    "infrastructure": 0.51,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "harlem",
+   "name": "Harlem",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    36,
+    12
+   ],
+   "adjacent": [
+    "east_harlem",
+    "hamilton_heights",
+    "morningside_heights",
+    "upper_west_side"
+   ],
+   "subway": [
+    "2",
+    "3",
+    "A",
+    "B",
+    "C"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 120000,
+    "prosperity": 0.45,
+    "crime": 0.5,
+    "infrastructure": 0.53,
+    "faith": 0.7
+   },
+   "landmarks": [
+    {
+     "id": "the_apollon",
+     "name": "The Apollon",
+     "kind": "civic"
+    }
+   ]
+  },
+  {
+   "id": "east_harlem",
+   "name": "East Harlem",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    38,
+    13
+   ],
+   "adjacent": [
+    "astoria",
+    "harlem",
+    "mott_haven",
+    "upper_east_side"
+   ],
+   "subway": [
+    "4",
+    "5",
+    "6"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 115000,
+    "prosperity": 0.35,
+    "crime": 0.55,
+    "infrastructure": 0.47,
+    "faith": 0.65
+   },
+   "landmarks": []
+  },
+  {
+   "id": "morningside_heights",
+   "name": "Morningside Heights",
+   "borough": "manhattan",
+   "area_type": "civic",
+   "pos": [
+    33,
+    14
+   ],
+   "adjacent": [
+    "hamilton_heights",
+    "harlem",
+    "upper_west_side"
+   ],
+   "subway": [
+    "1"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 55000,
+    "prosperity": 0.68,
+    "crime": 0.3,
+    "infrastructure": 0.65,
+    "faith": 0.55
+   },
+   "landmarks": [
+    {
+     "id": "the_university",
+     "name": "The University",
+     "kind": "campus"
+    }
+   ]
+  },
+  {
+   "id": "upper_west_side",
+   "name": "Upper West Side",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    34,
+    19
+   ],
+   "adjacent": [
+    "harlem",
+    "hells_kitchen",
+    "morningside_heights"
+   ],
+   "subway": [
+    "1",
+    "2",
+    "3",
+    "B",
+    "C"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 200000,
+    "prosperity": 0.82,
+    "crime": 0.25,
+    "infrastructure": 0.73,
+    "faith": 0.5
+   },
+   "landmarks": [
+    {
+     "id": "central_park_w",
+     "name": "Central Park",
+     "kind": "park"
+    }
+   ]
+  },
+  {
+   "id": "upper_east_side",
+   "name": "Upper East Side",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    38,
+    20
+   ],
+   "adjacent": [
+    "east_harlem",
+    "midtown"
+   ],
+   "subway": [
+    "4",
+    "5",
+    "6",
+    "Q"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 210000,
+    "prosperity": 0.9,
+    "crime": 0.2,
+    "infrastructure": 0.78,
+    "faith": 0.45
+   },
+   "landmarks": []
+  },
+  {
+   "id": "hells_kitchen",
+   "name": "Hell's Kitchen",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    33,
+    27
+   ],
+   "adjacent": [
+    "chelsea",
+    "midtown",
+    "upper_west_side"
+   ],
+   "subway": [
+    "A",
+    "C",
+    "E"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 60000,
+    "prosperity": 0.6,
+    "crime": 0.4,
+    "infrastructure": 0.61,
+    "faith": 0.4
+   },
+   "landmarks": []
+  },
+  {
+   "id": "midtown",
+   "name": "Midtown",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    36,
+    27
+   ],
+   "adjacent": [
+    "chelsea",
+    "gramercy",
+    "hells_kitchen",
+    "long_island_city",
+    "murray_hill",
+    "upper_east_side"
+   ],
+   "subway": [
+    "1",
+    "2",
+    "7",
+    "A",
+    "E",
+    "B",
+    "D",
+    "N",
+    "Q"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 90000,
+    "prosperity": 0.75,
+    "crime": 0.45,
+    "infrastructure": 0.69,
+    "faith": 0.35
+   },
+   "landmarks": [
+    {
+     "id": "the_garden",
+     "name": "The Garden",
+     "kind": "arena"
+    }
+   ]
+  },
+  {
+   "id": "murray_hill",
+   "name": "Murray Hill",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    38,
+    30
+   ],
+   "adjacent": [
+    "gramercy",
+    "midtown"
+   ],
+   "subway": [
+    "4",
+    "6",
+    "7"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 55000,
+    "prosperity": 0.7,
+    "crime": 0.3,
+    "infrastructure": 0.67,
+    "faith": 0.35
+   },
+   "landmarks": []
+  },
+  {
+   "id": "chelsea",
+   "name": "Chelsea",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    33,
+    32
+   ],
+   "adjacent": [
+    "gramercy",
+    "greenwich_village",
+    "hells_kitchen",
+    "midtown"
+   ],
+   "subway": [
+    "1",
+    "A",
+    "C",
+    "E"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 65000,
+    "prosperity": 0.72,
+    "crime": 0.3,
+    "infrastructure": 0.68,
+    "faith": 0.4
+   },
+   "landmarks": []
+  },
+  {
+   "id": "gramercy",
+   "name": "Gramercy",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    37,
+    33
+   ],
+   "adjacent": [
+    "chelsea",
+    "east_village",
+    "midtown",
+    "murray_hill"
+   ],
+   "subway": [
+    "4",
+    "6",
+    "L",
+    "N",
+    "R"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 60000,
+    "prosperity": 0.75,
+    "crime": 0.28,
+    "infrastructure": 0.69,
+    "faith": 0.35
+   },
+   "landmarks": []
+  },
+  {
+   "id": "greenwich_village",
+   "name": "Greenwich Village",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    34,
+    36
+   ],
+   "adjacent": [
+    "chelsea",
+    "east_village",
+    "soho"
+   ],
+   "subway": [
+    "1",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "M"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 65000,
+    "prosperity": 0.8,
+    "crime": 0.25,
+    "infrastructure": 0.72,
+    "faith": 0.3
+   },
+   "landmarks": []
+  },
+  {
+   "id": "east_village",
+   "name": "East Village",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    37,
+    37
+   ],
+   "adjacent": [
+    "gramercy",
+    "greenwich_village",
+    "lower_east_side"
+   ],
+   "subway": [
+    "6",
+    "F",
+    "L"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.6,
+    "crime": 0.4,
+    "infrastructure": 0.61,
+    "faith": 0.35
+   },
+   "landmarks": []
+  },
+  {
+   "id": "soho",
+   "name": "SoHo",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    34,
+    39
+   ],
+   "adjacent": [
+    "chinatown",
+    "greenwich_village",
+    "tribeca"
+   ],
+   "subway": [
+    "6",
+    "C",
+    "E",
+    "R"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.85,
+    "crime": 0.25,
+    "infrastructure": 0.75,
+    "faith": 0.25
+   },
+   "landmarks": []
+  },
+  {
+   "id": "lower_east_side",
+   "name": "Lower East Side",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    38,
+    40
+   ],
+   "adjacent": [
+    "chinatown",
+    "east_village",
+    "williamsburg"
+   ],
+   "subway": [
+    "F",
+    "J",
+    "M",
+    "Z"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 80000,
+    "prosperity": 0.5,
+    "crime": 0.45,
+    "infrastructure": 0.56,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "chinatown",
+   "name": "Chinatown",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    36,
+    42
+   ],
+   "adjacent": [
+    "dumbo",
+    "financial_district",
+    "lower_east_side",
+    "soho",
+    "tribeca"
+   ],
+   "subway": [
+    "6",
+    "B",
+    "D",
+    "J",
+    "N",
+    "Q",
+    "Z"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.45,
+    "crime": 0.45,
+    "infrastructure": 0.53,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "tribeca",
+   "name": "Tribeca",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    34,
+    43
+   ],
+   "adjacent": [
+    "chinatown",
+    "financial_district",
+    "soho"
+   ],
+   "subway": [
+    "1",
+    "2",
+    "3",
+    "A",
+    "C"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.9,
+    "crime": 0.2,
+    "infrastructure": 0.78,
+    "faith": 0.25
+   },
+   "landmarks": []
+  },
+  {
+   "id": "financial_district",
+   "name": "Financial District",
+   "borough": "manhattan",
+   "area_type": "grid_dense",
+   "pos": [
+    34,
+    47
+   ],
+   "adjacent": [
+    "chinatown",
+    "dumbo",
+    "red_hook",
+    "st_george",
+    "tribeca"
+   ],
+   "subway": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "A",
+    "C",
+    "J",
+    "R",
+    "Z"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 65000,
+    "prosperity": 0.8,
+    "crime": 0.35,
+    "infrastructure": 0.72,
+    "faith": 0.3
+   },
+   "landmarks": [
+    {
+     "id": "battery_hall",
+     "name": "The Battery Ferry Hall",
+     "kind": "station"
+    }
+   ]
+  },
+  {
+   "id": "riverdale",
+   "name": "Riverdale",
+   "borough": "bronx",
+   "area_type": "suburban",
+   "pos": [
+    38,
+    2
+   ],
+   "adjacent": [
+    "inwood",
+    "kingsbridge"
+   ],
+   "subway": [
+    "1"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.78,
+    "crime": 0.15,
+    "infrastructure": 0.71,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "kingsbridge",
+   "name": "Kingsbridge",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    41,
+    4
+   ],
+   "adjacent": [
+    "bedford_park",
+    "inwood",
+    "norwood",
+    "riverdale"
+   ],
+   "subway": [
+    "1"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.45,
+    "crime": 0.4,
+    "infrastructure": 0.53,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "norwood",
+   "name": "Norwood",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    46,
+    3
+   ],
+   "adjacent": [
+    "bedford_park",
+    "kingsbridge",
+    "williamsbridge"
+   ],
+   "subway": [
+    "D"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 42000,
+    "prosperity": 0.4,
+    "crime": 0.42,
+    "infrastructure": 0.5,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "wakefield",
+   "name": "Wakefield",
+   "borough": "bronx",
+   "area_type": "suburban",
+   "pos": [
+    53,
+    1
+   ],
+   "adjacent": [
+    "williamsbridge"
+   ],
+   "subway": [
+    "2",
+    "5"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 35000,
+    "prosperity": 0.38,
+    "crime": 0.5,
+    "infrastructure": 0.49,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "williamsbridge",
+   "name": "Williamsbridge",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    52,
+    4
+   ],
+   "adjacent": [
+    "co_op_city",
+    "morris_park",
+    "norwood",
+    "wakefield"
+   ],
+   "subway": [
+    "2",
+    "5"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 60000,
+    "prosperity": 0.35,
+    "crime": 0.5,
+    "infrastructure": 0.47,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "co_op_city",
+   "name": "Co-op City",
+   "borough": "bronx",
+   "area_type": "projects",
+   "pos": [
+    58,
+    5
+   ],
+   "adjacent": [
+    "pelham_bay",
+    "williamsbridge"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 45000,
+    "prosperity": 0.42,
+    "crime": 0.35,
+    "infrastructure": 0.51,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "bedford_park",
+   "name": "Bedford Park",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    44,
+    5
+   ],
+   "adjacent": [
+    "fordham",
+    "kingsbridge",
+    "norwood"
+   ],
+   "subway": [
+    "4",
+    "B",
+    "D"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 55000,
+    "prosperity": 0.38,
+    "crime": 0.45,
+    "infrastructure": 0.49,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "fordham",
+   "name": "Fordham",
+   "borough": "bronx",
+   "area_type": "grid_dense",
+   "pos": [
+    45,
+    7
+   ],
+   "adjacent": [
+    "bedford_park",
+    "belmont",
+    "tremont",
+    "university_heights"
+   ],
+   "subway": [
+    "4",
+    "B",
+    "D"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 85000,
+    "prosperity": 0.35,
+    "crime": 0.5,
+    "infrastructure": 0.47,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "belmont",
+   "name": "Belmont",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    47,
+    8
+   ],
+   "adjacent": [
+    "fordham",
+    "tremont",
+    "west_farms"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.38,
+    "crime": 0.42,
+    "infrastructure": 0.49,
+    "faith": 0.7
+   },
+   "landmarks": []
+  },
+  {
+   "id": "university_heights",
+   "name": "University Heights",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    42,
+    8
+   ],
+   "adjacent": [
+    "fordham",
+    "highbridge",
+    "tremont",
+    "washington_heights"
+   ],
+   "subway": [
+    "4"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 55000,
+    "prosperity": 0.3,
+    "crime": 0.55,
+    "infrastructure": 0.45,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "tremont",
+   "name": "Tremont",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    46,
+    10
+   ],
+   "adjacent": [
+    "belmont",
+    "fordham",
+    "morrisania",
+    "university_heights",
+    "west_farms"
+   ],
+   "subway": [
+    "B",
+    "D"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.28,
+    "crime": 0.58,
+    "infrastructure": 0.43,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "west_farms",
+   "name": "West Farms",
+   "borough": "bronx",
+   "area_type": "projects",
+   "pos": [
+    48,
+    10
+   ],
+   "adjacent": [
+    "belmont",
+    "parkchester",
+    "soundview",
+    "tremont"
+   ],
+   "subway": [
+    "2",
+    "5"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.28,
+    "crime": 0.58,
+    "infrastructure": 0.43,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "morris_park",
+   "name": "Morris Park",
+   "borough": "bronx",
+   "area_type": "suburban",
+   "pos": [
+    52,
+    9
+   ],
+   "adjacent": [
+    "parkchester",
+    "pelham_bay",
+    "williamsbridge"
+   ],
+   "subway": [
+    "5"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 35000,
+    "prosperity": 0.5,
+    "crime": 0.35,
+    "infrastructure": 0.56,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "pelham_bay",
+   "name": "Pelham Bay",
+   "borough": "bronx",
+   "area_type": "suburban",
+   "pos": [
+    57,
+    7
+   ],
+   "adjacent": [
+    "city_island",
+    "co_op_city",
+    "morris_park",
+    "throgs_neck"
+   ],
+   "subway": [
+    "6"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.5,
+    "crime": 0.3,
+    "infrastructure": 0.56,
+    "faith": 0.5
+   },
+   "landmarks": [
+    {
+     "id": "pelham_bay_park",
+     "name": "Pelham Bay Park",
+     "kind": "park"
+    }
+   ]
+  },
+  {
+   "id": "city_island",
+   "name": "City Island",
+   "borough": "bronx",
+   "area_type": "waterfront",
+   "pos": [
+    62,
+    7
+   ],
+   "adjacent": [
+    "pelham_bay"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 5000,
+    "prosperity": 0.55,
+    "crime": 0.2,
+    "infrastructure": 0.58,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "throgs_neck",
+   "name": "Throgs Neck",
+   "borough": "bronx",
+   "area_type": "suburban",
+   "pos": [
+    58,
+    11
+   ],
+   "adjacent": [
+    "castle_hill",
+    "pelham_bay"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 45000,
+    "prosperity": 0.5,
+    "crime": 0.3,
+    "infrastructure": 0.56,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "castle_hill",
+   "name": "Castle Hill",
+   "borough": "bronx",
+   "area_type": "projects",
+   "pos": [
+    54,
+    12
+   ],
+   "adjacent": [
+    "parkchester",
+    "soundview",
+    "throgs_neck"
+   ],
+   "subway": [
+    "6"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.35,
+    "crime": 0.5,
+    "infrastructure": 0.47,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "parkchester",
+   "name": "Parkchester",
+   "borough": "bronx",
+   "area_type": "projects",
+   "pos": [
+    52,
+    11
+   ],
+   "adjacent": [
+    "castle_hill",
+    "morris_park",
+    "soundview",
+    "west_farms"
+   ],
+   "subway": [
+    "6"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.4,
+    "crime": 0.45,
+    "infrastructure": 0.5,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "soundview",
+   "name": "Soundview",
+   "borough": "bronx",
+   "area_type": "projects",
+   "pos": [
+    52,
+    14
+   ],
+   "adjacent": [
+    "castle_hill",
+    "hunts_point",
+    "parkchester",
+    "west_farms"
+   ],
+   "subway": [
+    "6"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 80000,
+    "prosperity": 0.3,
+    "crime": 0.55,
+    "infrastructure": 0.45,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "highbridge",
+   "name": "Highbridge",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    42,
+    11
+   ],
+   "adjacent": [
+    "concourse",
+    "university_heights",
+    "washington_heights"
+   ],
+   "subway": [
+    "4"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 60000,
+    "prosperity": 0.28,
+    "crime": 0.55,
+    "infrastructure": 0.43,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "concourse",
+   "name": "Concourse",
+   "borough": "bronx",
+   "area_type": "grid_dense",
+   "pos": [
+    43,
+    13
+   ],
+   "adjacent": [
+    "highbridge",
+    "melrose",
+    "morrisania"
+   ],
+   "subway": [
+    "4",
+    "B",
+    "D"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 90000,
+    "prosperity": 0.35,
+    "crime": 0.5,
+    "infrastructure": 0.47,
+    "faith": 0.5
+   },
+   "landmarks": [
+    {
+     "id": "bronx_cathedral",
+     "name": "The Bronx Cathedral",
+     "kind": "stadium"
+    }
+   ]
+  },
+  {
+   "id": "morrisania",
+   "name": "Morrisania",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    45,
+    13
+   ],
+   "adjacent": [
+    "concourse",
+    "hunts_point",
+    "melrose",
+    "tremont"
+   ],
+   "subway": [
+    "2",
+    "5"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.25,
+    "crime": 0.6,
+    "infrastructure": 0.42,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "melrose",
+   "name": "Melrose",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    44,
+    14
+   ],
+   "adjacent": [
+    "concourse",
+    "morrisania",
+    "mott_haven"
+   ],
+   "subway": [
+    "2",
+    "5"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.3,
+    "crime": 0.55,
+    "infrastructure": 0.45,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "mott_haven",
+   "name": "Mott Haven",
+   "borough": "bronx",
+   "area_type": "rowhouse",
+   "pos": [
+    44,
+    16
+   ],
+   "adjacent": [
+    "east_harlem",
+    "hunts_point",
+    "melrose"
+   ],
+   "subway": [
+    "4",
+    "5",
+    "6"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 60000,
+    "prosperity": 0.3,
+    "crime": 0.6,
+    "infrastructure": 0.45,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "hunts_point",
+   "name": "Hunts Point",
+   "borough": "bronx",
+   "area_type": "industrial",
+   "pos": [
+    48,
+    15
+   ],
+   "adjacent": [
+    "morrisania",
+    "mott_haven",
+    "soundview"
+   ],
+   "subway": [
+    "6"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.25,
+    "crime": 0.6,
+    "infrastructure": 0.34,
+    "faith": 0.5
+   },
+   "landmarks": [
+    {
+     "id": "night_market",
+     "name": "The Night Market",
+     "kind": "market"
+    }
+   ]
+  },
+  {
+   "id": "astoria",
+   "name": "Astoria",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    48,
+    20
+   ],
+   "adjacent": [
+    "east_elmhurst",
+    "east_harlem",
+    "long_island_city",
+    "woodside"
+   ],
+   "subway": [
+    "N",
+    "W"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 95000,
+    "prosperity": 0.55,
+    "crime": 0.35,
+    "infrastructure": 0.58,
+    "faith": 0.5
+   },
+   "landmarks": [
+    {
+     "id": "steinway_works",
+     "name": "The Steinway Works",
+     "kind": "campus"
+    }
+   ]
+  },
+  {
+   "id": "long_island_city",
+   "name": "Long Island City",
+   "borough": "queens",
+   "area_type": "industrial",
+   "pos": [
+    47,
+    25
+   ],
+   "adjacent": [
+    "astoria",
+    "greenpoint",
+    "midtown",
+    "sunnyside"
+   ],
+   "subway": [
+    "7",
+    "E",
+    "G",
+    "M",
+    "N",
+    "W"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 80000,
+    "prosperity": 0.65,
+    "crime": 0.35,
+    "infrastructure": 0.56,
+    "faith": 0.35
+   },
+   "landmarks": [
+    {
+     "id": "drone_yards",
+     "name": "The Drone Yards",
+     "kind": "arena"
+    }
+   ]
+  },
+  {
+   "id": "sunnyside",
+   "name": "Sunnyside",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    52,
+    26
+   ],
+   "adjacent": [
+    "long_island_city",
+    "woodside"
+   ],
+   "subway": [
+    "7"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.5,
+    "crime": 0.3,
+    "infrastructure": 0.56,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "woodside",
+   "name": "Woodside",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    56,
+    26
+   ],
+   "adjacent": [
+    "astoria",
+    "jackson_heights",
+    "maspeth",
+    "sunnyside"
+   ],
+   "subway": [
+    "7"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 45000,
+    "prosperity": 0.48,
+    "crime": 0.35,
+    "infrastructure": 0.54,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "jackson_heights",
+   "name": "Jackson Heights",
+   "borough": "queens",
+   "area_type": "grid_dense",
+   "pos": [
+    60,
+    24
+   ],
+   "adjacent": [
+    "corona",
+    "east_elmhurst",
+    "elmhurst",
+    "woodside"
+   ],
+   "subway": [
+    "7",
+    "E",
+    "F",
+    "M",
+    "R"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 110000,
+    "prosperity": 0.45,
+    "crime": 0.4,
+    "infrastructure": 0.53,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "east_elmhurst",
+   "name": "East Elmhurst",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    62,
+    21
+   ],
+   "adjacent": [
+    "astoria",
+    "corona",
+    "jackson_heights"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.42,
+    "crime": 0.4,
+    "infrastructure": 0.51,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "corona",
+   "name": "Corona",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    64,
+    26
+   ],
+   "adjacent": [
+    "east_elmhurst",
+    "elmhurst",
+    "flushing",
+    "jackson_heights"
+   ],
+   "subway": [
+    "7"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 110000,
+    "prosperity": 0.35,
+    "crime": 0.45,
+    "infrastructure": 0.47,
+    "faith": 0.6
+   },
+   "landmarks": [
+    {
+     "id": "flushing_bowl",
+     "name": "The Flushing Bowl",
+     "kind": "stadium"
+    }
+   ]
+  },
+  {
+   "id": "elmhurst",
+   "name": "Elmhurst",
+   "borough": "queens",
+   "area_type": "grid_dense",
+   "pos": [
+    60,
+    28
+   ],
+   "adjacent": [
+    "corona",
+    "jackson_heights",
+    "maspeth",
+    "rego_park"
+   ],
+   "subway": [
+    "7",
+    "M",
+    "R"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 100000,
+    "prosperity": 0.45,
+    "crime": 0.4,
+    "infrastructure": 0.53,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "maspeth",
+   "name": "Maspeth",
+   "borough": "queens",
+   "area_type": "industrial",
+   "pos": [
+    56,
+    32
+   ],
+   "adjacent": [
+    "east_williamsburg",
+    "elmhurst",
+    "middle_village",
+    "ridgewood",
+    "woodside"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 35000,
+    "prosperity": 0.45,
+    "crime": 0.35,
+    "infrastructure": 0.45,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "middle_village",
+   "name": "Middle Village",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    60,
+    33
+   ],
+   "adjacent": [
+    "forest_hills",
+    "glendale",
+    "maspeth"
+   ],
+   "subway": [
+    "M"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 35000,
+    "prosperity": 0.5,
+    "crime": 0.25,
+    "infrastructure": 0.56,
+    "faith": 0.55
+   },
+   "landmarks": [
+    {
+     "id": "cemetery_belt",
+     "name": "The Cemetery Belt",
+     "kind": "cemetery"
+    }
+   ]
+  },
+  {
+   "id": "ridgewood",
+   "name": "Ridgewood",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    56,
+    36
+   ],
+   "adjacent": [
+    "bushwick",
+    "glendale",
+    "maspeth"
+   ],
+   "subway": [
+    "L",
+    "M"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.45,
+    "crime": 0.35,
+    "infrastructure": 0.53,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "glendale",
+   "name": "Glendale",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    60,
+    36
+   ],
+   "adjacent": [
+    "middle_village",
+    "ridgewood",
+    "woodhaven"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.48,
+    "crime": 0.3,
+    "infrastructure": 0.54,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "rego_park",
+   "name": "Rego Park",
+   "borough": "queens",
+   "area_type": "grid_dense",
+   "pos": [
+    64,
+    30
+   ],
+   "adjacent": [
+    "elmhurst",
+    "forest_hills"
+   ],
+   "subway": [
+    "M",
+    "R"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 45000,
+    "prosperity": 0.55,
+    "crime": 0.3,
+    "infrastructure": 0.58,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "forest_hills",
+   "name": "Forest Hills",
+   "borough": "queens",
+   "area_type": "grid_dense",
+   "pos": [
+    66,
+    32
+   ],
+   "adjacent": [
+    "flushing",
+    "kew_gardens",
+    "middle_village",
+    "rego_park"
+   ],
+   "subway": [
+    "E",
+    "F",
+    "M",
+    "R"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 85000,
+    "prosperity": 0.68,
+    "crime": 0.22,
+    "infrastructure": 0.65,
+    "faith": 0.45
+   },
+   "landmarks": []
+  },
+  {
+   "id": "kew_gardens",
+   "name": "Kew Gardens",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    68,
+    34
+   ],
+   "adjacent": [
+    "forest_hills",
+    "jamaica",
+    "richmond_hill"
+   ],
+   "subway": [
+    "E",
+    "F"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.55,
+    "crime": 0.3,
+    "infrastructure": 0.58,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "flushing",
+   "name": "Flushing",
+   "borough": "queens",
+   "area_type": "grid_dense",
+   "pos": [
+    78,
+    28
+   ],
+   "adjacent": [
+    "bayside",
+    "college_point",
+    "corona",
+    "forest_hills",
+    "fresh_meadows"
+   ],
+   "subway": [
+    "7"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 180000,
+    "prosperity": 0.5,
+    "crime": 0.35,
+    "infrastructure": 0.56,
+    "faith": 0.7
+   },
+   "landmarks": [
+    {
+     "id": "flushing_meadows",
+     "name": "Flushing Meadows",
+     "kind": "park"
+    }
+   ]
+  },
+  {
+   "id": "college_point",
+   "name": "College Point",
+   "borough": "queens",
+   "area_type": "industrial",
+   "pos": [
+    76,
+    22
+   ],
+   "adjacent": [
+    "flushing",
+    "whitestone"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.45,
+    "crime": 0.3,
+    "infrastructure": 0.45,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "whitestone",
+   "name": "Whitestone",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    80,
+    20
+   ],
+   "adjacent": [
+    "bayside",
+    "college_point"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.6,
+    "crime": 0.2,
+    "infrastructure": 0.61,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "bayside",
+   "name": "Bayside",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    86,
+    24
+   ],
+   "adjacent": [
+    "flushing",
+    "fresh_meadows",
+    "whitestone"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 45000,
+    "prosperity": 0.65,
+    "crime": 0.18,
+    "infrastructure": 0.64,
+    "faith": 0.45
+   },
+   "landmarks": [
+    {
+     "id": "fort_totten",
+     "name": "Fort Totten",
+     "kind": "civic"
+    }
+   ]
+  },
+  {
+   "id": "fresh_meadows",
+   "name": "Fresh Meadows",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    80,
+    32
+   ],
+   "adjacent": [
+    "bayside",
+    "flushing",
+    "jamaica",
+    "queens_village"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.55,
+    "crime": 0.25,
+    "infrastructure": 0.58,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "jamaica",
+   "name": "Jamaica",
+   "borough": "queens",
+   "area_type": "grid_dense",
+   "pos": [
+    76,
+    40
+   ],
+   "adjacent": [
+    "fresh_meadows",
+    "hollis",
+    "kew_gardens",
+    "richmond_hill",
+    "st_albans"
+   ],
+   "subway": [
+    "E",
+    "F",
+    "J",
+    "Z"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 150000,
+    "prosperity": 0.35,
+    "crime": 0.5,
+    "infrastructure": 0.47,
+    "faith": 0.65
+   },
+   "landmarks": [
+    {
+     "id": "king_market",
+     "name": "King Market",
+     "kind": "market"
+    }
+   ]
+  },
+  {
+   "id": "richmond_hill",
+   "name": "Richmond Hill",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    70,
+    40
+   ],
+   "adjacent": [
+    "jamaica",
+    "kew_gardens",
+    "ozone_park",
+    "woodhaven"
+   ],
+   "subway": [
+    "J",
+    "Z"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 60000,
+    "prosperity": 0.4,
+    "crime": 0.4,
+    "infrastructure": 0.5,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "woodhaven",
+   "name": "Woodhaven",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    66,
+    40
+   ],
+   "adjacent": [
+    "cypress_hills",
+    "glendale",
+    "ozone_park",
+    "richmond_hill"
+   ],
+   "subway": [
+    "J",
+    "Z"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.42,
+    "crime": 0.38,
+    "infrastructure": 0.51,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "ozone_park",
+   "name": "Ozone Park",
+   "borough": "queens",
+   "area_type": "rowhouse",
+   "pos": [
+    68,
+    46
+   ],
+   "adjacent": [
+    "howard_beach",
+    "richmond_hill",
+    "springfield_gardens",
+    "woodhaven"
+   ],
+   "subway": [
+    "A"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.4,
+    "crime": 0.42,
+    "infrastructure": 0.5,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "howard_beach",
+   "name": "Howard Beach",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    70,
+    52
+   ],
+   "adjacent": [
+    "broad_channel",
+    "ozone_park",
+    "springfield_gardens"
+   ],
+   "subway": [
+    "A"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.5,
+    "crime": 0.3,
+    "infrastructure": 0.56,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "hollis",
+   "name": "Hollis",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    80,
+    38
+   ],
+   "adjacent": [
+    "jamaica",
+    "queens_village"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.4,
+    "crime": 0.42,
+    "infrastructure": 0.5,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "st_albans",
+   "name": "St. Albans",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    82,
+    42
+   ],
+   "adjacent": [
+    "jamaica",
+    "queens_village",
+    "springfield_gardens"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.4,
+    "crime": 0.42,
+    "infrastructure": 0.5,
+    "faith": 0.65
+   },
+   "landmarks": []
+  },
+  {
+   "id": "queens_village",
+   "name": "Queens Village",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    86,
+    38
+   ],
+   "adjacent": [
+    "fresh_meadows",
+    "hollis",
+    "st_albans"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.45,
+    "crime": 0.35,
+    "infrastructure": 0.53,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "springfield_gardens",
+   "name": "Springfield Gardens",
+   "borough": "queens",
+   "area_type": "suburban",
+   "pos": [
+    82,
+    48
+   ],
+   "adjacent": [
+    "howard_beach",
+    "ozone_park",
+    "st_albans"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.38,
+    "crime": 0.45,
+    "infrastructure": 0.49,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "broad_channel",
+   "name": "Broad Channel",
+   "borough": "queens",
+   "area_type": "waterfront",
+   "pos": [
+    72,
+    78
+   ],
+   "adjacent": [
+    "howard_beach",
+    "rockaway_beach"
+   ],
+   "subway": [
+    "A"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 3000,
+    "prosperity": 0.4,
+    "crime": 0.25,
+    "infrastructure": 0.5,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "rockaway_beach",
+   "name": "Rockaway Beach",
+   "borough": "queens",
+   "area_type": "waterfront",
+   "pos": [
+    66,
+    84
+   ],
+   "adjacent": [
+    "broad_channel",
+    "far_rockaway"
+   ],
+   "subway": [
+    "A"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.35,
+    "crime": 0.45,
+    "infrastructure": 0.47,
+    "faith": 0.55
+   },
+   "landmarks": [
+    {
+     "id": "the_boardwalk",
+     "name": "The Boardwalk",
+     "kind": "boardwalk"
+    }
+   ]
+  },
+  {
+   "id": "far_rockaway",
+   "name": "Far Rockaway",
+   "borough": "queens",
+   "area_type": "projects",
+   "pos": [
+    86,
+    86
+   ],
+   "adjacent": [
+    "rockaway_beach"
+   ],
+   "subway": [
+    "A"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 60000,
+    "prosperity": 0.3,
+    "crime": 0.55,
+    "infrastructure": 0.45,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "greenpoint",
+   "name": "Greenpoint",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    44,
+    50
+   ],
+   "adjacent": [
+    "long_island_city",
+    "williamsburg"
+   ],
+   "subway": [
+    "G"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.55,
+    "crime": 0.3,
+    "infrastructure": 0.58,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "williamsburg",
+   "name": "Williamsburg",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    44,
+    54
+   ],
+   "adjacent": [
+    "bed_stuy",
+    "east_williamsburg",
+    "greenpoint",
+    "lower_east_side"
+   ],
+   "subway": [
+    "G",
+    "J",
+    "L",
+    "M",
+    "Z"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 130000,
+    "prosperity": 0.55,
+    "crime": 0.35,
+    "infrastructure": 0.58,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "east_williamsburg",
+   "name": "East Williamsburg",
+   "borough": "brooklyn",
+   "area_type": "industrial",
+   "pos": [
+    48,
+    54
+   ],
+   "adjacent": [
+    "bushwick",
+    "maspeth",
+    "williamsburg"
+   ],
+   "subway": [
+    "G",
+    "L"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.45,
+    "crime": 0.4,
+    "infrastructure": 0.45,
+    "faith": 0.45
+   },
+   "landmarks": []
+  },
+  {
+   "id": "bushwick",
+   "name": "Bushwick",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    52,
+    56
+   ],
+   "adjacent": [
+    "bed_stuy",
+    "cypress_hills",
+    "east_new_york",
+    "east_williamsburg",
+    "ridgewood"
+   ],
+   "subway": [
+    "J",
+    "L",
+    "M",
+    "Z"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 120000,
+    "prosperity": 0.4,
+    "crime": 0.5,
+    "infrastructure": 0.5,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "bed_stuy",
+   "name": "Bed-Stuy",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    46,
+    58
+   ],
+   "adjacent": [
+    "bushwick",
+    "clinton_hill",
+    "crown_heights",
+    "williamsburg"
+   ],
+   "subway": [
+    "A",
+    "C",
+    "G",
+    "J",
+    "Z"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 160000,
+    "prosperity": 0.4,
+    "crime": 0.5,
+    "infrastructure": 0.5,
+    "faith": 0.65
+   },
+   "landmarks": []
+  },
+  {
+   "id": "dumbo",
+   "name": "DUMBO",
+   "borough": "brooklyn",
+   "area_type": "waterfront",
+   "pos": [
+    38,
+    52
+   ],
+   "adjacent": [
+    "brooklyn_heights",
+    "chinatown",
+    "downtown_brooklyn",
+    "financial_district"
+   ],
+   "subway": [
+    "A",
+    "C",
+    "F"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 15000,
+    "prosperity": 0.85,
+    "crime": 0.2,
+    "infrastructure": 0.75,
+    "faith": 0.3
+   },
+   "landmarks": [
+    {
+     "id": "brooklyn_bridge",
+     "name": "Brooklyn Bridge",
+     "kind": "bridge"
+    }
+   ]
+  },
+  {
+   "id": "brooklyn_heights",
+   "name": "Brooklyn Heights",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    37,
+    54
+   ],
+   "adjacent": [
+    "downtown_brooklyn",
+    "dumbo"
+   ],
+   "subway": [
+    "2",
+    "3",
+    "4",
+    "5",
+    "A",
+    "C",
+    "R"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.85,
+    "crime": 0.18,
+    "infrastructure": 0.75,
+    "faith": 0.4
+   },
+   "landmarks": []
+  },
+  {
+   "id": "downtown_brooklyn",
+   "name": "Downtown Brooklyn",
+   "borough": "brooklyn",
+   "area_type": "civic",
+   "pos": [
+    39,
+    55
+   ],
+   "adjacent": [
+    "boerum_hill",
+    "brooklyn_heights",
+    "dumbo",
+    "fort_greene"
+   ],
+   "subway": [
+    "2",
+    "3",
+    "4",
+    "5",
+    "A",
+    "C",
+    "F",
+    "R"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.65,
+    "crime": 0.35,
+    "infrastructure": 0.64,
+    "faith": 0.35
+   },
+   "landmarks": [
+    {
+     "id": "borough_hall",
+     "name": "Borough Hall",
+     "kind": "civic"
+    }
+   ]
+  },
+  {
+   "id": "fort_greene",
+   "name": "Fort Greene",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    41,
+    56
+   ],
+   "adjacent": [
+    "clinton_hill",
+    "downtown_brooklyn"
+   ],
+   "subway": [
+    "C",
+    "G"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.6,
+    "crime": 0.35,
+    "infrastructure": 0.61,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "clinton_hill",
+   "name": "Clinton Hill",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    43,
+    57
+   ],
+   "adjacent": [
+    "bed_stuy",
+    "fort_greene",
+    "prospect_heights"
+   ],
+   "subway": [
+    "C",
+    "G"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.58,
+    "crime": 0.35,
+    "infrastructure": 0.6,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "boerum_hill",
+   "name": "Boerum Hill",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    39,
+    58
+   ],
+   "adjacent": [
+    "carroll_gardens",
+    "downtown_brooklyn",
+    "gowanus"
+   ],
+   "subway": [
+    "A",
+    "C",
+    "F",
+    "G"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.65,
+    "crime": 0.3,
+    "infrastructure": 0.64,
+    "faith": 0.4
+   },
+   "landmarks": []
+  },
+  {
+   "id": "carroll_gardens",
+   "name": "Carroll Gardens",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    38,
+    60
+   ],
+   "adjacent": [
+    "boerum_hill",
+    "gowanus",
+    "red_hook"
+   ],
+   "subway": [
+    "F",
+    "G"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.7,
+    "crime": 0.25,
+    "infrastructure": 0.67,
+    "faith": 0.45
+   },
+   "landmarks": []
+  },
+  {
+   "id": "red_hook",
+   "name": "Red Hook",
+   "borough": "brooklyn",
+   "area_type": "waterfront",
+   "pos": [
+    36,
+    62
+   ],
+   "adjacent": [
+    "carroll_gardens",
+    "financial_district",
+    "gowanus"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 12000,
+    "prosperity": 0.35,
+    "crime": 0.45,
+    "infrastructure": 0.47,
+    "faith": 0.45
+   },
+   "landmarks": [
+    {
+     "id": "grain_elevator",
+     "name": "The Grain Elevator",
+     "kind": "port"
+    }
+   ]
+  },
+  {
+   "id": "gowanus",
+   "name": "Gowanus",
+   "borough": "brooklyn",
+   "area_type": "industrial",
+   "pos": [
+    39,
+    61
+   ],
+   "adjacent": [
+    "boerum_hill",
+    "carroll_gardens",
+    "park_slope",
+    "red_hook",
+    "sunset_park"
+   ],
+   "subway": [
+    "F",
+    "G",
+    "R"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.5,
+    "crime": 0.4,
+    "infrastructure": 0.48,
+    "faith": 0.35
+   },
+   "landmarks": []
+  },
+  {
+   "id": "park_slope",
+   "name": "Park Slope",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    41,
+    61
+   ],
+   "adjacent": [
+    "flatbush",
+    "gowanus",
+    "kensington",
+    "prospect_heights"
+   ],
+   "subway": [
+    "2",
+    "3",
+    "F",
+    "G",
+    "R"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.75,
+    "crime": 0.22,
+    "infrastructure": 0.69,
+    "faith": 0.45
+   },
+   "landmarks": [
+    {
+     "id": "prospect_park",
+     "name": "Prospect Park",
+     "kind": "park"
+    }
+   ]
+  },
+  {
+   "id": "prospect_heights",
+   "name": "Prospect Heights",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    43,
+    59
+   ],
+   "adjacent": [
+    "clinton_hill",
+    "crown_heights",
+    "park_slope"
+   ],
+   "subway": [
+    "2",
+    "3",
+    "B",
+    "Q"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 35000,
+    "prosperity": 0.65,
+    "crime": 0.3,
+    "infrastructure": 0.64,
+    "faith": 0.45
+   },
+   "landmarks": [
+    {
+     "id": "atlantic_dome",
+     "name": "The Atlantic Dome",
+     "kind": "arena"
+    }
+   ]
+  },
+  {
+   "id": "crown_heights",
+   "name": "Crown Heights",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    46,
+    61
+   ],
+   "adjacent": [
+    "bed_stuy",
+    "brownsville",
+    "east_flatbush",
+    "prospect_heights"
+   ],
+   "subway": [
+    "2",
+    "3",
+    "4",
+    "5"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 140000,
+    "prosperity": 0.38,
+    "crime": 0.52,
+    "infrastructure": 0.49,
+    "faith": 0.65
+   },
+   "landmarks": []
+  },
+  {
+   "id": "brownsville",
+   "name": "Brownsville",
+   "borough": "brooklyn",
+   "area_type": "projects",
+   "pos": [
+    50,
+    63
+   ],
+   "adjacent": [
+    "canarsie",
+    "crown_heights",
+    "east_flatbush",
+    "east_new_york"
+   ],
+   "subway": [
+    "3",
+    "L"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 110000,
+    "prosperity": 0.2,
+    "crime": 0.68,
+    "infrastructure": 0.39,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "east_new_york",
+   "name": "East New York",
+   "borough": "brooklyn",
+   "area_type": "projects",
+   "pos": [
+    54,
+    62
+   ],
+   "adjacent": [
+    "brownsville",
+    "bushwick",
+    "canarsie",
+    "cypress_hills"
+   ],
+   "subway": [
+    "3",
+    "A",
+    "C",
+    "J",
+    "L",
+    "Z"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 110000,
+    "prosperity": 0.22,
+    "crime": 0.65,
+    "infrastructure": 0.4,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "cypress_hills",
+   "name": "Cypress Hills",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    56,
+    58
+   ],
+   "adjacent": [
+    "bushwick",
+    "east_new_york",
+    "woodhaven"
+   ],
+   "subway": [
+    "J",
+    "Z"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 45000,
+    "prosperity": 0.3,
+    "crime": 0.55,
+    "infrastructure": 0.45,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "canarsie",
+   "name": "Canarsie",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    52,
+    68
+   ],
+   "adjacent": [
+    "brownsville",
+    "east_new_york",
+    "flatlands"
+   ],
+   "subway": [
+    "L"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 85000,
+    "prosperity": 0.35,
+    "crime": 0.45,
+    "infrastructure": 0.47,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "east_flatbush",
+   "name": "East Flatbush",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    47,
+    66
+   ],
+   "adjacent": [
+    "brownsville",
+    "crown_heights",
+    "flatbush",
+    "flatlands"
+   ],
+   "subway": [
+    "2",
+    "5"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 130000,
+    "prosperity": 0.35,
+    "crime": 0.5,
+    "infrastructure": 0.47,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "flatbush",
+   "name": "Flatbush",
+   "borough": "brooklyn",
+   "area_type": "grid_dense",
+   "pos": [
+    44,
+    66
+   ],
+   "adjacent": [
+    "east_flatbush",
+    "kensington",
+    "midwood",
+    "park_slope"
+   ],
+   "subway": [
+    "2",
+    "5",
+    "B",
+    "Q"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 150000,
+    "prosperity": 0.4,
+    "crime": 0.45,
+    "infrastructure": 0.5,
+    "faith": 0.65
+   },
+   "landmarks": []
+  },
+  {
+   "id": "kensington",
+   "name": "Kensington",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    42,
+    66
+   ],
+   "adjacent": [
+    "borough_park",
+    "flatbush",
+    "midwood",
+    "park_slope"
+   ],
+   "subway": [
+    "F",
+    "G"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.45,
+    "crime": 0.35,
+    "infrastructure": 0.53,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "borough_park",
+   "name": "Borough Park",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    40,
+    68
+   ],
+   "adjacent": [
+    "bensonhurst",
+    "kensington",
+    "midwood",
+    "sunset_park"
+   ],
+   "subway": [
+    "D",
+    "F"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 110000,
+    "prosperity": 0.42,
+    "crime": 0.3,
+    "infrastructure": 0.51,
+    "faith": 0.95
+   },
+   "landmarks": []
+  },
+  {
+   "id": "sunset_park",
+   "name": "Sunset Park",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    37,
+    66
+   ],
+   "adjacent": [
+    "bay_ridge",
+    "borough_park",
+    "gowanus"
+   ],
+   "subway": [
+    "D",
+    "N",
+    "R"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 120000,
+    "prosperity": 0.4,
+    "crime": 0.4,
+    "infrastructure": 0.5,
+    "faith": 0.6
+   },
+   "landmarks": [
+    {
+     "id": "green_wood",
+     "name": "Green-Wood Cemetery",
+     "kind": "cemetery"
+    }
+   ]
+  },
+  {
+   "id": "bay_ridge",
+   "name": "Bay Ridge",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    35,
+    72
+   ],
+   "adjacent": [
+    "dyker_heights",
+    "south_beach",
+    "sunset_park"
+   ],
+   "subway": [
+    "R"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 80000,
+    "prosperity": 0.55,
+    "crime": 0.25,
+    "infrastructure": 0.58,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "dyker_heights",
+   "name": "Dyker Heights",
+   "borough": "brooklyn",
+   "area_type": "suburban",
+   "pos": [
+    38,
+    73
+   ],
+   "adjacent": [
+    "bay_ridge",
+    "bensonhurst"
+   ],
+   "subway": [
+    "D"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 45000,
+    "prosperity": 0.55,
+    "crime": 0.2,
+    "infrastructure": 0.58,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "bensonhurst",
+   "name": "Bensonhurst",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    40,
+    75
+   ],
+   "adjacent": [
+    "borough_park",
+    "dyker_heights",
+    "gravesend"
+   ],
+   "subway": [
+    "D",
+    "N"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 150000,
+    "prosperity": 0.45,
+    "crime": 0.3,
+    "infrastructure": 0.53,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "gravesend",
+   "name": "Gravesend",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    43,
+    78
+   ],
+   "adjacent": [
+    "bensonhurst",
+    "coney_island",
+    "midwood",
+    "sheepshead_bay"
+   ],
+   "subway": [
+    "F",
+    "N"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 110000,
+    "prosperity": 0.4,
+    "crime": 0.35,
+    "infrastructure": 0.5,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "coney_island",
+   "name": "Coney Island",
+   "borough": "brooklyn",
+   "area_type": "projects",
+   "pos": [
+    44,
+    84
+   ],
+   "adjacent": [
+    "brighton_beach",
+    "gravesend"
+   ],
+   "subway": [
+    "D",
+    "F",
+    "N",
+    "Q"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 50000,
+    "prosperity": 0.3,
+    "crime": 0.5,
+    "infrastructure": 0.45,
+    "faith": 0.55
+   },
+   "landmarks": [
+    {
+     "id": "lunar_park",
+     "name": "Lunar Park",
+     "kind": "boardwalk"
+    }
+   ]
+  },
+  {
+   "id": "brighton_beach",
+   "name": "Brighton Beach",
+   "borough": "brooklyn",
+   "area_type": "grid_dense",
+   "pos": [
+    47,
+    84
+   ],
+   "adjacent": [
+    "coney_island",
+    "sheepshead_bay"
+   ],
+   "subway": [
+    "B",
+    "Q"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.4,
+    "crime": 0.4,
+    "infrastructure": 0.5,
+    "faith": 0.6
+   },
+   "landmarks": []
+  },
+  {
+   "id": "sheepshead_bay",
+   "name": "Sheepshead Bay",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    49,
+    80
+   ],
+   "adjacent": [
+    "brighton_beach",
+    "flatlands",
+    "gravesend"
+   ],
+   "subway": [
+    "B",
+    "Q"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 90000,
+    "prosperity": 0.45,
+    "crime": 0.35,
+    "infrastructure": 0.53,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "midwood",
+   "name": "Midwood",
+   "borough": "brooklyn",
+   "area_type": "rowhouse",
+   "pos": [
+    44,
+    72
+   ],
+   "adjacent": [
+    "borough_park",
+    "flatbush",
+    "gravesend",
+    "kensington"
+   ],
+   "subway": [
+    "B",
+    "F",
+    "Q"
+   ],
+   "coastal": false,
+   "stats_2026": {
+    "population": 90000,
+    "prosperity": 0.5,
+    "crime": 0.28,
+    "infrastructure": 0.56,
+    "faith": 0.8
+   },
+   "landmarks": []
+  },
+  {
+   "id": "flatlands",
+   "name": "Flatlands",
+   "borough": "brooklyn",
+   "area_type": "suburban",
+   "pos": [
+    50,
+    72
+   ],
+   "adjacent": [
+    "canarsie",
+    "east_flatbush",
+    "sheepshead_bay"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 70000,
+    "prosperity": 0.45,
+    "crime": 0.3,
+    "infrastructure": 0.53,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "st_george",
+   "name": "St. George",
+   "borough": "staten_island",
+   "area_type": "civic",
+   "pos": [
+    22,
+    66
+   ],
+   "adjacent": [
+    "financial_district",
+    "stapleton",
+    "west_brighton"
+   ],
+   "subway": [
+    "SIR"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.45,
+    "crime": 0.4,
+    "infrastructure": 0.53,
+    "faith": 0.5
+   },
+   "landmarks": [
+    {
+     "id": "ferry_terminal",
+     "name": "The Ferry Terminal",
+     "kind": "station"
+    }
+   ]
+  },
+  {
+   "id": "west_brighton",
+   "name": "West Brighton",
+   "borough": "staten_island",
+   "area_type": "rowhouse",
+   "pos": [
+    17,
+    68
+   ],
+   "adjacent": [
+    "port_richmond",
+    "st_george",
+    "todt_hill"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 35000,
+    "prosperity": 0.4,
+    "crime": 0.45,
+    "infrastructure": 0.5,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "port_richmond",
+   "name": "Port Richmond",
+   "borough": "staten_island",
+   "area_type": "rowhouse",
+   "pos": [
+    13,
+    68
+   ],
+   "adjacent": [
+    "mariners_harbor",
+    "west_brighton"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.35,
+    "crime": 0.5,
+    "infrastructure": 0.47,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "mariners_harbor",
+   "name": "Mariners Harbor",
+   "borough": "staten_island",
+   "area_type": "industrial",
+   "pos": [
+    8,
+    70
+   ],
+   "adjacent": [
+    "port_richmond",
+    "todt_hill"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.3,
+    "crime": 0.5,
+    "infrastructure": 0.37,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "stapleton",
+   "name": "Stapleton",
+   "borough": "staten_island",
+   "area_type": "rowhouse",
+   "pos": [
+    22,
+    71
+   ],
+   "adjacent": [
+    "south_beach",
+    "st_george",
+    "todt_hill"
+   ],
+   "subway": [
+    "SIR"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.38,
+    "crime": 0.48,
+    "infrastructure": 0.49,
+    "faith": 0.55
+   },
+   "landmarks": []
+  },
+  {
+   "id": "south_beach",
+   "name": "South Beach",
+   "borough": "staten_island",
+   "area_type": "suburban",
+   "pos": [
+    24,
+    76
+   ],
+   "adjacent": [
+    "bay_ridge",
+    "new_dorp",
+    "stapleton"
+   ],
+   "subway": [],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.45,
+    "crime": 0.35,
+    "infrastructure": 0.53,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "todt_hill",
+   "name": "Todt Hill",
+   "borough": "staten_island",
+   "area_type": "suburban",
+   "pos": [
+    17,
+    76
+   ],
+   "adjacent": [
+    "mariners_harbor",
+    "new_dorp",
+    "stapleton",
+    "west_brighton"
+   ],
+   "subway": [],
+   "coastal": false,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.75,
+    "crime": 0.12,
+    "infrastructure": 0.69,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "new_dorp",
+   "name": "New Dorp",
+   "borough": "staten_island",
+   "area_type": "suburban",
+   "pos": [
+    20,
+    81
+   ],
+   "adjacent": [
+    "great_kills",
+    "south_beach",
+    "todt_hill"
+   ],
+   "subway": [
+    "SIR"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 30000,
+    "prosperity": 0.55,
+    "crime": 0.25,
+    "infrastructure": 0.58,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "great_kills",
+   "name": "Great Kills",
+   "borough": "staten_island",
+   "area_type": "suburban",
+   "pos": [
+    16,
+    86
+   ],
+   "adjacent": [
+    "new_dorp",
+    "tottenville"
+   ],
+   "subway": [
+    "SIR"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 40000,
+    "prosperity": 0.55,
+    "crime": 0.22,
+    "infrastructure": 0.58,
+    "faith": 0.5
+   },
+   "landmarks": []
+  },
+  {
+   "id": "tottenville",
+   "name": "Tottenville",
+   "borough": "staten_island",
+   "area_type": "suburban",
+   "pos": [
+    7,
+    94
+   ],
+   "adjacent": [
+    "great_kills"
+   ],
+   "subway": [
+    "SIR"
+   ],
+   "coastal": true,
+   "stats_2026": {
+    "population": 25000,
+    "prosperity": 0.6,
+    "crime": 0.18,
+    "infrastructure": 0.61,
+    "faith": 0.5
+   },
+   "landmarks": []
+  }
+ ]
+}
