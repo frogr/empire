@@ -39,6 +39,13 @@ interface T2Record {
   state: 'home' | 'commuting' | 'working' | 'worship' | 'social' | 'hospital' | 'jail' | 'dead';
 }
 
+/** Something that just happened nearby — Game decides whether you hear it. */
+export interface T2Incident {
+  kind: 'death' | 'mugging' | 'burglary' | 'procession';
+  hood: string;
+  name: string; // who it happened to (or empty for processions)
+}
+
 const T2_PER_HOOD = 36;
 
 export class CitySim {
@@ -97,10 +104,12 @@ export class CitySim {
     return recs;
   }
 
-  /** Coarse tick over the player's neighborhood + adjacents. Budget < 2ms. */
-  tier2Tick(currentHood: string, hour: number, day: number): void {
+  /** Coarse tick over the player's neighborhood + adjacents. Budget < 2ms.
+   *  Returns what happened, so Game can stage the local ones in front of you. */
+  tier2Tick(currentHood: string, hour: number, day: number): T2Incident[] {
+    const incidents: T2Incident[] = [];
     const hood = this.byId.get(currentHood);
-    if (!hood) return;
+    if (!hood) return incidents;
     const loaded = [currentHood, ...hood.adjacent];
     for (const id of loaded) {
       const st = this.world.neighborhoods[id];
@@ -125,17 +134,85 @@ export class CitySim {
           victim.state = 'dead';
           st.population = Math.max(500, st.population - 1);
           this.pushRumor(`They found ${victim.name} under the scaffolding on #street# in ${name}. Nobody is asking questions out loud.`, id, day, 0xc05a50);
+          incidents.push({ kind: 'death', hood: id, name: victim.name });
         } else if (this.r.chance(0.4)) {
           victim.state = 'hospital';
           this.pushRumor(`${victim.name} got jumped on #street# in ${name} ${hour < 6 ? 'before dawn' : 'in broad daylight'}. The clinic took them in.`, id, day);
+          incidents.push({ kind: 'mugging', hood: id, name: victim.name });
         } else {
           this.pushRumor(`Somebody cleaned out a place on #street# in ${name}. Through the window, neat as a dentist.`, id, day);
+          incidents.push({ kind: 'burglary', hood: id, name: '' });
         }
       }
       if (this.r.chance(st.stats.cult * 0.1)) {
         this.pushRumor(`A procession went down #street# in ${this.byId.get(id)!.name} at ${hour < 12 ? 'dawn' : 'dusk'}. Candles. Humming. The usual now.`, id, day, 0xb8a0d8);
+        incidents.push({ kind: 'procession', hood: id, name: '' });
       }
     }
+    return incidents;
+  }
+
+  /** A thin Tier-3 slice for the player's district, every few hundred turns:
+   *  one thing, told to your face instead of buried in a menu. */
+  districtPulse(currentHood: string, hour: number): { text: string; fg: number } | null {
+    const hood = this.byId.get(currentHood);
+    if (!hood) return null;
+    const st = this.world.neighborhoods[currentHood];
+    const opts: { w: number; mk: () => { text: string; fg: number } | null }[] = [];
+    const local = this.rumors.filter((r) => r.hood === currentHood || hood.adjacent.includes(r.hood)).slice(-6);
+    if (local.length) {
+      opts.push({
+        w: 3,
+        mk: () => {
+          const r = this.r.pick(local);
+          return { text: `Overheard at a window: "${this.expandRumor(r.text)}"`, fg: r.fg };
+        },
+      });
+    }
+    const topControl = Object.entries(st.control).sort((a, b) => b[1] - a[1])[0];
+    if (topControl && topControl[1] > 0.2) {
+      const pack = FACTIONS.find((p) => p.id === topControl[0]);
+      if (pack) {
+        opts.push({
+          w: 2,
+          mk: () => ({
+            text: this.grammar.expand(this.r.pick(pack.rumor), this.r, { neighborhood: hood.name }),
+            fg: 0xc0a890,
+          }),
+        });
+      }
+    }
+    const faiths = Object.entries(st.faiths).filter(([, v]) => v > 0.15);
+    if (faiths.length) {
+      opts.push({
+        w: hour >= 17 && hour < 21 ? 3 : 1,
+        mk: () => {
+          const pack = RELIGIONS.find((p) => p.id === this.r.pick(faiths)[0]);
+          return pack
+            ? { text: this.grammar.expand(this.r.pick(pack.rumor), this.r, { neighborhood: hood.name }), fg: 0xb8a0d8 }
+            : null;
+        },
+      });
+    }
+    if (this.fixtures.length) {
+      opts.push({
+        w: 1,
+        mk: () => {
+          const g = this.fixtures[this.fixtures.length - 1];
+          const pack = LEAGUES.find((p) => p.id === g.league);
+          return pack
+            ? { text: `A kid runs past yelling the score: ${g.home} ${g.homeScore}, ${g.away} ${g.awayScore}. ${pack.name}.`, fg: 0x70a0c0 }
+            : null;
+        },
+      });
+    }
+    if (!opts.length) return null;
+    let roll = this.r.float() * opts.reduce((s, o) => s + o.w, 0);
+    for (const o of opts) {
+      roll -= o.w;
+      if (roll <= 0) return o.mk();
+    }
+    return opts[opts.length - 1].mk();
   }
 
   /** Citywide daily tick: stat drift, live events, league fixtures. <30ms. */

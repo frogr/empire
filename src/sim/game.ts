@@ -6,17 +6,18 @@ import { computeFOV } from './fov';
 import { GameMap, T, AK } from './map';
 import { generateLocalMap, GenResult } from './mapgen';
 import { simulateHistory } from './worldgen/history';
-import { CitySim } from './city';
+import { CitySim, T2Incident } from './city';
+import { Director } from './director';
 import { Rand } from './rng';
 import { Grammar } from './content/grammar';
 import { GRAMMAR_RULES, RELIGIONS, FACTIONS, ORIGINS, NAMES, ITEM_BY_ID, ARCHETYPES, LEAGUES, CITYMAP } from './content';
 import { PlayerChar, SKILLS, STATS, INJURY_LABEL, ItemStack } from './player';
 import {
-  AMBIENT, PED_BARKS, BUMP_PED, INTRO, TRAVEL_WALK, TRAVEL_SUBWAY, ARRIVE,
+  PED_BARKS, BUMP_PED, INTRO, TRAVEL_WALK, TRAVEL_SUBWAY, ARRIVE,
 } from './flavor';
 import type { Action, FrameMeta, Hint, Msg, PulseCell } from '../bridge/protocol';
 import type {
-  ChronicleEntry, Grave, NeighborhoodSeed, NeighborhoodState, OriginDef, WorldState,
+  ChronicleEntry, Grave, NeighborhoodSeed, NeighborhoodState, OriginDef, StreetSceneDef, WorldState,
 } from './content/types';
 
 export interface SaveData {
@@ -39,6 +40,10 @@ export interface SaveData {
   heatByBorough: Record<string, number>;
   lastDay: number;
   lastT2: number;
+  lastPulse?: number;          // v2
+  lastEditionBand?: number;    // v2
+  pendingHeadlines?: string[]; // v2
+  director?: { lastBeat: number; lastEncounter: number };  // v2
   lastRitual: number;
   city: unknown;
   maps: Record<string, { explored: string; items: [number, { id: string; qty: number }[]][]; doors: number[] }>;
@@ -85,7 +90,7 @@ const ARCH_COLOR: Record<string, number> = {
 };
 
 // Actor states.
-const ST_SCHEDULE = 0, ST_HOSTILE = 1, ST_FLEE = 2, ST_PANIC = 3;
+const ST_SCHEDULE = 0, ST_HOSTILE = 1, ST_FLEE = 2, ST_PANIC = 3, ST_SCENE = 4, ST_BRAWL = 5;
 // Actor flag bits.
 const AF_DISARMED = 1, AF_LIMP = 2, AF_BLEED = 4;
 
@@ -120,6 +125,20 @@ const VAULTABLE = new Set<T>([T.Car, T.Fence, T.Bench, T.Barricade, T.Counter, T
 const PIGEON_TILES = new Set<T>([T.Road, T.Sidewalk, T.Crosswalk, T.Grass, T.Path, T.Scrub, T.Pier]);
 const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
 
+// Staged when a Tier-2 death lands on the block you're standing in.
+const BODY_DISCOVERED: StreetSceneDef = {
+  id: 'body_discovered',
+  weight: 1,
+  behavior: 'vigil',
+  spawn: { count: [3, 5] },
+  duration: [30, 50],
+  text: {
+    start: 'A crowd is knotting up around something at the curb. Nobody is talking loudly.',
+    tick: 'Someone lights a candle at the curb. Someone else makes a call they have been dreading.',
+    end: 'A van takes the body away. The crowd unknots. The block exhales, ashamed of itself.',
+  },
+};
+
 const BOROUGH_COLOR: Record<string, number> = {
   manhattan: 0xb8b8c8, brooklyn: 0xd0a040, queens: 0x5a9ad0,
   bronx: 0xc05a50, staten_island: 0x5ab070,
@@ -134,8 +153,26 @@ interface CachedHood {
   lastUsed: number;
 }
 
+interface ActiveScene {
+  def: StreetSceneDef;
+  x: number;
+  y: number;
+  actors: number[];
+  endsAt: number;
+  lastTick: number;
+}
+
+interface Encounter {
+  kind: 'mugger' | 'watchman' | 'toll' | 'recruiter';
+  idx: number; // actor index, or -1
+  toll?: number;
+  faction?: string;
+  dest?: string; // toll: travel destination
+  faith?: string;
+}
+
 interface Menu {
-  kind: 'origin' | 'inventory' | 'item' | 'bodypart' | 'shop' | 'bet' | 'altar';
+  kind: 'origin' | 'inventory' | 'item' | 'bodypart' | 'shop' | 'bet' | 'altar' | 'encounter';
   title: string;
   entries: { label: string; sub?: string; fg?: number; data?: string }[];
   sel: number;
@@ -185,6 +222,13 @@ export class Game {
   private city!: CitySim;
   private lastDay = -1;
   private lastT2 = 0;
+  private lastPulse = 0;
+  private lastEditionBand = -1; // day*3 + (0 night / 1 daytime / 2 evening)
+  private pendingHeadlines: string[] = [];
+  private pendingIncidents: T2Incident[] = []; // local T2 incidents awaiting staging
+  private director: Director;
+  private scene: ActiveScene | null = null; // transient; ends on travel
+  private encounter: Encounter | null = null;
   private quest: Quest | null = null;
   private faith: string | null = null; // joined religion pack id
   private favor: Record<string, number> = {};
@@ -209,6 +253,7 @@ export class Game {
   private aFlags = new Uint8Array(MAX_ACTORS);
   private aStun = new Uint8Array(MAX_ACTORS);
   private aBarkCd = new Uint16Array(MAX_ACTORS);
+  private aTarget = new Int16Array(MAX_ACTORS).fill(-1); // brawl opponent
   private occ!: Int32Array;
   private tilesInterior: number[] = [];
   private tilesCorner: number[] = [];
@@ -222,6 +267,7 @@ export class Game {
     onProgress?.('Pouring concrete…');
     this.rTurn = new Rand(seed, 'turns');
     this.grammar = new Grammar(GRAMMAR_RULES);
+    this.director = new Director(seed);
     // Boot into origin selection; the world waits.
     this.menu = {
       kind: 'origin',
@@ -371,7 +417,18 @@ export class Game {
     }
     this.spawnActors(gen);
     this.computeVision();
-    if (via !== 'spawn') this.sayArrival(id);
+    this.pendingIncidents = [];
+    this.scene = null; // scenes don't follow you across the river
+    this.encounter = null;
+    this.director.blackoutUntil = 0;
+    if (via !== 'spawn') {
+      this.sayArrival(id);
+      // The neighborhood has been talking while you weren't here.
+      if (this.city) {
+        const word = this.city.rumors.filter((r) => r.hood === id).slice(-2);
+        for (const r of word) this.say(`Word on the street: ${this.city.expandRumor(r.text)}`, r.fg);
+      }
+    }
   }
 
   private sayArrival(id: string): void {
@@ -453,14 +510,30 @@ export class Game {
     const curState = this.world.neighborhoods[cur.id];
     const dstState = this.world.neighborhoods[dst.id];
     if (cur.adjacent.includes(dst.id)) {
-      const minutes = 22 + this.rTurn.int(0, 18);
-      this.clockMin += minutes;
-      this.turn += minutes * 10;
-      this.mode = 'play';
-      this.say(this.rTurn.pick(TRAVEL_WALK), MSG_TRAVEL);
-      this.enterHood(dst.id, 'walk');
-      this.say(`${minutes} minutes on foot.`, 0x5a6a78);
-      this.passiveRecover(minutes * 10);
+      // Crossing into somebody else's turf can cost you at the barricade (M6.3).
+      const curTop = Object.entries(curState.control).sort((a, b) => b[1] - a[1])[0];
+      const dstTop = Object.entries(dstState.control).sort((a, b) => b[1] - a[1])[0];
+      if (!this.encounter && dstTop && dstTop[1] > 0.25 && dstTop[0] !== curTop?.[0] && this.rTurn.chance(0.25)) {
+        const pack = FACTIONS.find((p) => p.id === dstTop[0]);
+        if (pack) {
+          const toll = 10 + this.rTurn.int(0, 30);
+          this.encounter = { kind: 'toll', idx: -1, toll, faction: dstTop[0], dest: dst.id };
+          this.mode = 'menu';
+          this.say(`Concrete and chain-link across the avenue into ${dst.name}. ${pack.name} colors on every block of it.`, MSG_BAD);
+          this.menu = {
+            kind: 'encounter',
+            title: `${pack.name.toUpperCase()} CHECKPOINT`,
+            entries: [
+              { label: `Pay the toll ($${toll})`, sub: 'Commerce. Of a kind.', data: 'enc:toll_pay' },
+              { label: 'Push through', sub: 'They will take it personally. And follow.', data: 'enc:toll_fight' },
+              { label: 'Turn back', sub: 'The long way exists for a reason.', data: 'enc:toll_back' },
+            ],
+            sel: 0,
+          };
+          return;
+        }
+      }
+      this.walkTravel(dst.id);
       return;
     }
     const shared = curState.subway.filter((l) => dstState.subway.includes(l));
@@ -480,6 +553,17 @@ export class Game {
       return;
     }
     this.say('No way there from here: not adjacent, and no line still runs between you.', 0xc08050);
+  }
+
+  private walkTravel(dstId: string): void {
+    const minutes = 22 + this.rTurn.int(0, 18);
+    this.clockMin += minutes;
+    this.turn += minutes * 10;
+    this.mode = 'play';
+    this.say(this.rTurn.pick(TRAVEL_WALK), MSG_TRAVEL);
+    this.enterHood(dstId, 'walk');
+    this.say(`${minutes} minutes on foot.`, 0x5a6a78);
+    this.passiveRecover(minutes * 10);
   }
 
   private passiveRecover(turns: number): void {
@@ -667,7 +751,7 @@ export class Game {
         if (this.rTurn.chance(chance)) pile.push({ id: itemId, qty: 1 });
       }
       const cash = this.rTurn.int(0, 8 + arch.greed * 6);
-      if (cash > 0) this.map.desc.set(ti, `Pockets already turned out — almost. $${cash} sewn into the lining.`);
+      if (cash > 0) pile.push({ id: 'cash', qty: cash });
       this.say(`${name} drops and doesn't argue about it. The street is suddenly very interested in being elsewhere.`, MSG_BAD);
       this.panicWitnesses(x, y, gun ? 12 : 6);
       this.heat += gun ? 3 : 2;
@@ -896,6 +980,7 @@ export class Game {
     }
     if (a.k === 'cancel') {
       if (m.kind === 'origin') return; // you must have been someone
+      if (m.kind === 'encounter') return; // and this is not optional
       this.menu = null;
       this.mode = 'play';
       return;
@@ -925,7 +1010,8 @@ export class Game {
       }
       case 'shop':
       case 'bet':
-      case 'altar': {
+      case 'altar':
+      case 'encounter': {
         const data = m.entries[m.sel]?.data;
         if (data) this.runDataAction(data);
         else { this.menu = null; this.mode = 'play'; }
@@ -1045,6 +1131,11 @@ export class Game {
       return;
     }
     for (const s of pile) {
+      if (s.id === 'cash') {
+        this.pc.money += s.qty;
+        this.say(`You take the $${s.qty}. The dead don't tip.`, MSG_GOOD);
+        continue;
+      }
       const def = ITEM_BY_ID.get(s.id)!;
       this.pc.gain(s.id, s.qty);
       this.say(`Taken: ${s.qty > 1 ? `${s.qty}× ` : ''}${def.name}.`, MSG_GOOD);
@@ -1057,6 +1148,7 @@ export class Game {
     let rested = 0;
     for (; rested < 100; rested++) {
       this.endTurn(true);
+      if (this.mode !== 'play') break; // something demanded your attention
       if (this.actorNear(3)) {
         this.say('Something moves nearby. You come back up to street-alert.', MSG_BAD);
         break;
@@ -1166,6 +1258,9 @@ export class Game {
     this.mode = 'play';
     switch (verb) {
       case 'leave': break;
+      case 'enc':
+        this.resolveEncounter(a);
+        break;
       case 'buy': {
         const def = ITEM_BY_ID.get(a)!;
         const price = this.shopPrice(def.value, true);
@@ -1678,27 +1773,70 @@ export class Game {
     if (pc.hp <= 0) pc.hp = 1; // death arrives with combat (M2); hunger alone won't finish you yet
 
     this.actorsAct();
-    if (this.turn - this.lastAmbient > 25 && this.rTurn.chance(0.035)) {
-      if (!silent) this.say(this.rTurn.pick(AMBIENT), MSG_AMBIENT);
+    this.directorTick(silent);
+    if (this.turn - this.lastAmbient > 18 && this.rTurn.chance(0.05)) {
+      if (!silent) this.say(this.grammar.expand('#ambient#', this.rTurn), MSG_AMBIENT);
       this.lastAmbient = this.turn;
     }
 
-    // Tier 2: coarse tick over loaded neighborhoods every 100 turns.
+    // Tier 2: coarse tick over loaded neighborhoods every 100 turns. What
+    // happens on *this* block, you hear happen.
     if (this.city && this.turn - this.lastT2 >= 100) {
       this.lastT2 = this.turn;
-      this.city.tier2Tick(this.hoodId, this.hourOfDay(), this.dayOf());
+      const incidents = this.city.tier2Tick(this.hoodId, this.hourOfDay(), this.dayOf());
+      for (const inc of incidents) {
+        if (inc.hood !== this.hoodId) continue;
+        this.pendingIncidents.push(inc);
+        if (silent) continue;
+        switch (inc.kind) {
+          case 'death': this.say('Shouting, a few blocks over. It stops abruptly.', MSG_BAD); break;
+          case 'mugging': this.say('A scuffle echoes out of a side street. Footsteps scatter.', MSG_BAD); break;
+          case 'burglary': this.say('Glass tinkles somewhere behind the buildings. Unhurried. Professional.'); break;
+          case 'procession': this.say('Candlelight slides between the buildings. Humming, many voices.', 0xb8a0d8); break;
+        }
+      }
+      if (this.pendingIncidents.length > 4) this.pendingIncidents.splice(0, this.pendingIncidents.length - 4);
     }
-    // Tier 3: the city turns over daily.
+    // District pulse: every ~40 game-minutes the neighborhood says something
+    // to your face instead of burying it in a menu.
+    if (this.city && this.turn - this.lastPulse >= 400) {
+      this.lastPulse = this.turn;
+      const p = this.city.districtPulse(this.hoodId, this.hourOfDay());
+      if (p && !silent) this.say(p.text, p.fg);
+    }
+    // Tier 3: the city turns over daily; the news waits for the editions.
     const day = this.dayOf();
     if (this.city && day !== this.lastDay) {
       const first = this.lastDay === -1;
       this.lastDay = day;
       if (!first) {
         const { headlines } = this.city.tier3Daily(day);
-        if (!silent && headlines.length) {
-          this.say(`THE LEDGER, morning edition: ${headlines[0]}`, 0xc9b458);
-        }
+        this.pendingHeadlines.push(...headlines.slice(0, 3));
         this.resolveBets(day - 1);
+      }
+    }
+    // Editions: dawn and dusk, the Ledger finds you.
+    {
+      const h = this.hourOfDay();
+      const band = day * 3 + (h >= 18 ? 2 : h >= 7 ? 1 : 0);
+      if (this.lastEditionBand === -1) {
+        this.lastEditionBand = band; // booting mid-day shouldn't print stale news
+      } else if (band > this.lastEditionBand && this.city) {
+        const morning = band % 3 === 1;
+        this.lastEditionBand = band;
+        if (!silent && (morning || band % 3 === 2)) {
+          this.say(`THE LEDGER, ${morning ? 'morning' : 'evening'} edition —`, 0xc9b458);
+          const items: string[] = [];
+          if (this.pendingHeadlines.length) items.push(...this.pendingHeadlines.splice(0, 2));
+          else {
+            const fresh = this.city.rumors[this.city.rumors.length - 1];
+            if (fresh) items.push(this.city.expandRumor(fresh.text));
+          }
+          const g = this.city.fixtures[this.city.fixtures.length - 1];
+          if (morning && g) items.push(`Late score: ${g.home} ${g.homeScore}, ${g.away} ${g.awayScore}.`);
+          if (items.length) for (const it of items) this.say(`  ${it}`, 0xa8a8b0);
+          else this.say('  A quiet news day. Historically, this precedes the other kind.', 0x76869a);
+        }
       }
     }
     // Worship: standing near a holy altar at ritual hour earns favor.
@@ -1754,6 +1892,466 @@ export class Game {
       }
     }
     this.bets = remaining;
+  }
+
+  // --- the street director (M6): scenes and directed encounters -----------------------
+
+  /** Reuse a dead slot before growing the pool. -1 = the city is full. */
+  private allocActor(): number {
+    for (let i = 0; i < this.aCount; i++) if (!this.aAlive[i]) return i;
+    if (this.aCount < MAX_ACTORS) return this.aCount++;
+    return -1;
+  }
+
+  private directorTick(silent: boolean): void {
+    if (!this.pc) return;
+    if (this.scene) this.sceneTick(silent);
+    if (this.director.blackoutUntil > 0 && this.turn >= this.director.blackoutUntil) {
+      this.director.blackoutUntil = 0;
+      if (!silent) this.say('The lights stutter back on, block by block. Nobody cheers anymore.', MSG_AMBIENT);
+    }
+    if (this.mode === 'menu') return; // beats wait while you're mid-decision
+    const hood = this.seedById.get(this.hoodId)!;
+    const state = this.world.neighborhoods[this.hoodId];
+    const beat = this.director.tick(this.turn, {
+      hour: this.hourOfDay(),
+      areaType: hood.area_type,
+      state,
+      sceneActive: !!this.scene,
+      encounterReady: this.turn - this.director.lastEncounter > 150 && this.encounterCandidate() !== null,
+    });
+    if (beat) {
+      switch (beat.kind) {
+        case 'message':
+          if (!silent) {
+            const slot = GRAMMAR_RULES.street_beat ? '#street_beat#' : '#ambient#';
+            this.say(this.grammar.expand(slot, this.director.r, { neighborhood: this.hoodName() }), MSG_AMBIENT);
+          }
+          break;
+        case 'scene': {
+          // A Tier-2 death on this block takes precedence: stage the discovery.
+          const di = this.pendingIncidents.findIndex((p) => p.kind === 'death');
+          const def = di >= 0 ? BODY_DISCOVERED : beat.scene!;
+          if (di >= 0) this.pendingIncidents.splice(di, 1);
+          this.startScene(def, silent);
+          break;
+        }
+        case 'encounter':
+          this.startEncounter();
+          break;
+      }
+    }
+    // Floor: on a hot block, quiet doesn't last 400 turns.
+    if (!this.encounter && this.mode === 'play' && state.stats.crime > 0.6
+        && this.turn - this.director.lastEncounter > 400 && this.encounterCandidate() !== null) {
+      this.director.lastEncounter = this.turn;
+      this.startEncounter();
+    }
+  }
+
+  private startScene(def: StreetSceneDef, silent: boolean): void {
+    const r = this.director.r;
+    if (def.behavior === 'blackout') {
+      this.director.blackoutUntil = this.turn + r.int(60, 120);
+      if (!silent) this.saySceneText(def, def.text.start);
+      return;
+    }
+    // Anchor: a walkable spot 8–14 tiles out — close enough to matter.
+    let ax = -1, ay = -1;
+    for (let tries = 0; tries < 30; tries++) {
+      const ang = r.float() * Math.PI * 2;
+      const d = 8 + r.float() * 6;
+      const x = Math.round(this.px + Math.cos(ang) * d);
+      const y = Math.round(this.py + Math.sin(ang) * d);
+      if (this.map.inBounds(x, y) && this.map.walkable(x, y)) { ax = x; ay = y; break; }
+    }
+    if (ax < 0) return;
+    if (def.behavior === 'shakedown') {
+      // Posted at the nearest counter, if the block has one.
+      let best = -1, bestD = 25;
+      for (let i = 0; i < this.map.terrain.length; i++) {
+        if (this.map.terrain[i] !== T.Counter) continue;
+        const cx = i % this.map.w, cy = (i / this.map.w) | 0;
+        const d = Math.abs(cx - this.px) + Math.abs(cy - this.py);
+        if (d < bestD) { bestD = d; best = i; }
+      }
+      if (best >= 0) { ax = best % this.map.w; ay = (best / this.map.w) | 0; }
+    }
+    const actors: number[] = [];
+    const isBrawl = def.behavior === 'brawl';
+    const archIdx = def.spawn?.arch ? ARCHETYPES.findIndex((a) => a.id === def.spawn!.arch) : -1;
+    const want = isBrawl ? 2 : def.spawn ? r.int(def.spawn.count[0], def.spawn.count[1]) : 0;
+    for (let k = 0; k < want && actors.length < 12; k++) {
+      let sx = -1, sy = -1;
+      for (let t = 0; t < 14; t++) {
+        const x = ax + r.int(-2, 2), y = ay + r.int(-2, 2);
+        if (this.map.inBounds(x, y) && this.canStep(x, y)) { sx = x; sy = y; break; }
+      }
+      if (sx < 0) continue;
+      const i = this.allocActor();
+      if (i < 0) break;
+      const kind = def.behavior === 'swarm' ? AK.Rat : archIdx >= 0 ? AK.NPC : AK.Ped;
+      this.aKind[i] = kind;
+      this.aX[i] = sx; this.aY[i] = sy;
+      this.aHomeX[i] = ax; this.aHomeY[i] = ay;
+      this.aWorkX[i] = ax; this.aWorkY[i] = ay;
+      this.aDir[i] = r.int(0, 3);
+      this.aAlive[i] = 1;
+      this.aStun[i] = 0;
+      this.aFlags[i] = 0;
+      this.aState[i] = isBrawl ? ST_BRAWL : ST_SCENE;
+      this.aTarget[i] = -1;
+      this.aBarkCd[i] = r.int(20, 90);
+      if (kind === AK.NPC) {
+        const arch = ARCHETYPES[archIdx];
+        this.aArch[i] = archIdx;
+        this.aHp[i] = r.int(arch.hp[0], arch.hp[1]);
+        this.aColor[i] = ARCH_COLOR[arch.id] ?? 0x9a9aa4;
+      } else if (kind === AK.Rat) {
+        this.aHp[i] = 2;
+        this.aColor[i] = 0x8a6f52;
+      } else {
+        this.aHp[i] = 4;
+        this.aColor[i] = r.pick(PED_COLORS);
+      }
+      this.occ[this.map.idx(sx, sy)] = i;
+      actors.push(i);
+    }
+    if (isBrawl && actors.length >= 2) {
+      this.aTarget[actors[0]] = actors[1];
+      this.aTarget[actors[1]] = actors[0];
+    }
+    if (def.id === 'body_discovered') {
+      const ti = this.map.idx(ax, ay);
+      const pile = this.map.items.get(ti) ?? [];
+      pile.push({ id: 'corpse', qty: 1 });
+      this.map.items.set(ti, pile);
+    }
+    this.scene = {
+      def, x: ax, y: ay, actors,
+      endsAt: this.turn + r.int(def.duration[0], def.duration[1]),
+      lastTick: this.turn,
+    };
+    if (!silent) this.saySceneText(def, def.text.start);
+  }
+
+  private sceneTick(silent: boolean): void {
+    const sc = this.scene!;
+    const brawlDone = sc.def.behavior === 'brawl' && sc.actors.filter((i) => this.aAlive[i]).length < 2;
+    if (this.turn >= sc.endsAt || brawlDone) {
+      for (const i of sc.actors) if (this.aAlive[i]) this.removeActor(i);
+      if (!silent && sc.def.text.end) this.saySceneText(sc.def, sc.def.text.end);
+      this.scene = null;
+      return;
+    }
+    if (sc.def.text.tick && this.turn - sc.lastTick >= 12 && this.director.r.chance(0.3)) {
+      sc.lastTick = this.turn;
+      const d = Math.abs(sc.x - this.px) + Math.abs(sc.y - this.py);
+      if (!silent && d <= 20) this.saySceneText(sc.def, sc.def.text.tick);
+    }
+  }
+
+  private saySceneText(def: StreetSceneDef, text: string): void {
+    const FG: Record<string, number> = {
+      crowd: 0x9aa8d0, vigil: 0xb8a0d8, swarm: 0xa8a290,
+      brawl: 0xc08050, blackout: 0xc9b458, shakedown: 0xc08050,
+    };
+    this.say(this.grammar.expand(text, this.director.r, { neighborhood: this.hoodName() }), FG[def.behavior] ?? MSG_AMBIENT);
+  }
+
+  /** Keep a scene actor orbiting its anchor. */
+  private sceneLoiter(i: number): void {
+    const r = this.rTurn;
+    const x = this.aX[i], y = this.aY[i];
+    const d = Math.abs(x - this.aHomeX[i]) + Math.abs(y - this.aHomeY[i]);
+    if (d > 2) {
+      if (r.chance(0.8)) this.stepToward(i, this.aHomeX[i], this.aHomeY[i]);
+    } else if (r.chance(0.2)) {
+      const [dx, dy] = r.pick(DIRS);
+      if (this.canStep(x + dx, y + dy)
+        && Math.abs(x + dx - this.aHomeX[i]) + Math.abs(y + dy - this.aHomeY[i]) <= 2) {
+        this.moveActor(i, x + dx, y + dy);
+      }
+    }
+  }
+
+  /** Two people settling it themselves. The player is just weather here. */
+  private brawlAct(i: number): void {
+    const t = this.aTarget[i];
+    if (t < 0 || !this.aAlive[t]) {
+      this.aState[i] = ST_SCENE;
+      this.aTarget[i] = -1;
+      return;
+    }
+    const d = Math.abs(this.aX[i] - this.aX[t]) + Math.abs(this.aY[i] - this.aY[t]);
+    if (d === 1) {
+      if (this.rTurn.chance(0.45)) {
+        this.aHp[t] -= this.rTurn.int(1, 4);
+        const seen = this.visible[this.map.idx(this.aX[i], this.aY[i])] === 1;
+        if (this.aHp[t] <= 0) {
+          this.dieQuietly(t);
+        } else if (seen && this.rTurn.chance(0.15)) {
+          this.say(`${this.npcName(i)} and ${this.npcName(t)} trade hits. Neither is good at this. Both are committed.`, 0xc08050);
+        }
+      }
+    } else if (this.rTurn.chance(0.8)) {
+      this.stepToward(i, this.aX[t], this.aY[t]);
+    }
+  }
+
+  /** Someone close enough, with motive. */
+  private encounterCandidate(): { idx: number; kind: 'mugger' | 'watchman' } | null {
+    if (this.mode !== 'play' || !this.map) return null;
+    let mugger = -1, law = -1;
+    for (let i = 0; i < this.aCount; i++) {
+      if (!this.aAlive[i] || this.aKind[i] !== AK.NPC || this.aState[i] !== ST_SCHEDULE) continue;
+      const d = Math.abs(this.aX[i] - this.px) + Math.abs(this.aY[i] - this.py);
+      if (d > 8) continue;
+      const arch = this.archOf(i);
+      if (arch.mugger && mugger < 0) mugger = i;
+      if (arch.law && this.heat >= 2 && law < 0) law = i;
+    }
+    if (law >= 0) return { idx: law, kind: 'watchman' };
+    if (mugger >= 0) return { idx: mugger, kind: 'mugger' };
+    return null;
+  }
+
+  private startEncounter(): void {
+    if (this.encounter || this.mode !== 'play') return;
+    const state = this.world.neighborhoods[this.hoodId];
+    // A recruiter sometimes gets to you before the predators do.
+    if (!this.faith && state.stats.cult > 0.3 && this.director.r.chance(0.25)) {
+      const faiths = Object.entries(state.faiths).filter(([, v]) => v > 0.15);
+      if (faiths.length) {
+        this.startRecruiterEncounter(this.director.r.pick(faiths)[0]);
+        return;
+      }
+    }
+    const cand = this.encounterCandidate();
+    if (!cand) return;
+    this.director.lastEncounter = this.turn;
+    if (cand.kind === 'watchman') this.startWatchmanEncounter(cand.idx);
+    else this.startMuggerEncounter(cand.idx);
+  }
+
+  private startMuggerEncounter(i: number): void {
+    const name = this.npcName(i);
+    this.encounter = { kind: 'mugger', idx: i };
+    this.say(`${name} steps out ahead of you. "Wallet. Easy way or the other way."`, MSG_BAD);
+    this.menu = {
+      kind: 'encounter',
+      title: `${name.toUpperCase()} WANTS YOUR MONEY`,
+      entries: [
+        { label: 'Hand over some cash', sub: 'Money is replaceable. Allegedly.', data: 'enc:pay' },
+        { label: 'Talk them down', sub: 'CHA and streetwise against their nerve.', data: 'enc:talk' },
+        { label: 'Run for it', sub: 'AGI and athletics. Costs stamina either way.', data: 'enc:run' },
+        { label: 'Fight', sub: 'You move first. After that, who knows.', data: 'enc:fight' },
+      ],
+      sel: 0,
+    };
+    this.mode = 'menu';
+  }
+
+  private startWatchmanEncounter(i: number): void {
+    const name = this.npcName(i);
+    const bribe = 25 + Math.floor(this.heat) * 15;
+    this.encounter = { kind: 'watchman', idx: i, toll: bribe };
+    this.say(`${name} marks you across the street. "Hold it right there."`, MSG_BAD);
+    this.menu = {
+      kind: 'encounter',
+      title: `${name.toUpperCase()} HAS QUESTIONS`,
+      entries: [
+        { label: `Settle it here ($${bribe})`, sub: 'The oldest civic institution.', data: 'enc:bribe' },
+        { label: 'Comply', sub: 'A fine, a lecture, half an hour of your night.', data: 'enc:comply' },
+        { label: 'Bolt', sub: 'Heat goes up. So does your pulse.', data: 'enc:bolt' },
+      ],
+      sel: 0,
+    };
+    this.mode = 'menu';
+  }
+
+  private startRecruiterEncounter(faithId: string): void {
+    const pack = RELIGIONS.find((p) => p.id === faithId);
+    if (!pack) return;
+    this.encounter = { kind: 'recruiter', idx: -1, faith: faithId };
+    this.say('Someone falls into step beside you, holding pamphlets like a winning hand.', 0xb8a0d8);
+    this.menu = {
+      kind: 'encounter',
+      title: `THE ${pack.name.toUpperCase()} WOULD LIKE A WORD`,
+      entries: [
+        { label: 'Take the pamphlet', sub: `${pack.name}: it's this or nothing, they say.`, data: 'enc:pamphlet' },
+        { label: 'Keep walking', sub: 'The city respects a straight line.', data: 'enc:decline' },
+      ],
+      sel: 0,
+    };
+    this.mode = 'menu';
+  }
+
+  private resolveEncounter(choice: string): void {
+    const enc = this.encounter;
+    this.encounter = null;
+    if (!enc) return;
+    const i = enc.idx;
+    const name = i >= 0 ? this.npcName(i) : '';
+    switch (choice) {
+      case 'pay': {
+        const ask = Math.min(this.pc.money, 20 + this.rTurn.int(0, 60));
+        this.pc.money -= ask;
+        if (i >= 0) this.aState[i] = ST_FLEE;
+        this.say(ask > 0
+          ? `You hand over $${ask}. ${name} melts back into the scaffolding shadows.`
+          : `Your pockets are honestly empty. ${name} looks almost sorry for you, and leaves.`, MSG_BAD);
+        this.endTurn();
+        break;
+      }
+      case 'talk': {
+        const arch = i >= 0 ? this.archOf(i) : null;
+        const odds = 0.3 + this.pc.stats.CHA * 0.045 + this.pc.skill('streetwise') * 0.06 - (arch ? arch.courage * 0.02 : 0);
+        if (this.rTurn.chance(Math.max(0.1, Math.min(0.9, odds)))) {
+          if (i >= 0) this.aState[i] = ST_FLEE;
+          this.say(`You talk like you have nothing worth taking and friends worth knowing. ${name} buys it.`, MSG_GOOD);
+          if (this.pc.train('streetwise', 2)) this.say('Streetwise improves.', MSG_SYSTEM);
+        } else {
+          if (i >= 0) this.aState[i] = ST_HOSTILE;
+          this.say(`${name} is not in the market for a story.`, MSG_BAD);
+        }
+        this.endTurn();
+        break;
+      }
+      case 'run': {
+        this.pc.stamina = Math.max(0, this.pc.stamina - 15);
+        const odds = 0.45 + this.pc.stats.AGI * 0.04 + this.pc.skill('athletics') * 0.05 - (this.pc.has('limp') ? 0.2 : 0);
+        if (this.rTurn.chance(Math.max(0.1, Math.min(0.95, odds)))) {
+          if (i >= 0) {
+            // You break away; they lose the angle.
+            this.stepAwayPlayer(i);
+            this.aStun[i] = 3;
+          }
+          this.say('You go. Corners help. By the second one, nobody is behind you.', MSG_GOOD);
+          if (this.pc.train('athletics', 2)) this.say('Athletics improves.', MSG_SYSTEM);
+        } else {
+          if (i >= 0) { this.aState[i] = ST_HOSTILE; this.npcAttack(i); }
+          this.say('You stumble on the first step. Bad start.', MSG_BAD);
+        }
+        this.endTurn();
+        break;
+      }
+      case 'fight':
+        if (i >= 0) this.aState[i] = ST_HOSTILE;
+        this.say('You square up first. Sometimes that decides it.', MSG_BAD);
+        break;
+      case 'bribe': {
+        const cost = enc.toll ?? 25;
+        if (this.pc.money >= cost) {
+          this.pc.money -= cost;
+          this.heat = Math.max(0, this.heat - 2);
+          if (i >= 0) this.aState[i] = ST_SCHEDULE;
+          this.say(`$${cost} changes hands inside a handshake. ${name} remembers an appointment elsewhere.`, MSG_TRAVEL);
+        } else {
+          this.say('Your pockets disappoint everyone. It goes on your record instead.', MSG_BAD);
+          this.heat = 0;
+          this.advanceTime(30);
+        }
+        this.endTurn();
+        break;
+      }
+      case 'comply': {
+        const fine = Math.round(this.pc.money * 0.1);
+        this.pc.money -= fine;
+        this.heat = 0;
+        this.advanceTime(30);
+        this.say(`Half an hour of questions and a $${fine} 'administrative recovery'. The street feels longer after.`, MSG_BAD);
+        this.endTurn();
+        break;
+      }
+      case 'bolt':
+        this.heat += 2;
+        if (i >= 0) this.aState[i] = ST_HOSTILE;
+        this.say('You bolt. The whistle behind you is almost flattering.', MSG_BAD);
+        this.endTurn();
+        break;
+      case 'pamphlet': {
+        if (enc.faith) {
+          this.favor[enc.faith] = (this.favor[enc.faith] ?? 0) + 1;
+          const pack = RELIGIONS.find((p) => p.id === enc.faith);
+          this.say(`You take the pamphlet. ${pack?.name ?? 'They'} will remember that you listened. (favor ${this.favor[enc.faith]})`, 0xb8a0d8);
+        }
+        this.endTurn();
+        break;
+      }
+      case 'decline':
+        this.say('You keep walking. The pamphlet finds a less committed pocket.', MSG_AMBIENT);
+        this.endTurn();
+        break;
+      case 'toll_pay': {
+        const cost = enc.toll ?? 20;
+        this.pc.money = Math.max(0, this.pc.money - cost);
+        this.say(`$${cost} for the privilege of the sidewalk. The barricade swings open.`, MSG_BAD);
+        if (enc.dest) this.walkTravel(enc.dest);
+        break;
+      }
+      case 'toll_fight':
+        this.say('You walk through their checkpoint like it isn\'t one. They notice.', MSG_BAD);
+        if (enc.dest) {
+          this.walkTravel(enc.dest);
+          this.spawnCheckpointEnforcers(enc.faction);
+        }
+        break;
+      case 'toll_back':
+        this.say('Not tonight. You turn around; the barricade pretends not to gloat.');
+        break;
+      default:
+        break;
+    }
+  }
+
+  /** Push the player directly away from actor i, if the tile allows it. */
+  private stepAwayPlayer(i: number): void {
+    const dx = Math.sign(this.px - this.aX[i]), dy = Math.sign(this.py - this.aY[i]);
+    for (const [mx, my] of [[dx, dy], [dx, 0], [0, dy]]) {
+      const nx = this.px + mx * 2, ny = this.py + my * 2;
+      if (this.map.inBounds(nx, ny) && this.map.walkable(nx, ny) && this.occ[this.map.idx(nx, ny)] < 0) {
+        this.px = nx; this.py = ny;
+        return;
+      }
+    }
+  }
+
+  private advanceTime(minutes: number): void {
+    this.clockMin += minutes;
+    this.turn += minutes * 10;
+    this.passiveRecover(minutes * 10);
+  }
+
+  private spawnCheckpointEnforcers(_factionId?: string): void {
+    const archIdx = ARCHETYPES.findIndex((a) => a.id === 'enforcer');
+    if (archIdx < 0) return;
+    for (let k = 0; k < 2; k++) {
+      const i = this.allocActor();
+      if (i < 0) return;
+      let sx = -1, sy = -1;
+      for (let t = 0; t < 16; t++) {
+        const x = this.px + this.rTurn.int(-5, 5), y = this.py + this.rTurn.int(-5, 5);
+        if (Math.abs(x - this.px) + Math.abs(y - this.py) >= 3 && this.map.inBounds(x, y) && this.canStep(x, y)) { sx = x; sy = y; break; }
+      }
+      if (sx < 0) return;
+      const arch = ARCHETYPES[archIdx];
+      this.aKind[i] = AK.NPC;
+      this.aArch[i] = archIdx;
+      this.aX[i] = sx; this.aY[i] = sy;
+      this.aHomeX[i] = sx; this.aHomeY[i] = sy;
+      this.aWorkX[i] = sx; this.aWorkY[i] = sy;
+      this.aHp[i] = this.rTurn.int(arch.hp[0], arch.hp[1]);
+      this.aColor[i] = ARCH_COLOR[arch.id] ?? 0x9a9aa4;
+      this.aAlive[i] = 1;
+      this.aStun[i] = 0;
+      this.aFlags[i] = 0;
+      this.aTarget[i] = -1;
+      this.aState[i] = ST_HOSTILE;
+      this.aBarkCd[i] = 0;
+      this.occ[this.map.idx(sx, sy)] = i;
+    }
+    this.say('Two sets of boots leave the checkpoint behind you, unhurried.', MSG_BAD);
   }
 
   private removeActor(i: number): void {
@@ -1891,15 +2489,29 @@ export class Game {
               if (dist > 12 && r.chance(0.12)) this.aState[i] = ST_SCHEDULE;
               break;
             }
+            case ST_SCENE: {
+              if (seen && dist <= 2 && this.aBarkCd[i] === 0 && r.chance(0.05)) {
+                this.say(`${this.npcName(i)}: ${r.pick(arch.barks)}`, MSG_BARK);
+                this.aBarkCd[i] = 90;
+              }
+              this.sceneLoiter(i);
+              break;
+            }
+            case ST_BRAWL: {
+              this.brawlAct(i);
+              break;
+            }
             default: {
-              if (arch.mugger && dist <= 4 && seen && r.chance((0.012 + (1 - this.daylight()) * 0.02) * (this.hasBoon('white_noise') ? 0.4 : 1))) {
-                this.aState[i] = ST_HOSTILE;
-                this.say(`${this.npcName(i)} steps out ahead of you. "Wallet. Easy way or the other way."`, MSG_BAD);
+              // Predators and the law open a conversation, not a swing (M6.3).
+              if (this.mode === 'play' && !this.encounter && arch.mugger && dist <= 4 && seen
+                  && r.chance((0.012 + (1 - this.daylight()) * 0.02) * (this.hasBoon('white_noise') ? 0.4 : 1))) {
+                this.director.lastEncounter = this.turn;
+                this.startMuggerEncounter(i);
                 break;
               }
-              if (arch.law && this.heat >= 3 && seen && dist <= 6 && r.chance(0.1)) {
-                this.aState[i] = ST_HOSTILE;
-                this.say(`${this.npcName(i)} marks you across the street. "Hold it right there."`, MSG_BAD);
+              if (this.mode === 'play' && !this.encounter && arch.law && this.heat >= 2 && seen && dist <= 6 && r.chance(0.1)) {
+                this.director.lastEncounter = this.turn;
+                this.startWatchmanEncounter(i);
                 break;
               }
               if (seen && dist <= 2 && this.aBarkCd[i] === 0 && r.chance(0.05)) {
@@ -1933,6 +2545,11 @@ export class Game {
           if (this.aState[i] === ST_PANIC) {
             this.stepAway(i, px, py);
             if (r.chance(0.1)) this.aState[i] = ST_SCHEDULE;
+            break;
+          }
+          if (this.aState[i] === ST_SCENE) {
+            if (seen && dist <= 2 && r.chance(0.04)) this.say(r.pick(PED_BARKS), MSG_BARK);
+            this.sceneLoiter(i);
             break;
           }
           if (seen && dist <= 2 && r.chance(0.04)) this.say(r.pick(PED_BARKS), MSG_BARK);
@@ -2017,7 +2634,8 @@ export class Game {
     const m = this.map;
     const camX = Math.max(0, Math.min(this.px - (viewW >> 1), m.w - viewW));
     const camY = Math.max(0, Math.min(this.py - (viewH >> 1), m.h - viewH));
-    const a = this.daylight();
+    const blackout = this.turn < this.director.blackoutUntil;
+    const a = blackout ? Math.min(0.18, this.daylight()) : this.daylight();
     const mr = Math.round(256 * (0.58 + 0.42 * a));
     const mg = Math.round(256 * (0.62 + 0.38 * a));
     const mb = Math.round(256 * (0.88 + 0.12 * a));
@@ -2051,7 +2669,7 @@ export class Game {
         } else { glyph[vi] = m.glyph[i]; fg[vi] = dimFg(m.fg[i]); bg[vi] = dimBg(m.bg[i]); }
       }
     }
-    if (a < 0.7) {
+    if (a < 0.7 && !blackout) {
       const warm = 1 - a;
       for (const li of m.lamps) {
         const lx = li % m.w, ly = (li / m.w) | 0;
@@ -2361,7 +2979,7 @@ export class Game {
       };
     }
     return {
-      version: 1,
+      version: 2,
       seed: this.seed,
       turn: this.turn, clockMin: this.clockMin, hoodId: this.hoodId, px: this.px, py: this.py,
       pc: { ...this.pc },
@@ -2371,6 +2989,9 @@ export class Game {
       faith: this.faith, favor: this.favor, quest: this.quest, bets: this.bets,
       heat: this.heat, heatByBorough: this.heatByBorough,
       lastDay: this.lastDay, lastT2: this.lastT2, lastRitual: this.lastRitual,
+      lastPulse: this.lastPulse, lastEditionBand: this.lastEditionBand,
+      pendingHeadlines: this.pendingHeadlines,
+      director: { lastBeat: this.director.lastBeat, lastEncounter: this.director.lastEncounter },
       city: this.city.dump(),
       maps,
     };
@@ -2415,6 +3036,11 @@ export class Game {
     this.lastDay = d.lastDay;
     this.lastT2 = d.lastT2;
     this.lastRitual = d.lastRitual;
+    this.lastPulse = d.lastPulse ?? d.turn; // v1 saves: start the cadence fresh
+    this.lastEditionBand = d.lastEditionBand ?? -1;
+    this.pendingHeadlines = d.pendingHeadlines ?? [];
+    this.director.lastBeat = d.director?.lastBeat ?? d.turn;
+    this.director.lastEncounter = d.director?.lastEncounter ?? d.turn;
     this.pendingMapDiffs = d.maps;
     this.menu = null;
     this.mode = 'play';

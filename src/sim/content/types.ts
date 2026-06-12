@@ -199,6 +199,25 @@ export interface ArchetypeDef {
   service?: string;
 }
 
+// --- street scenes (M6 director beats; staged near the player) ---------------
+
+export type SceneBehavior = 'crowd' | 'vigil' | 'swarm' | 'brawl' | 'blackout' | 'shakedown';
+
+export interface StreetSceneDef {
+  id: string;
+  weight: number; // 1-5 relative frequency
+  behavior: SceneBehavior;
+  pre?: {
+    hourMin?: number; // active hours; wraps midnight when hourMin > hourMax
+    hourMax?: number;
+    stat?: Partial<Record<StatKey, number>>; // neighborhood stat minimums
+    areaTypes?: AreaType[];
+  };
+  spawn?: { arch?: string; count: [number, number] };
+  duration: [number, number]; // turns
+  text: { start: string; tick?: string; end?: string }; // grammar refs or literals
+}
+
 // --- world state (output of the 2026→2036 history sim) -----------------------
 
 export interface ResidueStamp {

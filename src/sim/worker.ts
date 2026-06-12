@@ -77,7 +77,7 @@ self.onmessage = async (e: MessageEvent<MainMsg>) => {
       const payload = await gzip(JSON.stringify(game.serialize()));
       const sm = game.saveMeta();
       post(
-        { t: 'saved', data: payload, meta: { seed: game.seed, version: 1, ...sm } },
+        { t: 'saved', data: payload, meta: { seed: game.seed, version: 2, ...sm } },
         [payload],
       );
       break;

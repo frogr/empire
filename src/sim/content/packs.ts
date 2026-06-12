@@ -3,7 +3,7 @@
 // must ship in their own "grammars" section (CI validates coverage).
 
 import type {
-  ArchetypeDef, EventTemplate, FactionPack, ItemDef, ReligionPack,
+  ArchetypeDef, EventTemplate, FactionPack, ItemDef, ReligionPack, StreetSceneDef,
 } from './types';
 import type { GrammarRules } from './grammar';
 
@@ -13,6 +13,7 @@ export interface ContentPack {
   factions?: FactionPack[];
   items?: ItemDef[];
   archetypes?: ArchetypeDef[];
+  scenes?: StreetSceneDef[];
   grammars?: GrammarRules;
 }
 

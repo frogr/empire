@@ -35,24 +35,7 @@ export const GRAFFITI = [
   'BLACKOUT BABIES RUN THIS BLOCK',
 ];
 
-export const AMBIENT = [
-  'A siren wails somewhere south, loses interest, stops.',
-  'The ground hums — a train passing somewhere below. So some line still runs.',
-  'Steam coils up from a manhole and unknots itself.',
-  'A dog barks twice, professionally.',
-  'Somewhere above, a window slams shut.',
-  'Bass thuds from a basement. The party never acknowledged the decade.',
-  'A drone whines past, low, carrying something wrapped in plastic.',
-  'The smell of fried plantains arrives from nowhere and leaves the same way.',
-  'A bottle rolls half a block on its own. Wind, probably.',
-  'Two cats negotiate territory on a fire escape, loudly.',
-  'A helicopter chops the air far off, circling something that is not you. Yet.',
-  'Neon buzzes overhead like a wasp in a jar.',
-  'Rain is coming. The asphalt smells like a struck match.',
-  'A voice from a rooftop, chanting. It stops when you look up.',
-  'Someone laughs three blocks away. It does not sound like a joke landed.',
-  'A payphone rings. There has not been a payphone on this block in twenty years.',
-];
+// AMBIENT moved to grammars.json '#ambient#' so content packs can extend it.
 
 export const PED_BARKS = [
   '"Spare a transfer?"',

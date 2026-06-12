@@ -12,7 +12,7 @@ import originsJson from '../../../content/origins.json';
 import archetypesJson from '../../../content/archetypes.json';
 import citymapJson from '../../../content/citymap.json';
 import type {
-  ArchetypeDef, EventTemplate, FactionPack, ItemDef, LeaguePack, OriginDef, ReligionPack,
+  ArchetypeDef, EventTemplate, FactionPack, ItemDef, LeaguePack, OriginDef, ReligionPack, StreetSceneDef,
 } from './types';
 import type { GrammarRules } from './grammar';
 
@@ -48,6 +48,8 @@ export const ITEMS = merged(itemsJson.items as unknown as ItemDef[], (p) => p.it
 export const ORIGINS = originsJson.origins as unknown as OriginDef[];
 export const ITEM_BY_ID = new Map(ITEMS.map((i) => [i.id, i]));
 export const ARCHETYPES = merged(archetypesJson.archetypes as unknown as ArchetypeDef[], (p) => p.archetypes);
+// Street scenes live entirely in packs; the base game ships none.
+export const SCENES = merged([] as StreetSceneDef[], (p) => p.scenes);
 // The hand-tuned NYC silhouette behind the city map screen (scripts/gen_citymap.py).
 // Chars: '~' water · 'm/b/q/x/s' = manhattan/brooklyn/queens/bronx/staten_island land.
 export const CITYMAP = citymapJson as { w: number; h: number; rows: string[] };

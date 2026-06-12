@@ -1,0 +1,771 @@
+{
+  "scenes": [
+    {
+      "id": "vendor_argument",
+      "weight": 4,
+      "behavior": "crowd",
+      "pre": {
+        "hourMin": 10,
+        "hourMax": 20,
+        "areaTypes": ["grid_dense", "rowhouse"]
+      },
+      "spawn": { "arch": "vendor", "count": [4, 7] },
+      "duration": [20, 40],
+      "text": {
+        "start": "#scene_vendor_argument_open#",
+        "tick": "#scene_vendor_argument_mid#",
+        "end": "#scene_vendor_argument_close#"
+      }
+    },
+    {
+      "id": "preacher_corner",
+      "weight": 3,
+      "behavior": "crowd",
+      "pre": {
+        "hourMin": 12,
+        "hourMax": 19,
+        "areaTypes": ["grid_dense", "rowhouse", "projects"]
+      },
+      "spawn": { "arch": "preacher", "count": [3, 6] },
+      "duration": [30, 60],
+      "text": {
+        "start": "#scene_preacher_open#",
+        "tick": "#scene_preacher_mid#",
+        "end": "#scene_preacher_close#"
+      }
+    },
+    {
+      "id": "salvage_find",
+      "weight": 3,
+      "behavior": "crowd",
+      "pre": {
+        "hourMin": 8,
+        "hourMax": 17,
+        "areaTypes": ["industrial", "waterfront", "projects"]
+      },
+      "spawn": { "count": [5, 9] },
+      "duration": [25, 45],
+      "text": {
+        "start": "#scene_salvage_open#",
+        "tick": "#scene_salvage_mid#",
+        "end": "#scene_salvage_close#"
+      }
+    },
+    {
+      "id": "league_argument",
+      "weight": 4,
+      "behavior": "crowd",
+      "pre": {
+        "hourMin": 16,
+        "hourMax": 23,
+        "areaTypes": ["rowhouse", "grid_dense", "projects"]
+      },
+      "spawn": { "count": [4, 8] },
+      "duration": [20, 35],
+      "text": {
+        "start": "#scene_league_open#",
+        "tick": "#scene_league_mid#",
+        "end": "#scene_league_close#"
+      }
+    },
+    {
+      "id": "cult_sidewalk_sermon",
+      "weight": 2,
+      "behavior": "crowd",
+      "pre": {
+        "hourMin": 14,
+        "hourMax": 21,
+        "stat": { "cult": 0.5 },
+        "areaTypes": ["rowhouse", "grid_dense", "civic"]
+      },
+      "spawn": { "arch": "preacher", "count": [3, 5] },
+      "duration": [30, 55],
+      "text": {
+        "start": "#scene_cult_crowd_open#",
+        "tick": "#scene_cult_crowd_mid#",
+        "end": "#scene_cult_crowd_close#"
+      }
+    },
+    {
+      "id": "bodega_busker",
+      "weight": 3,
+      "behavior": "crowd",
+      "pre": {
+        "hourMin": 14,
+        "hourMax": 22,
+        "areaTypes": ["rowhouse", "grid_dense"]
+      },
+      "spawn": { "count": [4, 7] },
+      "duration": [25, 50],
+      "text": {
+        "start": "#scene_busker_open#",
+        "tick": "#scene_busker_mid#",
+        "end": "#scene_busker_close#"
+      }
+    },
+    {
+      "id": "stoop_wake",
+      "weight": 2,
+      "behavior": "vigil",
+      "pre": {
+        "hourMin": 18,
+        "hourMax": 2,
+        "areaTypes": ["rowhouse", "projects"]
+      },
+      "spawn": { "count": [4, 8] },
+      "duration": [40, 80],
+      "text": {
+        "start": "#scene_stoop_wake_open#",
+        "tick": "#scene_stoop_wake_mid#",
+        "end": "#scene_stoop_wake_close#"
+      }
+    },
+    {
+      "id": "faith_procession",
+      "weight": 2,
+      "behavior": "vigil",
+      "pre": {
+        "hourMin": 19,
+        "hourMax": 23,
+        "stat": { "faith": 0.4 },
+        "areaTypes": ["rowhouse", "civic", "grid_dense"]
+      },
+      "spawn": { "arch": "preacher", "count": [5, 10] },
+      "duration": [30, 60],
+      "text": {
+        "start": "#scene_procession_open#",
+        "tick": "#scene_procession_mid#",
+        "end": "#scene_procession_close#"
+      }
+    },
+    {
+      "id": "shot_memorial",
+      "weight": 3,
+      "behavior": "vigil",
+      "pre": {
+        "hourMin": 17,
+        "hourMax": 1,
+        "stat": { "crime": 0.4 },
+        "areaTypes": ["rowhouse", "projects", "grid_dense"]
+      },
+      "spawn": { "count": [3, 6] },
+      "duration": [50, 100],
+      "text": {
+        "start": "#scene_memorial_open#",
+        "tick": "#scene_memorial_mid#",
+        "end": "#scene_memorial_close#"
+      }
+    },
+    {
+      "id": "cult_candlelight",
+      "weight": 2,
+      "behavior": "vigil",
+      "pre": {
+        "hourMin": 21,
+        "hourMax": 3,
+        "stat": { "cult": 0.6 },
+        "areaTypes": ["rowhouse", "civic", "waterfront"]
+      },
+      "spawn": { "arch": "preacher", "count": [4, 8] },
+      "duration": [40, 70],
+      "text": {
+        "start": "#scene_cult_vigil_open#",
+        "tick": "#scene_cult_vigil_mid#",
+        "end": "#scene_cult_vigil_close#"
+      }
+    },
+    {
+      "id": "rats_trash_boil",
+      "weight": 4,
+      "behavior": "swarm",
+      "pre": {
+        "hourMin": 22,
+        "hourMax": 5,
+        "areaTypes": ["grid_dense", "industrial", "projects", "rowhouse"]
+      },
+      "duration": [15, 30],
+      "text": {
+        "start": "#scene_rats_open#",
+        "tick": "#scene_rats_mid#",
+        "end": "#scene_rats_close#"
+      }
+    },
+    {
+      "id": "rats_basement_breach",
+      "weight": 3,
+      "behavior": "swarm",
+      "pre": {
+        "hourMin": 0,
+        "hourMax": 6,
+        "areaTypes": ["industrial", "projects", "rowhouse"]
+      },
+      "duration": [15, 35],
+      "text": {
+        "start": "#scene_rats_basement_open#",
+        "tick": "#scene_rats_mid#",
+        "end": "#scene_rats_basement_close#"
+      }
+    },
+    {
+      "id": "rats_halal_cart",
+      "weight": 3,
+      "behavior": "swarm",
+      "pre": {
+        "hourMin": 2,
+        "hourMax": 7,
+        "areaTypes": ["grid_dense", "rowhouse"]
+      },
+      "duration": [10, 25],
+      "text": {
+        "start": "#scene_rats_halal_open#",
+        "tick": "#scene_rats_mid#",
+        "end": "#scene_rats_close#"
+      }
+    },
+    {
+      "id": "rats_scaffolding",
+      "weight": 2,
+      "behavior": "swarm",
+      "pre": {
+        "hourMin": 23,
+        "hourMax": 5,
+        "areaTypes": ["grid_dense", "rowhouse", "civic"]
+      },
+      "duration": [15, 30],
+      "text": {
+        "start": "#scene_rats_scaffold_open#",
+        "tick": "#scene_rats_mid#",
+        "end": "#scene_rats_close#"
+      }
+    },
+    {
+      "id": "drunk_brawl",
+      "weight": 4,
+      "behavior": "brawl",
+      "pre": {
+        "hourMin": 21,
+        "hourMax": 4,
+        "areaTypes": ["rowhouse", "grid_dense", "projects"]
+      },
+      "spawn": { "count": [2, 4] },
+      "duration": [15, 30],
+      "text": {
+        "start": "#scene_drunk_brawl_open#",
+        "tick": "#scene_brawl_mid#",
+        "end": "#scene_drunk_brawl_close#"
+      }
+    },
+    {
+      "id": "hustle_gone_wrong",
+      "weight": 3,
+      "behavior": "brawl",
+      "pre": {
+        "hourMin": 18,
+        "hourMax": 3,
+        "stat": { "crime": 0.4 },
+        "areaTypes": ["projects", "rowhouse", "industrial"]
+      },
+      "spawn": { "arch": "hustler", "count": [2, 4] },
+      "duration": [15, 25],
+      "text": {
+        "start": "#scene_hustle_brawl_open#",
+        "tick": "#scene_brawl_mid#",
+        "end": "#scene_hustle_brawl_close#"
+      }
+    },
+    {
+      "id": "crew_beef",
+      "weight": 2,
+      "behavior": "brawl",
+      "pre": {
+        "hourMin": 20,
+        "hourMax": 4,
+        "stat": { "crime": 0.6 },
+        "areaTypes": ["projects", "rowhouse"]
+      },
+      "spawn": { "arch": "enforcer", "count": [3, 5] },
+      "duration": [10, 20],
+      "text": {
+        "start": "#scene_crew_brawl_open#",
+        "tick": "#scene_brawl_mid#",
+        "end": "#scene_crew_brawl_close#"
+      }
+    },
+    {
+      "id": "scaffolding_brawl",
+      "weight": 2,
+      "behavior": "brawl",
+      "pre": {
+        "hourMin": 7,
+        "hourMax": 15,
+        "areaTypes": ["grid_dense", "civic", "rowhouse"]
+      },
+      "spawn": { "arch": "technician", "count": [2, 3] },
+      "duration": [15, 30],
+      "text": {
+        "start": "#scene_scaffold_brawl_open#",
+        "tick": "#scene_brawl_mid#",
+        "end": "#scene_scaffold_brawl_close#"
+      }
+    },
+    {
+      "id": "grid_blackout_night",
+      "weight": 3,
+      "behavior": "blackout",
+      "pre": {
+        "hourMin": 20,
+        "hourMax": 5,
+        "stat": { "infrastructure": 0.0 },
+        "areaTypes": ["rowhouse", "projects", "grid_dense"]
+      },
+      "duration": [40, 80],
+      "text": {
+        "start": "#scene_blackout_night_open#",
+        "tick": "#scene_blackout_mid#",
+        "end": "#scene_blackout_end#"
+      }
+    },
+    {
+      "id": "grid_blackout_day",
+      "weight": 2,
+      "behavior": "blackout",
+      "pre": {
+        "hourMin": 9,
+        "hourMax": 17,
+        "areaTypes": ["grid_dense", "industrial", "civic"]
+      },
+      "duration": [30, 60],
+      "text": {
+        "start": "#scene_blackout_day_open#",
+        "tick": "#scene_blackout_mid#",
+        "end": "#scene_blackout_end#"
+      }
+    },
+    {
+      "id": "rolling_blackout_industrial",
+      "weight": 2,
+      "behavior": "blackout",
+      "pre": {
+        "areaTypes": ["industrial", "waterfront"]
+      },
+      "duration": [35, 70],
+      "text": {
+        "start": "#scene_blackout_industrial_open#",
+        "tick": "#scene_blackout_mid#",
+        "end": "#scene_blackout_end#"
+      }
+    },
+    {
+      "id": "shop_shakedown",
+      "weight": 3,
+      "behavior": "shakedown",
+      "pre": {
+        "hourMin": 10,
+        "hourMax": 18,
+        "stat": { "crime": 0.5 },
+        "areaTypes": ["grid_dense", "rowhouse"]
+      },
+      "spawn": { "arch": "enforcer", "count": [2, 4] },
+      "duration": [20, 40],
+      "text": {
+        "start": "#scene_shakedown_open#",
+        "tick": "#scene_shakedown_mid#",
+        "end": "#scene_shakedown_close#"
+      }
+    },
+    {
+      "id": "dockside_shakedown",
+      "weight": 2,
+      "behavior": "shakedown",
+      "pre": {
+        "hourMin": 7,
+        "hourMax": 17,
+        "stat": { "crime": 0.4 },
+        "areaTypes": ["waterfront", "industrial"]
+      },
+      "spawn": { "arch": "enforcer", "count": [2, 4] },
+      "duration": [20, 45],
+      "text": {
+        "start": "#scene_dock_shakedown_open#",
+        "tick": "#scene_shakedown_mid#",
+        "end": "#scene_dock_shakedown_close#"
+      }
+    },
+    {
+      "id": "cult_shakedown",
+      "weight": 2,
+      "behavior": "shakedown",
+      "pre": {
+        "hourMin": 12,
+        "hourMax": 20,
+        "stat": { "cult": 0.6 },
+        "areaTypes": ["rowhouse", "civic", "grid_dense"]
+      },
+      "spawn": { "arch": "preacher", "count": [2, 3] },
+      "duration": [25, 50],
+      "text": {
+        "start": "#scene_cult_shakedown_open#",
+        "tick": "#scene_cult_shakedown_mid#",
+        "end": "#scene_shakedown_close#"
+      }
+    }
+  ],
+  "grammars": {
+    "scene_vendor_argument_open": [
+      "A ring of shoulders closes around two vendors arguing over the same corner. Nobody's leaving.",
+      "The halal cart and the bodega extension table are three feet apart. Both owners are explaining the law.",
+      "A folding table goes over. Produce rolls into the gutter. People watch like it's pay-per-view.",
+      "Two vendors are nose-to-nose outside the scaffolding. At least six people have their phones up.",
+      "A crowd stops moving on {neighborhood}. Someone's cart is in someone else's spot. This is a formal dispute now."
+    ],
+    "scene_vendor_argument_mid": [
+      "The argument found a referee. The referee is also a vendor.",
+      "Someone's grandmother arrived. The situation may or may not improve.",
+      "A cop walks past without stopping, which everyone notes.",
+      "The tally of wrongs goes back to 2031. Both sides have documentation."
+    ],
+    "scene_vendor_argument_close": [
+      "The crowd disperses. The carts are six inches further apart than before. Progress.",
+      "Someone paid someone. Nobody admits what for.",
+      "The vendors are shaking hands. The handshake takes about thirty seconds.",
+      "Nothing resolved. Everyone goes back to what they were doing. The corner still has two carts."
+    ],
+    "scene_preacher_open": [
+      "A preacher found a milk crate on {neighborhood} and is using it. He's got a crowd.",
+      "A woman with a bullhorn that doesn't need a bullhorn is working the corner. People slowed.",
+      "Someone's preaching from the steps. The crowd isn't moving — they want to see where this goes.",
+      "A man in a gold raincoat is delivering the end times to a bus stop. Three people missed their bus.",
+      "The sermon started at the crosswalk and spread. Twenty people now, none of them tourists."
+    ],
+    "scene_preacher_mid": [
+      "The preacher hits a line that makes someone holler back. That's a good sign for him.",
+      "He's naming names now. The names are real. The crowd is bigger.",
+      "She paused to let a truck pass, then picked up mid-sentence like it was planned.",
+      "The crowd isn't shrinking. Someone brought their kid up to listen."
+    ],
+    "scene_preacher_close": [
+      "The milk crate goes back under the arm. The crowd breaks apart like it was never there.",
+      "He steps down and immediately sells three pamphlets. The pamphlets are hand-stapled.",
+      "She walks away still talking. Half the crowd follows half a block.",
+      "The corner is empty. Someone left a shoe, which is confusing."
+    ],
+    "scene_salvage_open": [
+      "Someone opened a cellar door and found something worth fighting over. There's a crowd.",
+      "A caved-in storefront got pushed in further and now it's a dig site. People are watching.",
+      "A pile of salvage from the abandoned lot is getting sorted in public. People are making offers.",
+      "The vacant lot on {neighborhood} gave something up. A crowd is managing the find."
+    ],
+    "scene_salvage_mid": [
+      "The arguing has a structure now. There's a mediator. He's charging for it.",
+      "Someone brought a cart. Someone else brought a tarp. A market is forming.",
+      "Inventory is being done out loud. Bids are informal but taken seriously."
+    ],
+    "scene_salvage_close": [
+      "The lot is empty again. People are walking away with things under their arms.",
+      "Whatever was worth taking is taken. The rest stays in the gutter.",
+      "The find was split. Nobody agrees it was fair. It was still split."
+    ],
+    "scene_league_open": [
+      "Someone brought a portable screen outside and the sidewalk is watching the {neighborhood} game.",
+      "The call was wrong and half the block has decided to explain why to the other half.",
+      "The game is on in every window. The argument about the game is in the street.",
+      "A table of cards stopped mid-hand because the league score just changed. There are feelings.",
+      "Everyone on the corner has an opinion about the ref. They're sharing it at volume."
+    ],
+    "scene_league_mid": [
+      "The score changed again. The mood changed with it.",
+      "An old head is explaining how the '29 season was different. Nobody disagrees but nobody agrees.",
+      "Someone owes someone twenty now. The debt is being remembered loudly."
+    ],
+    "scene_league_close": [
+      "The game's over. The losing fans don't leave immediately.",
+      "The card table reconvenes. The debt question is still open.",
+      "The screen gets unplugged. The sidewalk goes back to sidewalk business."
+    ],
+    "scene_cult_crowd_open": [
+      "A speaker for one of the new faiths is working {neighborhood}. The crowd isn't skeptical enough to leave.",
+      "Someone set up a table with pamphlets and frequency charts. There's a line.",
+      "The congregation spilled sidewalk — forty people listening to doctrine read off a phone.",
+      "A man with antenna jewelry is explaining signal theology at the corner. He's good at it."
+    ],
+    "scene_cult_crowd_mid": [
+      "The doctrine got to the part about the old grid. People are nodding.",
+      "Someone asked a question that landed. The speaker went quiet, then answered.",
+      "A pamphlet changes hands. Two people argue the margin notes."
+    ],
+    "scene_cult_crowd_close": [
+      "The table folds up. Three people got a number. Unclear whose number.",
+      "The crowd disperses by degrees. A few linger to argue among themselves.",
+      "The pamphlets are gone. The table stays. Someone will take it by morning."
+    ],
+    "scene_busker_open": [
+      "Someone strung two speakers off a fire escape and is playing to {neighborhood}. A crowd formed below.",
+      "A trio in the bodega doorway is doing something that requires a hat on the ground. It's working.",
+      "A kid with a two-piece kit is drumming on the sidewalk and drawing a crowd.",
+      "A guy with a busted keyboard amp and extraordinary confidence is performing outside the check-cashing place."
+    ],
+    "scene_busker_mid": [
+      "The hat got heavier. The performer noticed.",
+      "Someone's dancing. Nobody looks at them directly but nobody moves away.",
+      "A bodega cat climbed into the speaker stack. Everyone agrees it improved the sound."
+    ],
+    "scene_busker_close": [
+      "The last note hangs. The crowd claps once and scatters.",
+      "The gear goes into a rolling cart. Two songs later and the sidewalk is regular again.",
+      "Someone offers a gig, hands over a card, walks away. The musician looks at the card for a long time."
+    ],
+    "scene_stoop_wake_open": [
+      "Candles line the stoop on {neighborhood}. Flowers, a photo, two folding chairs that fill up and empty and fill.",
+      "A memorial stoop on {neighborhood}: balloons, candles, a basketball jersey in a zip bag. People sitting.",
+      "There's a corner shrine set up — the kind that means someone died within the last week. People are coming.",
+      "Thirty people on and around a stoop. Someone died here recently. The candles are new."
+    ],
+    "scene_stoop_wake_mid": [
+      "Someone plays a song from a phone. Everyone recognizes it. Nobody says anything.",
+      "An older woman is holding someone up. It isn't going to help but it isn't supposed to.",
+      "A man brings water and paper cups out of the building. Nobody asked. Everyone takes one."
+    ],
+    "scene_stoop_wake_close": [
+      "The vigil breaks down by midnight. The candles stay through the week.",
+      "People peel off in pairs. The photo stays on the stoop under a bag.",
+      "The crowd is gone. The flowers haven't moved. Neither has the jersey."
+    ],
+    "scene_procession_open": [
+      "A faith procession is coming down {neighborhood} — candles in paper cups, chanting at half-tempo.",
+      "Forty people in the street, moving slow, singing. Traffic waits. Nobody honks.",
+      "The congregation walks in two lines down {neighborhood}, candles out, drone hymn on a portable speaker.",
+      "A religious procession has the street. Participants in pale cloth, candles in both hands."
+    ],
+    "scene_procession_mid": [
+      "The chant is the same line repeated. It's getting to you a little.",
+      "The procession slows at a corner. A prayer. Then it moves again.",
+      "Someone drops a candle. Three people stop to relight it before it goes dark."
+    ],
+    "scene_procession_close": [
+      "The procession turns down a side street and the sound fades in stages.",
+      "The street empties by the time they're done. Wax drips on the pavement stay.",
+      "The last participant is a child who keeps looking back to see if anyone is watching. Someone is."
+    ],
+    "scene_memorial_open": [
+      "The block on {neighborhood} has a fresh shrine — printed photo, candles, flowers taped to a pole.",
+      "Someone died on this corner in the last few days. The people who knew him are coming out.",
+      "A lamppost on {neighborhood} is dressed in zip ties and plastic flowers. A crowd keeps the street.",
+      "There's a memorial forming around a stairwell entrance. The candles have a little wax left."
+    ],
+    "scene_memorial_mid": [
+      "An argument starts, quiet, about what happened. It doesn't resolve.",
+      "A kid puts a flower down, steps back, looks at it, leaves.",
+      "Someone prints a new photo and tapes it over the one the rain got to."
+    ],
+    "scene_memorial_close": [
+      "The crowd breaks apart. The candles burn lower. The photo stays.",
+      "The vigil ends with the morning. The flowers stay until someone moves them.",
+      "By morning it's just candles and a name written in marker on the pavement."
+    ],
+    "scene_cult_vigil_open": [
+      "A circle of believers on {neighborhood} with candles and a portable antenna. They're not inviting anyone.",
+      "The cult is doing its night thing again — facing the old signal tower, candles at their feet.",
+      "A dozen figures in the street at midnight, candlelit, arranged by some system that isn't obvious.",
+      "Vigil on {neighborhood} — the antenna-worshippers, the ones who wear signal jewelry. Candles and frequency chants."
+    ],
+    "scene_cult_vigil_mid": [
+      "The chant is numbers. Frequencies, maybe, or coordinates. Nobody explains.",
+      "The candles all go out at once. They relight them without comment.",
+      "A figure in the middle speaks. The others face away to listen."
+    ],
+    "scene_cult_vigil_close": [
+      "The circle dissolves without a signal. The candles stay lit until they don't.",
+      "They leave in one direction. The street is empty and smells like tallow.",
+      "The vigil ends. The antenna gets packed into a rolling bag."
+    ],
+    "scene_rats_open": [
+      "The trash pile on {neighborhood} is moving. Rats are boiling out from the bottom.",
+      "Someone tipped a dumpster and the rats inside had opinions about it.",
+      "The corner pile is alive. Rats peeling out across the sidewalk in all directions."
+    ],
+    "scene_rats_mid": [
+      "The tide of rats hasn't finished. More keep coming.",
+      "They're heading toward the drain. Most of them.",
+      "A rat the size of a hand tool sits on the curb not running. It has done this before."
+    ],
+    "scene_rats_close": [
+      "They're back in the walls. The pile looks like it was never touched.",
+      "The last rat crosses the street. It takes its time.",
+      "The swarm is gone. Three people are comparing bites."
+    ],
+    "scene_rats_basement_open": [
+      "Something broke in the basement of the rowhouse on {neighborhood}. The rats are electing to leave.",
+      "A grate pops up and the basement beneath exports its whole rat colony at once.",
+      "Rats coming up through a cracked cellar door — dozens, ignoring everything."
+    ],
+    "scene_rats_basement_close": [
+      "The basement sealed itself back up. The rats found the next building.",
+      "A super appears with a broom handle too late. He knows it.",
+      "The colony is gone. The damage report will take weeks."
+    ],
+    "scene_rats_halal_open": [
+      "The halal cart on {neighborhood} is not open. The rats noticed first.",
+      "An abandoned cart became an ecosystem. The ecosystem is migrating.",
+      "Something under the cart's grease trap let go. The rats are organized about it."
+    ],
+    "scene_rats_scaffold_open": [
+      "The scaffolding on {neighborhood} has been up for six years and the rats inside have opinions.",
+      "Something disturbed the scaffolding colony. They're streaming out along the boards.",
+      "A work crew hit something in the scaffolding housing. The rats are the something."
+    ],
+    "scene_drunk_brawl_open": [
+      "Two people outside the bar are doing the slow-motion thing that ends with someone on the ground.",
+      "A disagreement on {neighborhood} made it outside and got physical around the corner.",
+      "Two guys in the street, shirts involved, at least one of them is going to fall.",
+      "Someone threw a bottle. The bottle missed. The second punch didn't."
+    ],
+    "scene_brawl_mid": [
+      "It's not over. One of them won't stay down.",
+      "Someone is filming. Several people are explaining this is wrong while filming.",
+      "The crowd gave them a circle. Fighting inside a circle is polite."
+    ],
+    "scene_drunk_brawl_close": [
+      "One of them sat down in the street. The fight apparently over.",
+      "They're shaking hands. One of them is bleeding while shaking hands.",
+      "The fight ended when a woman yelled from a third-floor window. First try."
+    ],
+    "scene_hustle_brawl_open": [
+      "A deal on {neighborhood} broke down publicly. The breakdown has an audience.",
+      "Two hustlers are settling a count dispute with their bodies. The count was wrong.",
+      "A handshake went bad. The correction is going worse."
+    ],
+    "scene_hustle_brawl_close": [
+      "The matter is settled in a way that will be re-litigated later.",
+      "One of them left. The other one picked something off the ground and left too.",
+      "The crowd disperses fast. Everyone has somewhere to be."
+    ],
+    "scene_crew_brawl_open": [
+      "Two crews have a problem at the corner of {neighborhood} that's being solved physically.",
+      "This is a territorial conversation. It's gotten to the part without words.",
+      "Four people on the sidewalk working out a disagreement. Nobody intervenes."
+    ],
+    "scene_crew_brawl_close": [
+      "One side left. They left on their own terms, walking. Nobody ran.",
+      "The corner is quiet again. The price of quiet is currently unknown.",
+      "Whatever the dispute was, it's been filed."
+    ],
+    "scene_scaffold_brawl_open": [
+      "Two workers on the scaffolding job are working something out on the sidewalk.",
+      "A contract dispute between two guys and a section of pipe, on {neighborhood}.",
+      "The work crew stopped working. Two of them are explaining the situation with their hands."
+    ],
+    "scene_scaffold_brawl_close": [
+      "Both workers are back on the job. The scaffolding job remains incomplete either way.",
+      "A foreman appeared and the fight ended and everyone pretended it didn't happen.",
+      "The fight ended when someone dropped a tool and both of them looked down."
+    ],
+    "scene_blackout_night_open": [
+      "The block on {neighborhood} goes dark all at once — one pop, then silence, then generators.",
+      "The lights went off from the corner and rolled down the block like dominoes. Grid's down.",
+      "Blackout hit {neighborhood}. Windows going dark, candles appearing in the same windows fifteen seconds later.",
+      "The streetlights on {neighborhood} killed. The dark came in so fast people looked up."
+    ],
+    "scene_blackout_day_open": [
+      "The storefronts lost power on {neighborhood}. Metal gates going down while it's still light.",
+      "Every screen on {neighborhood} went blank at the same moment. Grid problem.",
+      "The bodega's fridge hum stopped. The whole block stopped. Daytime blackout.",
+      "Power died on {neighborhood} in the afternoon. The ice in the carts starts counting down."
+    ],
+    "scene_blackout_industrial_open": [
+      "The dock equipment stopped. The whole waterfront block went dark.",
+      "Industrial sector lost the grid. Backup generators are the good ones here. Most of them.",
+      "The warehouses on {neighborhood} are dark. Emergency lighting, which means amber and not much."
+    ],
+    "scene_blackout_mid": [
+      "The dark isn't lifting. People are organizing around it.",
+      "Candles in every window now. The street lit from above by other people's emergencies.",
+      "The grid is down but the neighborhood isn't. Someone strung an extension cord across the street."
+    ],
+    "scene_blackout_end": [
+      "The lights came back. People cheered once and went back inside.",
+      "Power restored on {neighborhood}. The reasons are not released.",
+      "The grid came up by degrees — first one streetlight, then three, then all of them."
+    ],
+    "scene_shakedown_open": [
+      "Faction muscle posted at the shop entrance on {neighborhood}. The owner is making change fast.",
+      "Two enforcers at the register of the bodega on {neighborhood}. The line of customers is very patient.",
+      "The collectors are here. The shop is open but the atmosphere is not.",
+      "A protection stop on {neighborhood} — two people at the door, one inside, everyone aware."
+    ],
+    "scene_shakedown_mid": [
+      "The owner is talking slow and nodding. This is going fine, in the way where fine means nothing broke.",
+      "The tally is being written. The pen is very deliberate.",
+      "One of the enforcers bought something. This is apparently normal."
+    ],
+    "scene_shakedown_close": [
+      "The collectors walk out and down the street. The owner locks up for ten minutes.",
+      "They left with something in a bag. The shop reopens immediately.",
+      "The muscle is gone. The shop owner mops something by the register."
+    ],
+    "scene_dock_shakedown_open": [
+      "A dock crew stopped unloading. Faction representatives arrived with a clipboard.",
+      "The cargo on the waterfront isn't moving until numbers are agreed on. The sun is moving.",
+      "Two enforcers at the warehouse gate on {neighborhood}. The foreman is checking his phone for a number."
+    ],
+    "scene_dock_shakedown_close": [
+      "The cargo moves. The dock crew resumes without looking at anyone.",
+      "The clipboard people walk back to the water. Everyone goes back to work.",
+      "Numbers agreed. The dock foreman doesn't look relieved."
+    ],
+    "scene_cult_shakedown_open": [
+      "Cult collectors are asking for tithe at the corner of {neighborhood}. They call it a donation.",
+      "Two believers with an envelope are working the block. It isn't optional.",
+      "The antenna-cult doing collections on {neighborhood}. The rate is a standard rate. Mostly."
+    ],
+    "scene_cult_shakedown_mid": [
+      "Someone declined. The conversation continued.",
+      "The envelope gets full slowly. The collectors don't rush.",
+      "A merchant paid with components instead of currency. They took it."
+    ],
+    "street_beat": [
+      "Two voices behind a sealed door going fast. You don't hear words, only heat.",
+      "A livery cab idles at the corner for eight minutes, then leaves without taking anyone.",
+      "A deal in a building doorway. Hands don't show. Nods.",
+      "Someone in the phone-less phone booth on {neighborhood} is actually on the phone.",
+      "A drone comes in low, clears the scaffolding by two feet, drops a bag on a fire escape.",
+      "Glass breaks one floor up. Nobody on the street looks up.",
+      "A kid on a bike does one slow lap around the block and stops at the same corner.",
+      "Someone crying in the phone-less phone booth. The door is open.",
+      "Two people hug in the middle of the sidewalk for a long time. Neither lets go first.",
+      "A guy with a shopping cart full of copper moves down the alley at speed.",
+      "A dog tied to a parking meter is reading the street better than anyone.",
+      "A window shade opens, someone looks out at the street for thirty seconds, closes.",
+      "The halal cart on {neighborhood} is out of everything. The sign says 'come back.' It doesn't say when.",
+      "A fight you can't see — just the sound and the crowd adjusting away from the mouth of the alley.",
+      "A man in a suit standing in front of a rowhouse writing in a notebook. He sees you see him.",
+      "Three guys on a stoop all look in the same direction at the same moment, then don't.",
+      "A fire escape garden drops a tomato. It lands wrong.",
+      "Footsteps above, fast, crossing from one building to the next via the rooftop. Parkour, maybe. Maybe not.",
+      "A folded note under a wiper blade. Wind takes it before anyone reads it.",
+      "Someone put a couch on the curb. It's gone in forty minutes.",
+      "A livery cab has had its hazards on for two hours. The driver is still in it.",
+      "An argument dies the moment you pass. Resumes after.",
+      "The door of the abandoned storefront on {neighborhood} is ajar. It wasn't yesterday.",
+      "A child hands something to an adult from a second-story window on a string. The adult pockets it and walks.",
+      "Sirens three blocks south, then more sirens east, then quiet. Something happened.",
+      "A rat the size of a shoe crosses the intersection with purpose.",
+      "Two men shaking hands for the fourth time in a row, each one more final than the last.",
+      "Someone stencils the pavement three feet ahead of you. Gone around the corner before you read it."
+    ],
+    "ambient": [
+      "The scaffolding on this block has been up so long moss grew on the planks.",
+      "A bodega cat watches you from behind the Red Bull display. It has watched everyone.",
+      "The BQE hums in the distance like it always does — traffic or grief, same sound.",
+      "A halal cart's grill is still warm. No one's tending it.",
+      "Three cones in the street for a reason nobody is investigating.",
+      "The fire escape above you has a garden. The garden has a lock.",
+      "Someone wrote a phone number on the doorframe in grease pencil. It's been there long enough to fade.",
+      "A stoop chair. No one in it.",
+      "The building to your left still has scaffolding. The permit expired in 2031.",
+      "A news drone passes overhead, slow, making itself very obvious.",
+      "The awning overhead reads something in two languages and the English half is illegible.",
+      "A pay-laundry bag hanging from a fire escape — someone still waiting for a pickup.",
+      "The curb smells like bleach. Recent bleach."
+    ]
+  }
+}
